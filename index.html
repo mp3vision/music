@@ -108,7 +108,7 @@
       <!-- Playlist Sidebar List -->
       <div id="playlist-sidebar" class="flex-1 overflow-y-auto px-3 space-y-1"></div>
 
-      <!-- Add Music Actions -->
+      <!-- Add Music & Buy Me a Coffee Support -->
       <div class="p-4 border-t border-zinc-800 space-y-2">
         <button onclick="openUrlTrackModal()" class="w-full flex items-center justify-center gap-2 bg-[#1db954] hover:bg-emerald-400 text-black text-xs font-bold py-2.5 px-4 rounded-full transition">
           <i class="fa-solid fa-cloud"></i>
@@ -119,6 +119,22 @@
           <span id="upload-btn-label">Import MP3 / MP4 Files</span>
           <input type="file" id="mp3-upload" accept=".mp3,.mp4,audio/mpeg,video/mp4,audio/*" multiple class="hidden" onchange="handleFileUpload(event)" />
         </label>
+
+        <!-- Buy Me a Coffee Support Card -->
+        <div class="pt-2">
+          <a
+            href="https://buymeacoffee.com/mp3vision"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="w-full flex items-center justify-center gap-2 bg-[#FFDD00] hover:bg-yellow-300 text-black text-xs font-extrabold py-2.5 px-4 rounded-full shadow transition hover:scale-[1.02]"
+          >
+            <i class="fa-solid fa-mug-hot text-sm"></i>
+            <span>Buy Me a Coffee</span>
+          </a>
+          <p class="text-[11px] text-zinc-400 text-center mt-1.5 leading-tight">
+            Support MP3 Vision to keep it <span class="text-white font-semibold">100% ad-free</span> — no ads at all!
+          </p>
+        </div>
       </div>
     </aside>
 
@@ -166,13 +182,10 @@
             </div>
           </div>
 
-          <!-- Custom Playlist Management Buttons -->
+          <!-- Custom Playlist Management Buttons (Sharing Removed) -->
           <div id="playlist-header-actions" class="hidden items-center gap-2 flex-wrap">
             <button onclick="openCoverModal()" class="bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-semibold px-3.5 py-2 rounded-full flex items-center gap-1.5 transition">
               <i class="fa-solid fa-palette text-[#1db954]"></i> Customize Cover
-            </button>
-            <button onclick="shareCurrentPlaylist()" class="bg-[#1db954] hover:bg-emerald-400 text-black text-xs font-bold px-4 py-2 rounded-full flex items-center gap-1.5 transition">
-              <i class="fa-solid fa-share-nodes"></i> Share Playlist
             </button>
             <button onclick="renameCurrentPlaylist()" class="bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-semibold px-3.5 py-2 rounded-full flex items-center gap-1.5 transition">
               <i class="fa-solid fa-pen"></i> Rename
@@ -181,18 +194,11 @@
               <i class="fa-solid fa-trash"></i> Delete
             </button>
           </div>
-
-          <!-- Shared Playlist Import Action -->
-          <div id="shared-playlist-actions" class="hidden items-center gap-2">
-            <button onclick="saveSharedPlaylistToLibrary()" class="bg-[#1db954] hover:bg-emerald-400 text-black text-xs font-bold px-4 py-2 rounded-full flex items-center gap-1.5 transition">
-              <i class="fa-solid fa-plus"></i> Save to My Library
-            </button>
-          </div>
         </div>
 
         <!-- HELP PAGE VIEW -->
-        <div id="help-container" class="hidden">
-          <div class="bg-[#181818] border border-zinc-800/80 rounded-2xl p-8 max-w-2xl space-y-5 shadow-xl">
+        <div id="help-container" class="hidden space-y-6 max-w-2xl">
+          <div class="bg-[#181818] border border-zinc-800/80 rounded-2xl p-8 space-y-5 shadow-xl">
             <h2 class="text-2xl sm:text-3xl font-bold text-white tracking-tight">Introduction to MP3 Vision</h2>
             <div class="space-y-3 text-base text-zinc-200 leading-relaxed">
               <p>Upload MP3 tracks once and play them forever!</p>
@@ -200,10 +206,31 @@
               <p class="pt-2 text-[#1db954] font-semibold">Thank you for using MP3 Vision!</p>
             </div>
           </div>
+
+          <!-- Support / Buy Me a Coffee Card on Help Page -->
+          <div class="bg-gradient-to-r from-zinc-900 to-[#181818] border border-yellow-500/30 rounded-2xl p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xl">
+            <div class="space-y-1">
+              <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                <i class="fa-solid fa-mug-hot text-[#FFDD00]"></i> Support MP3 Vision
+              </h3>
+              <p class="text-sm text-zinc-300">
+                Enjoying uninterrupted music? Donate to keep MP3 Vision running with <strong class="text-white">no ads at all!</strong>
+              </p>
+            </div>
+            <a
+              href="https://buymeacoffee.com/mp3vision"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="bg-[#FFDD00] hover:bg-yellow-300 text-black text-xs font-extrabold px-5 py-3 rounded-full flex items-center gap-2 shrink-0 shadow transition hover:scale-105"
+            >
+              <i class="fa-solid fa-mug-hot"></i>
+              <span>Buy Me a Coffee</span>
+            </a>
+          </div>
         </div>
 
-        <!-- DETAILED LISTENING ANALYTICS DASHBOARD -->
-        <div id="analytics-container" class="space-y-6">
+        <!-- DETAILED LISTENING ANALYTICS DASHBOARD (Hidden on Home Page) -->
+        <div id="analytics-container" class="hidden space-y-6">
           
           <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
             <div class="bg-[#181818] p-4 rounded-xl border border-zinc-800/80">
@@ -230,7 +257,7 @@
                 <i class="fa-solid fa-bolt text-amber-400"></i>
               </div>
               <div id="stat-daily-avg" class="text-2xl sm:text-3xl font-extrabold text-white mt-2">0 mins</div>
-              <div class="text-xs text-zinc-500 mt-1">Per active listening day</div>
+              <div id="stat-daily-avg-sub" class="text-xs text-zinc-500 mt-1">Per active listening day</div>
             </div>
 
             <div class="bg-[#181818] p-4 rounded-xl border border-zinc-800/80">
@@ -386,30 +413,7 @@
     </div>
   </div>
 
-  <!-- 2. SHARE PLAYLIST LINK MODAL -->
-  <div id="share-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-    <div class="bg-[#181818] border border-zinc-800 rounded-2xl w-full max-w-md p-6 shadow-2xl space-y-4">
-      <div class="flex items-center justify-between">
-        <h3 class="text-lg font-bold flex items-center gap-2">
-          <i class="fa-solid fa-share-nodes text-[#1db954]"></i> Share Playlist Link
-        </h3>
-        <button onclick="closeShareModal()" class="text-zinc-400 hover:text-white">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
-      </div>
-      <p id="share-status-text" class="text-xs text-zinc-400">
-        Anyone with this link can view and stream the synced tracks in this playlist.
-      </p>
-      <div class="flex items-center gap-2">
-        <input id="share-link-input" type="text" readonly class="flex-1 bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-xs text-white font-mono focus:outline-none" />
-        <button id="copy-share-btn" onclick="copyShareLink()" class="bg-[#1db954] hover:bg-emerald-400 text-black text-xs font-bold px-4 py-2 rounded-lg transition shrink-0">
-          Copy Link
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- 3. REAL FIREBASE AUTH MODAL -->
+  <!-- 2. REAL FIREBASE AUTH MODAL -->
   <div id="auth-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
     <div class="bg-[#181818] border border-zinc-800 rounded-2xl w-full max-w-md p-6 shadow-2xl">
       <div class="flex items-center justify-between mb-4">
@@ -469,7 +473,7 @@
     </div>
   </div>
 
-  <!-- 4. EDIT SONG & ARTIST MODAL -->
+  <!-- 3. EDIT SONG & ARTIST MODAL -->
   <div id="edit-song-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
     <div class="bg-[#181818] border border-zinc-800 rounded-2xl w-full max-w-sm p-6 shadow-2xl space-y-4">
       <div class="flex items-center justify-between">
@@ -497,7 +501,7 @@
     </div>
   </div>
 
-  <!-- 5. CREATE / RENAME PLAYLIST MODAL -->
+  <!-- 4. CREATE / RENAME PLAYLIST MODAL -->
   <div id="playlist-name-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
     <div class="bg-[#181818] border border-zinc-800 rounded-2xl w-full max-w-sm p-6 shadow-2xl space-y-4">
       <div class="flex items-center justify-between">
@@ -517,7 +521,7 @@
     </div>
   </div>
 
-  <!-- 6. ASSIGN SONG TO PLAYLISTS MODAL -->
+  <!-- 5. ASSIGN SONG TO PLAYLISTS MODAL -->
   <div id="assign-playlist-modal" class="hidden fixed inset-0 bg-black/75 flex items-center justify-center z-50 p-4">
     <div class="bg-[#181818] border border-zinc-800 rounded-xl w-80 p-5">
       <div class="flex items-center justify-between mb-3">
@@ -530,7 +534,7 @@
     </div>
   </div>
 
-  <!-- 7. ADD MP3/MP4 BY URL / GITHUB MODAL -->
+  <!-- 6. ADD MP3/MP4 BY URL / GITHUB MODAL -->
   <div id="url-track-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
     <div class="bg-[#181818] border border-zinc-800 rounded-2xl w-full max-w-md p-6 shadow-2xl space-y-4">
       <div class="flex items-center justify-between">
@@ -685,7 +689,6 @@
       deviceName: localStorage.getItem('mp3v_device_name') || detectDeviceName(),
       authMode: 'login',
       currentView: 'all',
-      sharedPlaylistData: null,
       currentTrackId: null,
       isPlaying: false,
       isShuffle: false,
@@ -741,12 +744,6 @@
       audio.volume = state.volume;
       document.getElementById('device-label').textContent = state.deviceName;
       document.getElementById('auth-device').value = state.deviceName;
-
-      const urlParams = new URLSearchParams(window.location.search);
-      const shareId = urlParams.get('share');
-      if (shareId) {
-        await loadSharedPlaylistFromLink(shareId);
-      }
 
       renderAll();
 
@@ -893,130 +890,6 @@
       syncStateToCloud();
     };
 
-    // =========================================================================
-    // 6. SHARE PLAYLIST IN LINK FORMAT
-    // =========================================================================
-    window.shareCurrentPlaylist = async () => {
-      const pl = state.playlists.find(p => p.id === state.currentView);
-      if (!pl) return;
-
-      const playlistTracks = pl.trackIds
-        .map(id => state.tracks.find(t => t.id === id))
-        .filter(Boolean)
-        .map(t => ({
-          id: t.id,
-          title: t.title,
-          artist: t.artist,
-          mediaType: t.mediaType || 'mp3',
-          color: t.color || 'from-emerald-500 to-teal-900',
-          src: t.isLocalBlob ? '' : (t.src || '')
-        }));
-
-      const shareCode = (state.user ? state.user.uid.slice(0, 6) + '_' : '') + pl.id;
-      const baseUrl = window.location.origin + window.location.pathname;
-      const shareUrl = `${baseUrl}?share=${encodeURIComponent(shareCode)}`;
-
-      document.getElementById('share-link-input').value = shareUrl;
-      document.getElementById('copy-share-btn').textContent = 'Copy Link';
-      document.getElementById('share-modal').classList.remove('hidden');
-
-      if (!state.user) {
-        document.getElementById('share-status-text').textContent =
-          'Sign in first to publish this playlist link to the cloud so others can open it.';
-        return;
-      }
-
-      document.getElementById('share-status-text').textContent = 'Publishing playlist link...';
-
-      try {
-        await set(dbRef(rtdb, 'shared_playlists/' + shareCode), {
-          name: pl.name,
-          coverColor: pl.coverColor || DEFAULT_COVER_GRADIENT,
-          coverImage: pl.coverImage || null,
-          ownerEmail: state.user.email,
-          tracks: playlistTracks,
-          updatedAt: Date.now()
-        });
-        document.getElementById('share-status-text').textContent =
-          'Playlist link is live! Anyone with this link can stream it.';
-      } catch (err) {
-        document.getElementById('share-status-text').textContent =
-          'Could not publish link. Make sure shared_playlists rules are enabled in Firebase.';
-      }
-    };
-
-    window.copyShareLink = () => {
-      const input = document.getElementById('share-link-input');
-      input.select();
-      navigator.clipboard.writeText(input.value);
-      document.getElementById('copy-share-btn').textContent = 'Copied!';
-    };
-
-    window.closeShareModal = () => {
-      document.getElementById('share-modal').classList.add('hidden');
-    };
-
-    async function loadSharedPlaylistFromLink(shareCode) {
-      try {
-        const snap = await get(dbRef(rtdb, 'shared_playlists/' + shareCode));
-        if (snap.exists()) {
-          const data = snap.val();
-          state.sharedPlaylistData = {
-            shareCode,
-            name: data.name || 'Shared Playlist',
-            coverColor: data.coverColor || DEFAULT_COVER_GRADIENT,
-            coverImage: data.coverImage || null,
-            ownerEmail: data.ownerEmail || 'MP3 Vision User',
-            tracks: Array.isArray(data.tracks) ? data.tracks : []
-          };
-          state.currentView = 'shared_view';
-        }
-      } catch (e) {
-        console.warn('Could not load shared playlist:', e);
-      }
-    }
-
-    window.saveSharedPlaylistToLibrary = () => {
-      if (!state.sharedPlaylistData) return;
-      const newTrackIds = [];
-
-      state.sharedPlaylistData.tracks.forEach((sharedTrk, i) => {
-        let existing = state.tracks.find(t => t.src && t.src === sharedTrk.src && t.title === sharedTrk.title);
-        if (!existing) {
-          existing = {
-            id: 'trk_' + Date.now() + '_' + i,
-            title: sharedTrk.title,
-            artist: sharedTrk.artist,
-            mediaType: sharedTrk.mediaType || 'mp3',
-            plays: 0,
-            secondsListened: 0,
-            liked: false,
-            color: sharedTrk.color || 'from-emerald-500 to-teal-900',
-            src: sharedTrk.src || '',
-            isLocalBlob: false
-          };
-          state.tracks.push(existing);
-        }
-        newTrackIds.push(existing.id);
-      });
-
-      const newPl = {
-        id: 'pl_' + Date.now(),
-        name: state.sharedPlaylistData.name,
-        coverColor: state.sharedPlaylistData.coverColor || DEFAULT_COVER_GRADIENT,
-        coverImage: state.sharedPlaylistData.coverImage || null,
-        trackIds: newTrackIds
-      };
-      state.playlists.push(newPl);
-
-      window.history.replaceState({}, document.title, window.location.pathname);
-      state.sharedPlaylistData = null;
-      state.currentView = newPl.id;
-
-      renderAll();
-      syncStateToCloud();
-    };
-
     function recordListeningTime(trackId, seconds) {
       const track = state.tracks.find(t => t.id === trackId);
       if (!track) return;
@@ -1044,7 +917,7 @@
     }
 
     // =========================================================================
-    // 7. FIREBASE AUTHENTICATION
+    // 6. FIREBASE AUTHENTICATION
     // =========================================================================
     window.openAuthModal = () => {
       document.getElementById('auth-error').classList.add('hidden');
@@ -1149,7 +1022,7 @@
     }
 
     // =========================================================================
-    // 8. REALTIME DATABASE SYNC
+    // 7. REALTIME DATABASE SYNC
     // =========================================================================
     async function subscribeToRealtimeDatabase(uid) {
       if (unsubscribeRtdb) unsubscribeRtdb();
@@ -1325,7 +1198,7 @@
     }
 
     // =========================================================================
-    // 9. IMPORT MP3 / MP4 FILES (PERSISTENT INDEXEDDB + AUDIO-ONLY PLAYBACK)
+    // 8. IMPORT MP3 / MP4 FILES (PERSISTENT INDEXEDDB + AUDIO-ONLY PLAYBACK)
     // =========================================================================
     window.handleFileUpload = async (event) => {
       const files = Array.from(event.target.files);
@@ -1433,7 +1306,7 @@
     };
 
     // =========================================================================
-    // 10. RENAME SONG, ARTIST, OR AUDIO URL / DELETE SONG
+    // 9. RENAME SONG, ARTIST, OR AUDIO URL / DELETE SONG
     // =========================================================================
     window.openEditSongModal = (trackId, event) => {
       if (event) event.stopPropagation();
@@ -1510,7 +1383,7 @@
     };
 
     // =========================================================================
-    // 11. REORDER SEQUENCE (UP/DOWN BUTTONS & DRAG-AND-DROP)
+    // 10. REORDER SEQUENCE (UP/DOWN BUTTONS & DRAG-AND-DROP)
     // =========================================================================
     window.moveSongInSequence = (index, direction, event) => {
       if (event) event.stopPropagation();
@@ -1563,7 +1436,7 @@
     };
 
     // =========================================================================
-    // 12. ADD, RENAME & DELETE PLAYLISTS
+    // 11. ADD, RENAME & DELETE PLAYLISTS
     // =========================================================================
     window.openCreatePlaylistModal = () => {
       state.playlistModalMode = 'create';
@@ -1661,23 +1534,15 @@
     };
 
     // =========================================================================
-    // 13. PLAYBACK & TRANSPORT CONTROLS
+    // 12. PLAYBACK & TRANSPORT CONTROLS
     // =========================================================================
     function getActiveQueue() {
       const visible = getFilteredTracks();
       return visible.length > 0 ? visible : state.tracks;
     }
 
-    function findTrackAnywhere(trackId) {
-      let track = state.tracks.find(t => t.id === trackId);
-      if (!track && state.sharedPlaylistData) {
-        track = state.sharedPlaylistData.tracks.find(t => t.id === trackId);
-      }
-      return track;
-    }
-
     async function loadTrackById(trackId, autoPlay = true) {
-      const track = findTrackAnywhere(trackId);
+      const track = state.tracks.find(t => t.id === trackId);
       if (!track) return;
 
       if (!track.src) {
@@ -1689,7 +1554,7 @@
       }
 
       if (!track.src) {
-        if (state.currentView !== 'shared_view') openEditSongModal(track.id);
+        openEditSongModal(track.id);
         alert(`"${track.title}" has no audio URL on this device yet.`);
         return;
       }
@@ -1846,7 +1711,7 @@
     }
 
     // =========================================================================
-    // 14. ANALYTICS & RENDERING
+    // 13. ANALYTICS & RENDERING
     // =========================================================================
     function incrementPlayCount(trackId) {
       const track = state.tracks.find(t => t.id === trackId);
@@ -1927,9 +1792,7 @@
       const query = document.getElementById('search-input').value.toLowerCase().trim();
       let list = [];
 
-      if (state.currentView === 'shared_view' && state.sharedPlaylistData) {
-        list = [...state.sharedPlaylistData.tracks];
-      } else if (state.currentView.startsWith('pl_')) {
+      if (state.currentView.startsWith('pl_')) {
         const pl = state.playlists.find(p => p.id === state.currentView);
         if (pl) {
           list = pl.trackIds
@@ -2099,22 +1962,18 @@
       const analyticsBox = document.getElementById('analytics-container');
       const songSection = document.getElementById('song-table-section');
       const plHeaderActions = document.getElementById('playlist-header-actions');
-      const sharedHeaderActions = document.getElementById('shared-playlist-actions');
 
       helpBox.classList.add('hidden');
-      analyticsBox.classList.remove('hidden');
+      analyticsBox.classList.add('hidden');
       songSection.classList.remove('hidden');
       plHeaderActions.classList.add('hidden');
       plHeaderActions.classList.remove('flex');
-      sharedHeaderActions.classList.add('hidden');
-      sharedHeaderActions.classList.remove('flex');
       subtitleEl.textContent = '';
 
       coverEl.className = `w-32 h-32 rounded-lg bg-gradient-to-br ${DEFAULT_COVER_GRADIENT} shadow-2xl flex items-center justify-center text-4xl shrink-0 overflow-hidden relative group`;
       coverEl.innerHTML = `<i class="fa-solid fa-headphones"></i>`;
 
       const isPlaylistView = state.currentView.startsWith('pl_');
-      const isSharedView = state.currentView === 'shared_view' && !!state.sharedPlaylistData;
       const canReorder = isPlaylistView || state.currentView === 'all';
 
       if (state.currentView === 'all') {
@@ -2126,7 +1985,6 @@
         coverEl.className = 'w-32 h-32 rounded-lg bg-gradient-to-br from-sky-500 to-zinc-900 shadow-2xl flex items-center justify-center text-4xl shrink-0';
         coverEl.innerHTML = `<i class="fa-solid fa-circle-question"></i>`;
         helpBox.classList.remove('hidden');
-        analyticsBox.classList.add('hidden');
         songSection.classList.add('hidden');
         return;
       } else if (state.currentView === 'liked') {
@@ -2134,17 +1992,17 @@
         titleEl.textContent = 'Liked Songs';
         coverEl.className = 'w-32 h-32 rounded-lg bg-gradient-to-br from-emerald-400 to-teal-900 shadow-2xl flex items-center justify-center text-4xl shrink-0';
         coverEl.innerHTML = `<i class="fa-solid fa-heart"></i>`;
-        analyticsBox.classList.add('hidden');
       } else if (state.currentView === 'analytics') {
         typeEl.textContent = 'MP3 VISION INSIGHTS';
         titleEl.textContent = 'Detailed Listening Stats';
         coverEl.innerHTML = `<i class="fa-solid fa-chart-line"></i>`;
+        analyticsBox.classList.remove('hidden');
         songSection.classList.add('hidden');
+        return;
       } else if (isPlaylistView) {
         const pl = state.playlists.find(p => p.id === state.currentView);
         typeEl.textContent = 'PLAYLIST';
         titleEl.textContent = pl ? pl.name : 'Playlist';
-        analyticsBox.classList.add('hidden');
         plHeaderActions.classList.remove('hidden');
         plHeaderActions.classList.add('flex');
 
@@ -2166,19 +2024,6 @@
               </div>
             `;
           }
-        }
-      } else if (isSharedView) {
-        typeEl.textContent = 'SHARED PLAYLIST';
-        titleEl.textContent = state.sharedPlaylistData.name;
-        subtitleEl.textContent = `Shared by ${state.sharedPlaylistData.ownerEmail}`;
-        analyticsBox.classList.add('hidden');
-        sharedHeaderActions.classList.remove('hidden');
-        sharedHeaderActions.classList.add('flex');
-
-        if (state.sharedPlaylistData.coverImage) {
-          coverEl.innerHTML = `<img src="${state.sharedPlaylistData.coverImage}" class="w-full h-full object-cover" />`;
-        } else {
-          coverEl.className = `w-32 h-32 rounded-lg bg-gradient-to-br ${state.sharedPlaylistData.coverColor || DEFAULT_COVER_GRADIENT} shadow-2xl flex items-center justify-center text-4xl shrink-0`;
         }
       }
 
@@ -2234,27 +2079,23 @@
             <div class="col-span-3 text-sm text-zinc-400 truncate pr-2">${track.artist}</div>
 
             <div class="col-span-1 text-right text-xs font-mono text-zinc-400">
-              ${isSharedView ? '—' : `
-                <div>${formatDurationHuman(track.secondsListened)}</div>
-                <div class="text-[10px] text-zinc-500">${track.plays || 0} plays</div>
-              `}
+              <div>${formatDurationHuman(track.secondsListened)}</div>
+              <div class="text-[10px] text-zinc-500">${track.plays || 0} plays</div>
             </div>
 
             <div class="col-span-3 flex items-center justify-end gap-3" onclick="event.stopPropagation()">
-              ${isSharedView ? '' : `
-                <button onclick="toggleLike('${track.id}', event)" class="${track.liked ? 'text-[#1db954]' : 'text-zinc-500 hover:text-white'}">
-                  <i class="${track.liked ? 'fa-solid' : 'fa-regular'} fa-heart"></i>
-                </button>
-                <button onclick="openEditSongModal('${track.id}', event)" class="text-zinc-400 hover:text-white">
-                  <i class="fa-solid fa-pen text-xs"></i>
-                </button>
-                <button onclick="openAssignPlaylistModal('${track.id}', event)" class="text-zinc-400 hover:text-white">
-                  <i class="fa-solid fa-folder-plus text-xs"></i>
-                </button>
-                <button onclick="deleteOrRemoveSong('${track.id}', event)" class="text-zinc-500 hover:text-red-400">
-                  <i class="fa-solid ${isPlaylistView ? 'fa-minus' : 'fa-trash'} text-xs"></i>
-                </button>
-              `}
+              <button onclick="toggleLike('${track.id}', event)" class="${track.liked ? 'text-[#1db954]' : 'text-zinc-500 hover:text-white'}">
+                <i class="${track.liked ? 'fa-solid' : 'fa-regular'} fa-heart"></i>
+              </button>
+              <button onclick="openEditSongModal('${track.id}', event)" class="text-zinc-400 hover:text-white">
+                <i class="fa-solid fa-pen text-xs"></i>
+              </button>
+              <button onclick="openAssignPlaylistModal('${track.id}', event)" class="text-zinc-400 hover:text-white">
+                <i class="fa-solid fa-folder-plus text-xs"></i>
+              </button>
+              <button onclick="deleteOrRemoveSong('${track.id}', event)" class="text-zinc-500 hover:text-red-400">
+                <i class="fa-solid ${isPlaylistView ? 'fa-minus' : 'fa-trash'} text-xs"></i>
+              </button>
             </div>
           </div>
         `;

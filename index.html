@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PulseStream — Cloud MP3 Player</title>
+  <title>MP3 Vision — Cloud Music Player & Listening Stats</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   <style>
     :root {
-      --spotify-green: #1db954;
+      --accent-green: #1db954;
     }
     body {
       background-color: #000;
@@ -36,7 +36,7 @@
       transition: transform 0.1s ease, background-color 0.1s ease;
     }
     input[type="range"]:hover::-webkit-slider-thumb {
-      background: var(--spotify-green);
+      background: var(--accent-green);
       transform: scale(1.2);
     }
     .drag-over {
@@ -73,19 +73,24 @@
     <!-- LEFT SIDEBAR -->
     <aside class="w-64 bg-[#121212] rounded-lg flex flex-col overflow-hidden shrink-0">
       <div class="p-5 space-y-4">
-        <div class="flex items-center gap-2 text-xl font-bold tracking-tight text-white">
-          <i class="fa-brands fa-spotify text-[#1db954] text-3xl"></i>
-          <span>PulseStream</span>
+        <div class="flex items-center gap-2.5 text-xl font-bold tracking-tight text-white">
+          <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-[#1db954] to-emerald-700 text-black flex items-center justify-center text-lg shadow">
+            <i class="fa-solid fa-wave-square"></i>
+          </div>
+          <span>MP3 Vision</span>
         </div>
-        <nav class="space-y-2 pt-2">
-          <button onclick="switchView('all')" id="nav-all" class="w-full flex items-center gap-4 text-sm font-semibold text-white hover:text-white transition py-1.5">
-            <i class="fa-solid fa-house text-lg w-6"></i> Home / All Songs
+        <nav class="space-y-1.5 pt-2">
+          <button onclick="switchView('all')" id="nav-all" class="w-full flex items-center gap-3.5 text-sm font-semibold text-white bg-zinc-800/80 px-3 py-2 rounded-lg transition">
+            <i class="fa-solid fa-house text-base w-5"></i> Home / All Songs
           </button>
-          <button onclick="switchView('analytics')" id="nav-analytics" class="w-full flex items-center gap-4 text-sm font-semibold text-zinc-400 hover:text-white transition py-1.5">
-            <i class="fa-solid fa-chart-simple text-lg w-6"></i> Top Charts & Stats
+          <button onclick="switchView('analytics')" id="nav-analytics" class="w-full flex items-center gap-3.5 text-sm font-semibold text-zinc-400 hover:text-white px-3 py-2 rounded-lg transition">
+            <i class="fa-solid fa-chart-line text-base w-5 text-[#1db954]"></i> Detailed Listening Stats
           </button>
-          <button onclick="switchView('liked')" id="nav-liked" class="w-full flex items-center gap-4 text-sm font-semibold text-zinc-400 hover:text-white transition py-1.5">
-            <i class="fa-solid fa-heart text-lg w-6 text-emerald-400"></i> Liked Songs
+          <button onclick="switchView('liked')" id="nav-liked" class="w-full flex items-center gap-3.5 text-sm font-semibold text-zinc-400 hover:text-white px-3 py-2 rounded-lg transition">
+            <i class="fa-solid fa-heart text-base w-5 text-emerald-400"></i> Liked Songs
+          </button>
+          <button onclick="switchView('help')" id="nav-help" class="w-full flex items-center gap-3.5 text-sm font-semibold text-zinc-400 hover:text-white px-3 py-2 rounded-lg transition">
+            <i class="fa-solid fa-circle-question text-base w-5 text-sky-400"></i> Help
           </button>
         </nav>
       </div>
@@ -105,15 +110,15 @@
 
       <!-- Add Music Actions -->
       <div class="p-4 border-t border-zinc-800 space-y-2">
-        <label class="w-full flex items-center justify-center gap-2 bg-[#1db954] hover:bg-emerald-400 text-black text-xs font-bold py-2.5 px-4 rounded-full cursor-pointer transition">
-          <i class="fa-solid fa-cloud-arrow-up"></i>
-          <span id="upload-btn-label">Upload MP3 Files</span>
-          <input type="file" id="mp3-upload" accept="audio/*" multiple class="hidden" onchange="handleFileUpload(event)" />
-        </label>
-        <button onclick="openUrlTrackModal()" class="w-full flex items-center justify-center gap-2 bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-semibold py-2 px-4 rounded-full transition">
-          <i class="fa-solid fa-link text-[#1db954]"></i>
-          <span>Add MP3 via URL</span>
+        <button onclick="openUrlTrackModal()" class="w-full flex items-center justify-center gap-2 bg-[#1db954] hover:bg-emerald-400 text-black text-xs font-bold py-2.5 px-4 rounded-full transition">
+          <i class="fa-solid fa-cloud"></i>
+          <span>Add MP3/MP4 via URL</span>
         </button>
+        <label class="w-full flex items-center justify-center gap-2 bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-semibold py-2 px-4 rounded-full cursor-pointer transition">
+          <i class="fa-solid fa-file-audio text-[#1db954]"></i>
+          <span id="upload-btn-label">Import MP3 / MP4 Files</span>
+          <input type="file" id="mp3-upload" accept=".mp3,.mp4,audio/mpeg,video/mp4,audio/*" multiple class="hidden" onchange="handleFileUpload(event)" />
+        </label>
       </div>
     </aside>
 
@@ -151,58 +156,134 @@
         <!-- View Header Banner -->
         <div class="flex items-end justify-between gap-6 flex-wrap">
           <div class="flex items-end gap-6">
-            <div id="view-cover" class="w-36 h-36 rounded-lg bg-gradient-to-br from-emerald-500 to-zinc-900 shadow-2xl flex items-center justify-center text-5xl shrink-0">
-              <i class="fa-solid fa-music"></i>
+            <div id="view-cover" class="w-32 h-32 rounded-lg bg-gradient-to-br from-emerald-500 to-zinc-900 shadow-2xl flex items-center justify-center text-4xl shrink-0 overflow-hidden relative group">
+              <i class="fa-solid fa-headphones"></i>
             </div>
             <div>
-              <p class="text-xs font-bold uppercase tracking-widest text-zinc-400" id="view-type">LIBRARY</p>
-              <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight mt-1 mb-2" id="view-title">All Songs</h1>
-              <p class="text-sm text-zinc-400" id="view-subtitle">Drag rows or use ▲/▼ arrows to reorder sequence</p>
+              <p class="text-xs font-bold uppercase tracking-widest text-zinc-400" id="view-type">MP3 VISION LIBRARY</p>
+              <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight mt-1 mb-1" id="view-title">All Songs</h1>
+              <p class="text-sm text-zinc-400" id="view-subtitle"></p>
             </div>
           </div>
 
-          <!-- Playlist Management Buttons (Shown when viewing a custom playlist) -->
-          <div id="playlist-header-actions" class="hidden items-center gap-2">
+          <!-- Custom Playlist Management Buttons -->
+          <div id="playlist-header-actions" class="hidden items-center gap-2 flex-wrap">
+            <button onclick="openCoverModal()" class="bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-semibold px-3.5 py-2 rounded-full flex items-center gap-1.5 transition">
+              <i class="fa-solid fa-palette text-[#1db954]"></i> Customize Cover
+            </button>
+            <button onclick="shareCurrentPlaylist()" class="bg-[#1db954] hover:bg-emerald-400 text-black text-xs font-bold px-4 py-2 rounded-full flex items-center gap-1.5 transition">
+              <i class="fa-solid fa-share-nodes"></i> Share Playlist
+            </button>
             <button onclick="renameCurrentPlaylist()" class="bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-semibold px-3.5 py-2 rounded-full flex items-center gap-1.5 transition">
-              <i class="fa-solid fa-pen"></i> Rename Playlist
+              <i class="fa-solid fa-pen"></i> Rename
             </button>
             <button onclick="deleteCurrentPlaylist()" class="bg-red-950/70 hover:bg-red-900 text-red-200 text-xs font-semibold px-3.5 py-2 rounded-full flex items-center gap-1.5 transition">
-              <i class="fa-solid fa-trash"></i> Delete Playlist
+              <i class="fa-solid fa-trash"></i> Delete
+            </button>
+          </div>
+
+          <!-- Shared Playlist Import Action -->
+          <div id="shared-playlist-actions" class="hidden items-center gap-2">
+            <button onclick="saveSharedPlaylistToLibrary()" class="bg-[#1db954] hover:bg-emerald-400 text-black text-xs font-bold px-4 py-2 rounded-full flex items-center gap-1.5 transition">
+              <i class="fa-solid fa-plus"></i> Save to My Library
             </button>
           </div>
         </div>
 
-        <!-- TOP ANALYTICS SECTION -->
-        <div id="analytics-container" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div class="bg-[#181818] p-5 rounded-xl border border-zinc-800/80">
-            <div class="flex items-center justify-between mb-4">
-              <h2 class="text-lg font-bold flex items-center gap-2">
-                <i class="fa-solid fa-fire text-orange-500"></i> Top Listened Songs
-              </h2>
-              <span class="text-xs text-zinc-400">By Play Count</span>
+        <!-- HELP PAGE VIEW -->
+        <div id="help-container" class="hidden">
+          <div class="bg-[#181818] border border-zinc-800/80 rounded-2xl p-8 max-w-2xl space-y-5 shadow-xl">
+            <h2 class="text-2xl sm:text-3xl font-bold text-white tracking-tight">Introduction to MP3 Vision</h2>
+            <div class="space-y-3 text-base text-zinc-200 leading-relaxed">
+              <p>Upload MP3 tracks once and play them forever!</p>
+              <p>Login to sync account stats.</p>
+              <p class="pt-2 text-[#1db954] font-semibold">Thank you for using MP3 Vision!</p>
             </div>
-            <div id="top-songs-list" class="space-y-2"></div>
+          </div>
+        </div>
+
+        <!-- DETAILED LISTENING ANALYTICS DASHBOARD -->
+        <div id="analytics-container" class="space-y-6">
+          
+          <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="bg-[#181818] p-4 rounded-xl border border-zinc-800/80">
+              <div class="text-xs text-zinc-400 font-semibold uppercase tracking-wider flex items-center justify-between">
+                <span>Hours This Week</span>
+                <i class="fa-solid fa-calendar-week text-[#1db954]"></i>
+              </div>
+              <div id="stat-weekly-hours" class="text-2xl sm:text-3xl font-extrabold text-white mt-2">0.00 hrs</div>
+              <div id="stat-weekly-mins" class="text-xs text-zinc-500 mt-1">0 mins logged this week</div>
+            </div>
+
+            <div class="bg-[#181818] p-4 rounded-xl border border-zinc-800/80">
+              <div class="text-xs text-zinc-400 font-semibold uppercase tracking-wider flex items-center justify-between">
+                <span>Total Hours Played</span>
+                <i class="fa-solid fa-clock text-emerald-400"></i>
+              </div>
+              <div id="stat-total-hours" class="text-2xl sm:text-3xl font-extrabold text-white mt-2">0.00 hrs</div>
+              <div id="stat-total-plays" class="text-xs text-zinc-500 mt-1">0 total song streams</div>
+            </div>
+
+            <div class="bg-[#181818] p-4 rounded-xl border border-zinc-800/80">
+              <div class="text-xs text-zinc-400 font-semibold uppercase tracking-wider flex items-center justify-between">
+                <span>Daily Average</span>
+                <i class="fa-solid fa-bolt text-amber-400"></i>
+              </div>
+              <div id="stat-daily-avg" class="text-2xl sm:text-3xl font-extrabold text-white mt-2">0 mins</div>
+              <div class="text-xs text-zinc-500 mt-1">Per active listening day</div>
+            </div>
+
+            <div class="bg-[#181818] p-4 rounded-xl border border-zinc-800/80">
+              <div class="text-xs text-zinc-400 font-semibold uppercase tracking-wider flex items-center justify-between">
+                <span>#1 Top Artist</span>
+                <i class="fa-solid fa-crown text-yellow-400"></i>
+              </div>
+              <div id="stat-top-artist-name" class="text-xl sm:text-2xl font-extrabold text-white mt-2 truncate">—</div>
+              <div id="stat-top-artist-time" class="text-xs text-[#1db954] mt-1">0 mins listened</div>
+            </div>
           </div>
 
-          <div class="bg-[#181818] p-5 rounded-xl border border-zinc-800/80">
-            <div class="flex items-center justify-between mb-4">
-              <h2 class="text-lg font-bold flex items-center gap-2">
-                <i class="fa-solid fa-crown text-yellow-400"></i> Top Listened Artists
-              </h2>
-              <span class="text-xs text-zinc-400">Total Streams</span>
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="bg-[#181818] p-5 rounded-xl border border-zinc-800/80 flex flex-col justify-between">
+              <div class="flex items-center justify-between mb-4">
+                <h2 class="text-base font-bold flex items-center gap-2">
+                  <i class="fa-solid fa-chart-column text-[#1db954]"></i> Weekly Listening Activity
+                </h2>
+                <span class="text-xs text-zinc-400">Last 7 Days</span>
+              </div>
+              <div id="weekly-bar-chart" class="h-40 flex items-end justify-between gap-2 pt-4 px-1"></div>
             </div>
-            <div id="top-artists-list" class="space-y-2"></div>
+
+            <div class="bg-[#181818] p-5 rounded-xl border border-zinc-800/80">
+              <div class="flex items-center justify-between mb-4">
+                <h2 class="text-base font-bold flex items-center gap-2">
+                  <i class="fa-solid fa-fire text-orange-500"></i> Top Listened Songs
+                </h2>
+                <span class="text-xs text-zinc-400">Time & Plays</span>
+              </div>
+              <div id="top-songs-list" class="space-y-2"></div>
+            </div>
+
+            <div class="bg-[#181818] p-5 rounded-xl border border-zinc-800/80">
+              <div class="flex items-center justify-between mb-4">
+                <h2 class="text-base font-bold flex items-center gap-2">
+                  <i class="fa-solid fa-star text-yellow-400"></i> Top Listened Artists
+                </h2>
+                <span class="text-xs text-zinc-400">Total Time</span>
+              </div>
+              <div id="top-artists-list" class="space-y-2"></div>
+            </div>
           </div>
         </div>
 
         <!-- SONG TABLE -->
-        <div>
+        <div id="song-table-section">
           <div class="grid grid-cols-12 text-xs font-semibold uppercase tracking-wider text-zinc-400 border-b border-zinc-800 pb-2 px-3">
-            <div class="col-span-1"># / Order</div>
+            <div class="col-span-1">#</div>
             <div class="col-span-4">Title</div>
             <div class="col-span-3">Artist</div>
-            <div class="col-span-1 text-right">Plays</div>
-            <div class="col-span-3 text-right">Edit / Actions</div>
+            <div class="col-span-1 text-right">Time / Plays</div>
+            <div class="col-span-3 text-right">Actions</div>
           </div>
           <div id="song-list" class="divide-y divide-zinc-800/40 mt-2"></div>
         </div>
@@ -213,21 +294,19 @@
 
   <!-- BOTTOM PLAYER BAR -->
   <footer class="h-24 bg-black border-t border-zinc-900 px-4 flex items-center justify-between shrink-0">
-    <!-- Now Playing Info -->
     <div class="w-1/4 flex items-center gap-4 min-w-[180px]">
       <div id="player-art" class="w-14 h-14 rounded bg-zinc-800 flex items-center justify-center text-xl shrink-0">
         <i class="fa-solid fa-compact-disc text-zinc-500"></i>
       </div>
       <div class="overflow-hidden">
         <div id="player-title" class="text-sm font-semibold text-white truncate">No song playing</div>
-        <div id="player-artist" class="text-xs text-zinc-400 truncate">Upload or select a track</div>
+        <div id="player-artist" class="text-xs text-zinc-400 truncate">Select a track</div>
       </div>
       <button onclick="toggleLikeCurrent()" id="player-like-btn" class="text-zinc-400 hover:text-white ml-1">
         <i class="fa-regular fa-heart"></i>
       </button>
     </div>
 
-    <!-- Transport Controls + Seek Bar -->
     <div class="w-2/4 max-w-xl flex flex-col items-center gap-2">
       <div class="flex items-center gap-6">
         <button onclick="toggleShuffle()" id="btn-shuffle" title="Shuffle" class="text-zinc-400 hover:text-white text-sm transition relative">
@@ -255,7 +334,6 @@
       </div>
     </div>
 
-    <!-- Device Status & Volume Adjust -->
     <div class="w-1/4 flex items-center justify-end gap-3 min-w-[180px]">
       <span id="device-indicator" class="text-[11px] text-[#1db954] hidden md:flex items-center gap-1 bg-emerald-950/60 px-2.5 py-1 rounded-full">
         <i class="fa-solid fa-laptop"></i> <span id="device-label">Web Player</span>
@@ -271,19 +349,78 @@
   <!-- MODALS -->
   <!-- ======================================================================= -->
 
-  <!-- 1. REAL FIREBASE AUTH MODAL -->
+  <!-- 1. PLAYLIST COVER CUSTOMIZER MODAL -->
+  <div id="cover-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div class="bg-[#181818] border border-zinc-800 rounded-2xl w-full max-w-md p-6 shadow-2xl space-y-5">
+      <div class="flex items-center justify-between">
+        <h3 class="text-lg font-bold flex items-center gap-2">
+          <i class="fa-solid fa-palette text-[#1db954]"></i> Customize Playlist Cover
+        </h3>
+        <button onclick="closeCoverModal()" class="text-zinc-400 hover:text-white">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div>
+        <label class="text-xs font-bold text-zinc-400 uppercase block mb-2">Choose Cover Color Theme</label>
+        <div id="cover-color-grid" class="grid grid-cols-4 gap-2.5"></div>
+      </div>
+
+      <div>
+        <label class="text-xs font-bold text-zinc-400 uppercase block mb-2">Or Upload Custom Cover Image</label>
+        <label class="w-full flex items-center justify-center gap-2 bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-semibold py-2.5 px-4 rounded-xl cursor-pointer border border-zinc-700 transition">
+          <i class="fa-solid fa-image text-[#1db954]"></i>
+          <span>Select Image (JPG, PNG, WebP)</span>
+          <input type="file" accept="image/*" class="hidden" onchange="handleCoverImageUpload(event)" />
+        </label>
+      </div>
+
+      <div class="flex items-center justify-between pt-2 border-t border-zinc-800">
+        <button onclick="revertPlaylistCover()" class="text-xs font-semibold text-zinc-400 hover:text-red-400 flex items-center gap-1.5 transition">
+          <i class="fa-solid fa-rotate-left"></i> Revert to Default
+        </button>
+        <button onclick="closeCoverModal()" class="bg-[#1db954] hover:bg-emerald-400 text-black text-xs font-bold px-5 py-2 rounded-full transition">
+          Done
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. SHARE PLAYLIST LINK MODAL -->
+  <div id="share-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div class="bg-[#181818] border border-zinc-800 rounded-2xl w-full max-w-md p-6 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between">
+        <h3 class="text-lg font-bold flex items-center gap-2">
+          <i class="fa-solid fa-share-nodes text-[#1db954]"></i> Share Playlist Link
+        </h3>
+        <button onclick="closeShareModal()" class="text-zinc-400 hover:text-white">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <p id="share-status-text" class="text-xs text-zinc-400">
+        Anyone with this link can view and stream the synced tracks in this playlist.
+      </p>
+      <div class="flex items-center gap-2">
+        <input id="share-link-input" type="text" readonly class="flex-1 bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-xs text-white font-mono focus:outline-none" />
+        <button id="copy-share-btn" onclick="copyShareLink()" class="bg-[#1db954] hover:bg-emerald-400 text-black text-xs font-bold px-4 py-2 rounded-lg transition shrink-0">
+          Copy Link
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. REAL FIREBASE AUTH MODAL -->
   <div id="auth-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
     <div class="bg-[#181818] border border-zinc-800 rounded-2xl w-full max-w-md p-6 shadow-2xl">
       <div class="flex items-center justify-between mb-4">
         <h3 class="text-xl font-bold flex items-center gap-2">
-          <i class="fa-brands fa-spotify text-[#1db954]"></i> Account & Cloud Sync
+          <i class="fa-solid fa-wave-square text-[#1db954]"></i> MP3 Vision Account
         </h3>
         <button onclick="closeAuthModal()" class="text-zinc-400 hover:text-white">
           <i class="fa-solid fa-xmark"></i>
         </button>
       </div>
 
-      <!-- Logged Out View -->
       <div id="auth-logged-out-view" class="space-y-4">
         <div class="grid grid-cols-2 bg-zinc-900 p-1 rounded-lg text-xs font-bold text-center">
           <button id="tab-login" onclick="switchAuthTab('login')" class="py-2 rounded-md bg-zinc-800 text-white transition">Log In</button>
@@ -301,7 +438,7 @@
           <input id="auth-password" type="password" placeholder="At least 6 characters" class="w-full mt-1 bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#1db954]" />
         </div>
         <div>
-          <label class="text-xs font-bold text-zinc-300 uppercase">This Device's Name (For Sync)</label>
+          <label class="text-xs font-bold text-zinc-300 uppercase">This Device's Name</label>
           <input id="auth-device" type="text" value="Desktop Browser" class="w-full mt-1 bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#1db954]" />
         </div>
 
@@ -310,13 +447,12 @@
         </button>
       </div>
 
-      <!-- Logged In View -->
       <div id="auth-logged-in-view" class="hidden space-y-4">
         <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 space-y-1">
           <div class="text-xs text-zinc-400">Signed in as</div>
           <div id="profile-email" class="text-sm font-bold text-white truncate"></div>
           <div class="text-xs text-[#1db954] pt-1 flex items-center gap-1.5">
-            <i class="fa-solid fa-check-circle"></i> Real-time Firestore Cloud Sync Active
+            <i class="fa-solid fa-check-circle"></i> Stats & Playlists Synced to Firebase
           </div>
         </div>
         <div>
@@ -333,11 +469,11 @@
     </div>
   </div>
 
-  <!-- 2. EDIT SONG & ARTIST MODAL -->
+  <!-- 4. EDIT SONG & ARTIST MODAL -->
   <div id="edit-song-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
     <div class="bg-[#181818] border border-zinc-800 rounded-2xl w-full max-w-sm p-6 shadow-2xl space-y-4">
       <div class="flex items-center justify-between">
-        <h3 class="text-lg font-bold">Rename Song & Artist</h3>
+        <h3 class="text-lg font-bold">Edit Song Info</h3>
         <button onclick="closeEditSongModal()" class="text-zinc-400 hover:text-white">
           <i class="fa-solid fa-xmark"></i>
         </button>
@@ -350,6 +486,10 @@
         <label class="text-xs font-bold text-zinc-400 uppercase">Artist Name</label>
         <input id="edit-song-artist" type="text" class="w-full mt-1 bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#1db954]" />
       </div>
+      <div>
+        <label class="text-xs font-bold text-zinc-400 uppercase">Cloud / GitHub Audio Path (.mp3 or .mp4)</label>
+        <input id="edit-song-src" type="text" placeholder="e.g. ./mysong.mp3 or ./video.mp4" class="w-full mt-1 bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#1db954]" />
+      </div>
       <div class="flex gap-2 pt-2">
         <button onclick="closeEditSongModal()" class="flex-1 bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-bold py-2.5 rounded-full">Cancel</button>
         <button onclick="saveEditedSong()" class="flex-1 bg-[#1db954] hover:bg-emerald-400 text-black text-xs font-bold py-2.5 rounded-full">Save Changes</button>
@@ -357,7 +497,7 @@
     </div>
   </div>
 
-  <!-- 3. CREATE / RENAME PLAYLIST MODAL -->
+  <!-- 5. CREATE / RENAME PLAYLIST MODAL -->
   <div id="playlist-name-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
     <div class="bg-[#181818] border border-zinc-800 rounded-2xl w-full max-w-sm p-6 shadow-2xl space-y-4">
       <div class="flex items-center justify-between">
@@ -377,7 +517,7 @@
     </div>
   </div>
 
-  <!-- 4. ASSIGN SONG TO PLAYLISTS MODAL -->
+  <!-- 6. ASSIGN SONG TO PLAYLISTS MODAL -->
   <div id="assign-playlist-modal" class="hidden fixed inset-0 bg-black/75 flex items-center justify-center z-50 p-4">
     <div class="bg-[#181818] border border-zinc-800 rounded-xl w-80 p-5">
       <div class="flex items-center justify-between mb-3">
@@ -390,36 +530,36 @@
     </div>
   </div>
 
-  <!-- 5. ADD MP3 BY URL MODAL -->
+  <!-- 7. ADD MP3/MP4 BY URL / GITHUB MODAL -->
   <div id="url-track-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-    <div class="bg-[#181818] border border-zinc-800 rounded-2xl w-full max-w-sm p-6 shadow-2xl space-y-4">
+    <div class="bg-[#181818] border border-zinc-800 rounded-2xl w-full max-w-md p-6 shadow-2xl space-y-4">
       <div class="flex items-center justify-between">
-        <h3 class="text-lg font-bold">Add MP3 by URL</h3>
+        <h3 class="text-lg font-bold">Add Cloud MP3 or MP4 (Audio Only)</h3>
         <button onclick="closeUrlTrackModal()" class="text-zinc-400 hover:text-white">
           <i class="fa-solid fa-xmark"></i>
         </button>
       </div>
       <div>
         <label class="text-xs font-bold text-zinc-400 uppercase">Song Title</label>
-        <input id="url-song-title" type="text" placeholder="Song Title" class="w-full mt-1 bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#1db954]" />
+        <input id="url-song-title" type="text" placeholder="e.g. Blinding Lights" class="w-full mt-1 bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#1db954]" />
       </div>
       <div>
         <label class="text-xs font-bold text-zinc-400 uppercase">Artist Name</label>
-        <input id="url-song-artist" type="text" placeholder="Artist Name" class="w-full mt-1 bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#1db954]" />
+        <input id="url-song-artist" type="text" placeholder="e.g. The Weeknd" class="w-full mt-1 bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#1db954]" />
       </div>
       <div>
-        <label class="text-xs font-bold text-zinc-400 uppercase">MP3 URL or Relative Path</label>
-        <input id="url-song-src" type="text" placeholder="https://.../song.mp3 or ./song.mp3" class="w-full mt-1 bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#1db954]" />
+        <label class="text-xs font-bold text-zinc-400 uppercase">GitHub Filename or Direct MP3/MP4 URL</label>
+        <input id="url-song-src" type="text" placeholder="./song1.mp3 or ./track.mp4" class="w-full mt-1 bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#1db954]" />
       </div>
       <div class="flex gap-2 pt-2">
         <button onclick="closeUrlTrackModal()" class="flex-1 bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-bold py-2.5 rounded-full">Cancel</button>
-        <button onclick="addTrackFromUrl()" class="flex-1 bg-[#1db954] hover:bg-emerald-400 text-black text-xs font-bold py-2.5 rounded-full">Add Song</button>
+        <button onclick="addTrackFromUrl()" class="flex-1 bg-[#1db954] hover:bg-emerald-400 text-black text-xs font-bold py-2.5 rounded-full">Add & Sync Song</button>
       </div>
     </div>
   </div>
 
   <!-- ======================================================================= -->
-  <!-- FIREBASE & APPLICATION LOGIC -->
+  <!-- FIREBASE, INDEXEDDB PERSISTENT AUDIO VAULT & APP LOGIC -->
   <!-- ======================================================================= -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/13.3.0/firebase-app.js";
@@ -432,20 +572,13 @@
       onAuthStateChanged
     } from "https://www.gstatic.com/firebasejs/13.3.0/firebase-auth.js";
     import {
-      getFirestore,
-      doc,
-      setDoc,
-      getDoc,
-      onSnapshot
-    } from "https://www.gstatic.com/firebasejs/13.3.0/firebase-firestore.js";
-    import {
-      getStorage,
-      ref as storageRef,
-      uploadBytes,
-      getDownloadURL
-    } from "https://www.gstatic.com/firebasejs/13.3.0/firebase-storage.js";
+      getDatabase,
+      ref as dbRef,
+      set,
+      get,
+      onValue
+    } from "https://www.gstatic.com/firebasejs/13.3.0/firebase-database.js";
 
-    // Your web app's Firebase configuration
     const firebaseConfig = {
       apiKey: "AIzaSyDFW_xA5QInCCHG0vupzOLoBxcjZHA9_8E",
       authDomain: "pulsestreammp3.firebaseapp.com",
@@ -457,62 +590,180 @@
       measurementId: "G-HRM65R5HEL"
     };
 
-    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
-    let analytics = null;
-    try { analytics = getAnalytics(app); } catch (e) {}
+    try { getAnalytics(app); } catch (e) {}
     const auth = getAuth(app);
-    const db = getFirestore(app);
-    const storage = getStorage(app);
+    const rtdb = getDatabase(app);
 
     // =========================================================================
-    // STATE (NO DEFAULT DEMO TRACKS)
+    // 1. PERSISTENT INDEXEDDB MEDIA VAULT (SURVIVES PAGE REFRESHES!)
+    // =========================================================================
+    const VaultDB = {
+      dbName: 'MP3VisionMediaVault',
+      storeName: 'audioFiles',
+      open() {
+        return new Promise((resolve, reject) => {
+          const req = indexedDB.open(this.dbName, 1);
+          req.onupgradeneeded = (e) => {
+            const db = e.target.result;
+            if (!db.objectStoreNames.contains(this.storeName)) {
+              db.createObjectStore(this.storeName);
+            }
+          };
+          req.onsuccess = () => resolve(req.result);
+          req.onerror = () => reject(req.error);
+        });
+      },
+      async saveFile(trackId, blob) {
+        try {
+          const db = await this.open();
+          return new Promise((resolve, reject) => {
+            const tx = db.transaction(this.storeName, 'readwrite');
+            tx.objectStore(this.storeName).put(blob, trackId);
+            tx.oncomplete = () => resolve();
+            tx.onerror = () => reject(tx.error);
+          });
+        } catch (e) {
+          console.warn('IndexedDB save failed:', e);
+        }
+      },
+      async getFileUrl(trackId) {
+        try {
+          const db = await this.open();
+          return new Promise((resolve) => {
+            const tx = db.transaction(this.storeName, 'readonly');
+            const req = tx.objectStore(this.storeName).get(trackId);
+            req.onsuccess = () => {
+              if (req.result) {
+                resolve(URL.createObjectURL(req.result));
+              } else {
+                resolve(null);
+              }
+            };
+            req.onerror = () => resolve(null);
+          });
+        } catch (e) {
+          return null;
+        }
+      },
+      async deleteFile(trackId) {
+        try {
+          const db = await this.open();
+          const tx = db.transaction(this.storeName, 'readwrite');
+          tx.objectStore(this.storeName).delete(trackId);
+        } catch (e) {}
+      }
+    };
+
+    // =========================================================================
+    // 2. PLAYLIST COVER PALETTE DEFINITIONS
+    // =========================================================================
+    const DEFAULT_COVER_GRADIENT = 'from-emerald-500 to-zinc-900';
+    const COVER_THEMES = [
+      { id: 'default', label: 'Emerald Default', gradient: 'from-emerald-500 to-zinc-900' },
+      { id: 'purple', label: 'Midnight Violet', gradient: 'from-purple-600 to-indigo-950' },
+      { id: 'sunset', label: 'Solar Crimson', gradient: 'from-rose-500 to-amber-900' },
+      { id: 'ocean', label: 'Deep Ocean', gradient: 'from-cyan-500 to-blue-950' },
+      { id: 'gold', label: 'Royal Gold', gradient: 'from-amber-400 to-yellow-900' },
+      { id: 'pink', label: 'Neon Magenta', gradient: 'from-pink-500 to-fuchsia-950' },
+      { id: 'teal', label: 'Arctic Mint', gradient: 'from-teal-400 to-slate-900' },
+      { id: 'mono', label: 'Obsidian Slate', gradient: 'from-zinc-600 to-zinc-950' }
+    ];
+
+    // =========================================================================
+    // 3. STATE & STATS STRUCTURE
     // =========================================================================
     const audio = new Audio();
-    let unsubscribeFirestore = null;
+    let unsubscribeRtdb = null;
     let isApplyingCloudUpdate = false;
+    let lastTickTimestamp = null;
+    let unsavedSecondsBuffer = 0;
 
     const state = {
       user: null,
-      deviceId: localStorage.getItem('ps_device_id') || ('dev_' + Math.random().toString(36).slice(2, 9)),
-      deviceName: localStorage.getItem('ps_device_name') || detectDeviceName(),
+      deviceId: localStorage.getItem('mp3v_device_id') || ('dev_' + Math.random().toString(36).slice(2, 9)),
+      deviceName: localStorage.getItem('mp3v_device_name') || detectDeviceName(),
       authMode: 'login',
-      currentView: 'all', // 'all', 'liked', 'analytics', or playlist ID
+      currentView: 'all',
+      sharedPlaylistData: null,
       currentTrackId: null,
       isPlaying: false,
       isShuffle: false,
-      loopMode: 'off', // 'off' | 'all' | 'one'
+      loopMode: 'off',
       volume: 0.8,
       isMuted: false,
       editingTrackId: null,
-      playlistModalMode: 'create', // 'create' | 'rename'
+      playlistModalMode: 'create',
       songToAssign: null,
       draggedIndex: null,
       playlists: [],
-      tracks: [] // Starts completely empty with no demo music
+      tracks: [],
+      stats: {
+        totalSecondsListened: 0,
+        dailySeconds: {},
+        weeklySeconds: {},
+        artistStats: {}
+      }
     };
 
-    localStorage.setItem('ps_device_id', state.deviceId);
+    localStorage.setItem('mp3v_device_id', state.deviceId);
     let pendingRemoteSession = null;
 
     function detectDeviceName() {
       const ua = navigator.userAgent;
-      if (/iPhone|iPad|iPod/i.test(ua)) return 'iPhone / iOS Web';
-      if (/Android/i.test(ua)) return 'Android Web';
+      if (/iPhone|iPad|iPod/i.test(ua)) return 'iPhone / iOS';
+      if (/Android/i.test(ua)) return 'Android Phone';
       if (/Mac/i.test(ua)) return 'Mac Browser';
       if (/Win/i.test(ua)) return 'Windows PC';
       return 'Web Player';
     }
 
+    function getTodayKey(dateObj = new Date()) {
+      return dateObj.toISOString().split('T')[0];
+    }
+
+    function getWeekKey(dateObj = new Date()) {
+      const d = new Date(Date.UTC(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate()));
+      const dayNum = d.getUTCDay() || 7;
+      d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+      const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+      const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+      return `${d.getUTCFullYear()}-W${String(weekNo).padStart(2, '0')}`;
+    }
+
     // =========================================================================
-    // INITIALIZE & LISTENERS
+    // 4. INITIALIZATION & RESTORING LOCAL FILES FROM INDEXEDDB
     // =========================================================================
-    window.addEventListener('DOMContentLoaded', () => {
+    window.addEventListener('DOMContentLoaded', async () => {
       loadLocalBackup();
+      await restoreVaultUrlsForAllTracks();
+
       audio.volume = state.volume;
       document.getElementById('device-label').textContent = state.deviceName;
       document.getElementById('auth-device').value = state.deviceName;
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const shareId = urlParams.get('share');
+      if (shareId) {
+        await loadSharedPlaylistFromLink(shareId);
+      }
+
       renderAll();
+
+      setInterval(() => {
+        if (!audio.paused && state.currentTrackId) {
+          const now = Date.now();
+          if (lastTickTimestamp) {
+            const deltaSec = (now - lastTickTimestamp) / 1000;
+            if (deltaSec > 0 && deltaSec < 5) {
+              recordListeningTime(state.currentTrackId, deltaSec);
+            }
+          }
+          lastTickTimestamp = now;
+        } else {
+          lastTickTimestamp = null;
+        }
+      }, 1000);
 
       audio.addEventListener('timeupdate', () => {
         if (!isNaN(audio.duration) && audio.duration > 0) {
@@ -523,7 +774,16 @@
         }
       });
 
+      audio.addEventListener('pause', () => {
+        lastTickTimestamp = null;
+        if (unsavedSecondsBuffer > 0) {
+          unsavedSecondsBuffer = 0;
+          syncStateToCloud();
+        }
+      });
+
       audio.addEventListener('ended', () => {
+        lastTickTimestamp = null;
         if (state.loopMode === 'one') {
           audio.currentTime = 0;
           if (state.currentTrackId) incrementPlayCount(state.currentTrackId);
@@ -533,23 +793,258 @@
         }
       });
 
-      // Listen for Firebase Authentication state changes
       onAuthStateChanged(auth, async (user) => {
         state.user = user;
         updateAuthHeaderUI();
         if (user) {
-          await subscribeToUserCloudData(user.uid);
-        } else {
-          if (unsubscribeFirestore) {
-            unsubscribeFirestore();
-            unsubscribeFirestore = null;
-          }
+          await subscribeToRealtimeDatabase(user.uid);
+        } else if (unsubscribeRtdb) {
+          unsubscribeRtdb();
+          unsubscribeRtdb = null;
         }
       });
     });
 
+    async function restoreVaultUrlsForAllTracks() {
+      for (const track of state.tracks) {
+        if (track.isLocalBlob || !track.src) {
+          const restoredUrl = await VaultDB.getFileUrl(track.id);
+          if (restoredUrl) {
+            track.src = restoredUrl;
+            track.isLocalBlob = true;
+          }
+        }
+      }
+    }
+
     // =========================================================================
-    // REAL FIREBASE AUTHENTICATION
+    // 5. PLAYLIST COVER CUSTOMIZER (COLOR, IMAGE UPLOAD, REVERT TO DEFAULT)
+    // =========================================================================
+    window.openCoverModal = () => {
+      const pl = state.playlists.find(p => p.id === state.currentView);
+      if (!pl) return;
+
+      const grid = document.getElementById('cover-color-grid');
+      grid.innerHTML = COVER_THEMES.map(theme => {
+        const isSelected = !pl.coverImage && (pl.coverColor || DEFAULT_COVER_GRADIENT) === theme.gradient;
+        return `
+          <button onclick="selectPlaylistCoverColor('${theme.gradient}')" class="flex flex-col items-center gap-1.5 p-2 rounded-xl border ${isSelected ? 'border-[#1db954] bg-zinc-800' : 'border-zinc-800 hover:border-zinc-600'} transition">
+            <div class="w-12 h-12 rounded-lg bg-gradient-to-br ${theme.gradient} shadow"></div>
+            <span class="text-[10px] text-zinc-300 truncate w-full text-center">${theme.label}</span>
+          </button>
+        `;
+      }).join('');
+
+      document.getElementById('cover-modal').classList.remove('hidden');
+    };
+
+    window.closeCoverModal = () => {
+      document.getElementById('cover-modal').classList.add('hidden');
+    };
+
+    window.selectPlaylistCoverColor = (gradientClass) => {
+      const pl = state.playlists.find(p => p.id === state.currentView);
+      if (!pl) return;
+      pl.coverColor = gradientClass;
+      pl.coverImage = null;
+      renderAll();
+      openCoverModal();
+      syncStateToCloud();
+    };
+
+    window.handleCoverImageUpload = (event) => {
+      const file = event.target.files[0];
+      const pl = state.playlists.find(p => p.id === state.currentView);
+      if (!file || !pl) return;
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const size = 300;
+          canvas.width = size;
+          canvas.height = size;
+          const ctx = canvas.getContext('2d');
+
+          const minSide = Math.min(img.width, img.height);
+          const sx = (img.width - minSide) / 2;
+          const sy = (img.height - minSide) / 2;
+          ctx.drawImage(img, sx, sy, minSide, minSide, 0, 0, size, size);
+
+          pl.coverImage = canvas.toDataURL('image/jpeg', 0.8);
+          renderAll();
+          closeCoverModal();
+          syncStateToCloud();
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+      event.target.value = '';
+    };
+
+    window.revertPlaylistCover = () => {
+      const pl = state.playlists.find(p => p.id === state.currentView);
+      if (!pl) return;
+      pl.coverColor = DEFAULT_COVER_GRADIENT;
+      pl.coverImage = null;
+      renderAll();
+      openCoverModal();
+      syncStateToCloud();
+    };
+
+    // =========================================================================
+    // 6. SHARE PLAYLIST IN LINK FORMAT
+    // =========================================================================
+    window.shareCurrentPlaylist = async () => {
+      const pl = state.playlists.find(p => p.id === state.currentView);
+      if (!pl) return;
+
+      const playlistTracks = pl.trackIds
+        .map(id => state.tracks.find(t => t.id === id))
+        .filter(Boolean)
+        .map(t => ({
+          id: t.id,
+          title: t.title,
+          artist: t.artist,
+          mediaType: t.mediaType || 'mp3',
+          color: t.color || 'from-emerald-500 to-teal-900',
+          src: t.isLocalBlob ? '' : (t.src || '')
+        }));
+
+      const shareCode = (state.user ? state.user.uid.slice(0, 6) + '_' : '') + pl.id;
+      const baseUrl = window.location.origin + window.location.pathname;
+      const shareUrl = `${baseUrl}?share=${encodeURIComponent(shareCode)}`;
+
+      document.getElementById('share-link-input').value = shareUrl;
+      document.getElementById('copy-share-btn').textContent = 'Copy Link';
+      document.getElementById('share-modal').classList.remove('hidden');
+
+      if (!state.user) {
+        document.getElementById('share-status-text').textContent =
+          'Sign in first to publish this playlist link to the cloud so others can open it.';
+        return;
+      }
+
+      document.getElementById('share-status-text').textContent = 'Publishing playlist link...';
+
+      try {
+        await set(dbRef(rtdb, 'shared_playlists/' + shareCode), {
+          name: pl.name,
+          coverColor: pl.coverColor || DEFAULT_COVER_GRADIENT,
+          coverImage: pl.coverImage || null,
+          ownerEmail: state.user.email,
+          tracks: playlistTracks,
+          updatedAt: Date.now()
+        });
+        document.getElementById('share-status-text').textContent =
+          'Playlist link is live! Anyone with this link can stream it.';
+      } catch (err) {
+        document.getElementById('share-status-text').textContent =
+          'Could not publish link. Make sure shared_playlists rules are enabled in Firebase.';
+      }
+    };
+
+    window.copyShareLink = () => {
+      const input = document.getElementById('share-link-input');
+      input.select();
+      navigator.clipboard.writeText(input.value);
+      document.getElementById('copy-share-btn').textContent = 'Copied!';
+    };
+
+    window.closeShareModal = () => {
+      document.getElementById('share-modal').classList.add('hidden');
+    };
+
+    async function loadSharedPlaylistFromLink(shareCode) {
+      try {
+        const snap = await get(dbRef(rtdb, 'shared_playlists/' + shareCode));
+        if (snap.exists()) {
+          const data = snap.val();
+          state.sharedPlaylistData = {
+            shareCode,
+            name: data.name || 'Shared Playlist',
+            coverColor: data.coverColor || DEFAULT_COVER_GRADIENT,
+            coverImage: data.coverImage || null,
+            ownerEmail: data.ownerEmail || 'MP3 Vision User',
+            tracks: Array.isArray(data.tracks) ? data.tracks : []
+          };
+          state.currentView = 'shared_view';
+        }
+      } catch (e) {
+        console.warn('Could not load shared playlist:', e);
+      }
+    }
+
+    window.saveSharedPlaylistToLibrary = () => {
+      if (!state.sharedPlaylistData) return;
+      const newTrackIds = [];
+
+      state.sharedPlaylistData.tracks.forEach((sharedTrk, i) => {
+        let existing = state.tracks.find(t => t.src && t.src === sharedTrk.src && t.title === sharedTrk.title);
+        if (!existing) {
+          existing = {
+            id: 'trk_' + Date.now() + '_' + i,
+            title: sharedTrk.title,
+            artist: sharedTrk.artist,
+            mediaType: sharedTrk.mediaType || 'mp3',
+            plays: 0,
+            secondsListened: 0,
+            liked: false,
+            color: sharedTrk.color || 'from-emerald-500 to-teal-900',
+            src: sharedTrk.src || '',
+            isLocalBlob: false
+          };
+          state.tracks.push(existing);
+        }
+        newTrackIds.push(existing.id);
+      });
+
+      const newPl = {
+        id: 'pl_' + Date.now(),
+        name: state.sharedPlaylistData.name,
+        coverColor: state.sharedPlaylistData.coverColor || DEFAULT_COVER_GRADIENT,
+        coverImage: state.sharedPlaylistData.coverImage || null,
+        trackIds: newTrackIds
+      };
+      state.playlists.push(newPl);
+
+      window.history.replaceState({}, document.title, window.location.pathname);
+      state.sharedPlaylistData = null;
+      state.currentView = newPl.id;
+
+      renderAll();
+      syncStateToCloud();
+    };
+
+    function recordListeningTime(trackId, seconds) {
+      const track = state.tracks.find(t => t.id === trackId);
+      if (!track) return;
+
+      const today = getTodayKey();
+      const week = getWeekKey();
+
+      track.secondsListened = (track.secondsListened || 0) + seconds;
+      state.stats.totalSecondsListened = (state.stats.totalSecondsListened || 0) + seconds;
+      state.stats.dailySeconds[today] = (state.stats.dailySeconds[today] || 0) + seconds;
+      state.stats.weeklySeconds[week] = (state.stats.weeklySeconds[week] || 0) + seconds;
+
+      if (!state.stats.artistStats[track.artist]) {
+        state.stats.artistStats[track.artist] = { plays: 0, seconds: 0 };
+      }
+      state.stats.artistStats[track.artist].seconds += seconds;
+
+      unsavedSecondsBuffer += seconds;
+      renderAnalytics();
+
+      if (unsavedSecondsBuffer >= 10) {
+        unsavedSecondsBuffer = 0;
+        syncStateToCloud();
+      }
+    }
+
+    // =========================================================================
+    // 7. FIREBASE AUTHENTICATION
     // =========================================================================
     window.openAuthModal = () => {
       document.getElementById('auth-error').classList.add('hidden');
@@ -601,7 +1096,7 @@
       }
 
       state.deviceName = device;
-      localStorage.setItem('ps_device_name', device);
+      localStorage.setItem('mp3v_device_name', device);
       document.getElementById('device-label').textContent = device;
 
       submitBtn.disabled = true;
@@ -616,15 +1111,7 @@
         }
         closeAuthModal();
       } catch (err) {
-        let msg = err.message;
-        if (err.code === 'auth/operation-not-allowed') {
-          msg = 'Enable Email/Password sign-in in your Firebase Console -> Authentication -> Sign-in method.';
-        } else if (err.code === 'auth/invalid-credential' || err.code === 'auth/wrong-password') {
-          msg = 'Incorrect email or password.';
-        } else if (err.code === 'auth/email-already-in-use') {
-          msg = 'An account with this email already exists. Switch to Log In.';
-        }
-        errorBox.textContent = msg;
+        errorBox.textContent = err.message;
         errorBox.classList.remove('hidden');
       } finally {
         submitBtn.disabled = false;
@@ -636,7 +1123,7 @@
       const newName = document.getElementById('active-device-input').value.trim();
       if (newName) {
         state.deviceName = newName;
-        localStorage.setItem('ps_device_name', newName);
+        localStorage.setItem('mp3v_device_name', newName);
         document.getElementById('device-label').textContent = newName;
         syncStateToCloud();
         closeAuthModal();
@@ -654,7 +1141,7 @@
 
       if (state.user) {
         authLabel.textContent = state.user.email.split('@')[0];
-        cloudStatus.innerHTML = `<i class="fa-solid fa-circle text-[8px] text-[#1db954]"></i> Cloud Synced`;
+        cloudStatus.innerHTML = `<i class="fa-solid fa-circle text-[8px] text-[#1db954]"></i> Stats & Library Synced`;
       } else {
         authLabel.textContent = 'Log In / Sign Up';
         cloudStatus.innerHTML = `<i class="fa-solid fa-circle text-[8px] text-zinc-500"></i> Local Mode`;
@@ -662,39 +1149,56 @@
     }
 
     // =========================================================================
-    // CLOUD FIRESTORE REAL-TIME SYNC
+    // 8. REALTIME DATABASE SYNC
     // =========================================================================
-    async function subscribeToUserCloudData(uid) {
-      if (unsubscribeFirestore) unsubscribeFirestore();
-      const userDocRef = doc(db, 'user_sessions', uid);
+    async function subscribeToRealtimeDatabase(uid) {
+      if (unsubscribeRtdb) unsubscribeRtdb();
+      const userRef = dbRef(rtdb, 'user_sessions/' + uid);
 
       try {
-        const initialSnap = await getDoc(userDocRef);
-        if (!initialSnap.exists() && (state.tracks.length > 0 || state.playlists.length > 0)) {
+        const initialSnap = await get(userRef);
+        if (!initialSnap.exists() && (state.tracks.length > 0 || state.stats.totalSecondsListened > 0)) {
           await syncStateToCloud();
         }
-      } catch (e) {
-        console.warn('Firestore read warning:', e);
-      }
+      } catch (e) {}
 
-      unsubscribeFirestore = onSnapshot(userDocRef, (snapshot) => {
+      unsubscribeRtdb = onValue(userRef, async (snapshot) => {
         if (!snapshot.exists()) return;
-        const data = snapshot.data();
+        const data = snapshot.val();
 
         isApplyingCloudUpdate = true;
 
-        // Merge cloud tracks (preserve local blob URLs if track is local-only)
-        if (Array.isArray(data.tracks)) {
-          const localMap = {};
-          state.tracks.forEach(t => { if (t.isLocalBlob) localMap[t.id] = t.src; });
-          state.tracks = data.tracks.map(t => ({
-            ...t,
-            src: localMap[t.id] || t.src
-          }));
-        }
+        const incomingTracks = Array.isArray(data.tracks) ? data.tracks : [];
+        const localBlobMap = {};
+        state.tracks.forEach(t => {
+          if (t.isLocalBlob && t.src) localBlobMap[t.id] = t.src;
+        });
 
-        if (Array.isArray(data.playlists)) {
-          state.playlists = data.playlists;
+        state.tracks = incomingTracks.map(t => ({
+          ...t,
+          plays: t.plays || 0,
+          secondsListened: t.secondsListened || 0,
+          src: localBlobMap[t.id] || t.src || ''
+        }));
+
+        await restoreVaultUrlsForAllTracks();
+
+        state.playlists = Array.isArray(data.playlists)
+          ? data.playlists.map(pl => ({
+              ...pl,
+              coverColor: pl.coverColor || DEFAULT_COVER_GRADIENT,
+              coverImage: pl.coverImage || null,
+              trackIds: Array.isArray(pl.trackIds) ? pl.trackIds : []
+            }))
+          : [];
+
+        if (data.stats) {
+          state.stats = {
+            totalSecondsListened: data.stats.totalSecondsListened || 0,
+            dailySeconds: data.stats.dailySeconds || {},
+            weeklySeconds: data.stats.weeklySeconds || {},
+            artistStats: data.stats.artistStats || {}
+          };
         }
 
         state.isShuffle = !!data.isShuffle;
@@ -702,7 +1206,6 @@
         updateTransportBadgesUI();
         renderAll();
 
-        // Check if update came from another device
         if (data.deviceId && data.deviceId !== state.deviceId && data.currentTrackId) {
           const remoteTrack = state.tracks.find(t => t.id === data.currentTrackId);
           if (remoteTrack) {
@@ -711,12 +1214,6 @@
             const bannerText = document.getElementById('remote-sync-text');
             bannerText.textContent = `${data.deviceName || 'Another device'} is on "${remoteTrack.title}" (${formatTime(data.currentTime || 0)})`;
             banner.classList.remove('hidden');
-          }
-        } else if (!state.currentTrackId && data.currentTrackId) {
-          const idx = state.tracks.findIndex(t => t.id === data.currentTrackId);
-          if (idx !== -1) {
-            loadTrackById(data.currentTrackId, false);
-            audio.currentTime = data.currentTime || 0;
           }
         }
 
@@ -732,12 +1229,38 @@
         id: t.id,
         title: t.title,
         artist: t.artist,
+        mediaType: t.mediaType || 'mp3',
         plays: t.plays || 0,
+        secondsListened: Math.round(t.secondsListened || 0),
         liked: !!t.liked,
         color: t.color || 'from-emerald-500 to-teal-900',
-        src: t.isLocalBlob ? '' : t.src,
+        src: t.isLocalBlob ? '' : (t.src || ''),
         isLocalBlob: !!t.isLocalBlob
       }));
+
+      const topSongsSummary = [...sanitizedTracks]
+        .sort((a, b) => b.secondsListened - a.secondsListened || b.plays - a.plays)
+        .slice(0, 10)
+        .map(t => ({
+          id: t.id,
+          title: t.title,
+          artist: t.artist,
+          plays: t.plays,
+          hours: +(t.secondsListened / 3600).toFixed(2)
+        }));
+
+      const artistAgg = getAggregatedArtistStats();
+      const topArtistsSummary = Object.entries(artistAgg)
+        .sort((a, b) => b[1].seconds - a[1].seconds || b[1].plays - a[1].plays)
+        .slice(0, 10)
+        .map(([artist, info]) => ({
+          artist,
+          plays: info.plays,
+          hours: +(info.seconds / 3600).toFixed(2)
+        }));
+
+      const currentWeek = getWeekKey();
+      const weeklyHours = +((state.stats.weeklySeconds[currentWeek] || 0) / 3600).toFixed(2);
 
       const payload = {
         email: state.user.email,
@@ -749,13 +1272,23 @@
         loopMode: state.loopMode,
         playlists: state.playlists,
         tracks: sanitizedTracks,
+        stats: {
+          totalSecondsListened: Math.round(state.stats.totalSecondsListened || 0),
+          totalHoursListened: +((state.stats.totalSecondsListened || 0) / 3600).toFixed(2),
+          currentWeekHours: weeklyHours,
+          dailySeconds: state.stats.dailySeconds || {},
+          weeklySeconds: state.stats.weeklySeconds || {},
+          artistStats: state.stats.artistStats || {},
+          topSongsSummary,
+          topArtistsSummary
+        },
         updatedAt: Date.now()
       };
 
       try {
-        await setDoc(doc(db, 'user_sessions', state.user.uid), payload, { merge: true });
+        await set(dbRef(rtdb, 'user_sessions/' + state.user.uid), payload);
       } catch (err) {
-        console.warn('Cloud sync error (check Firestore Rules):', err);
+        console.warn('Realtime DB write error:', err);
       }
     }
 
@@ -769,20 +1302,22 @@
     function saveLocalBackup() {
       const backup = {
         playlists: state.playlists,
-        tracks: state.tracks.filter(t => !t.isLocalBlob),
+        tracks: state.tracks.map(t => ({ ...t, src: t.isLocalBlob ? '' : t.src })),
+        stats: state.stats,
         isShuffle: state.isShuffle,
         loopMode: state.loopMode
       };
-      localStorage.setItem('ps_local_backup', JSON.stringify(backup));
+      localStorage.setItem('mp3v_local_backup', JSON.stringify(backup));
     }
 
     function loadLocalBackup() {
-      const raw = localStorage.getItem('ps_local_backup');
+      const raw = localStorage.getItem('mp3v_local_backup');
       if (!raw) return;
       try {
         const parsed = JSON.parse(raw);
         state.playlists = parsed.playlists || [];
         state.tracks = parsed.tracks || [];
+        if (parsed.stats) state.stats = parsed.stats;
         state.isShuffle = !!parsed.isShuffle;
         state.loopMode = parsed.loopMode || 'off';
         updateTransportBadgesUI();
@@ -790,13 +1325,15 @@
     }
 
     // =========================================================================
-    // UPLOAD MP3 FILES (FIREBASE CLOUD STORAGE + FALLBACK) & ADD VIA URL
+    // 9. IMPORT MP3 / MP4 FILES (PERSISTENT INDEXEDDB + AUDIO-ONLY PLAYBACK)
     // =========================================================================
     window.handleFileUpload = async (event) => {
       const files = Array.from(event.target.files);
       if (!files.length) return;
 
       const labelEl = document.getElementById('upload-btn-label');
+      labelEl.textContent = 'Saving to Vault...';
+
       const gradients = [
         'from-emerald-500 to-teal-900',
         'from-purple-500 to-indigo-900',
@@ -807,49 +1344,41 @@
 
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
+        const extMatch = file.name.match(/\.([^/.]+)$/);
+        const ext = extMatch ? extMatch[1].toLowerCase() : 'mp3';
+        const isMp4 = ext === 'mp4' || file.type.includes('mp4');
+
         const cleanName = file.name.replace(/\.[^/.]+$/, '');
         const parts = cleanName.split(' - ');
         const artist = parts.length > 1 ? parts[0].trim() : 'Unknown Artist';
         const title = parts.length > 1 ? parts.slice(1).join(' - ').trim() : cleanName;
         const trackId = 'trk_' + Date.now() + '_' + i;
 
-        let trackUrl = URL.createObjectURL(file);
-        let isLocalBlob = true;
-
-        // If logged in, try uploading MP3 to Firebase Storage for cross-device streaming
-        if (state.user) {
-          try {
-            labelEl.textContent = `Uploading ${i + 1}/${files.length}...`;
-            const fileRef = storageRef(storage, `users/${state.user.uid}/tracks/${trackId}_${file.name}`);
-            await uploadBytes(fileRef, file);
-            trackUrl = await getDownloadURL(fileRef);
-            isLocalBlob = false;
-          } catch (storageErr) {
-            console.warn('Firebase Storage not enabled yet; using local browser playback.', storageErr);
-          }
-        }
+        await VaultDB.saveFile(trackId, file);
+        const persistentBlobUrl = URL.createObjectURL(file);
 
         const newTrack = {
           id: trackId,
           title,
           artist,
+          mediaType: isMp4 ? 'mp4' : 'mp3',
           plays: 0,
+          secondsListened: 0,
           liked: false,
           color: gradients[(state.tracks.length + i) % gradients.length],
-          src: trackUrl,
-          isLocalBlob
+          src: persistentBlobUrl,
+          isLocalBlob: true
         };
 
         state.tracks.push(newTrack);
 
-        // If user is currently inside a custom playlist, also add it to that playlist
         if (state.currentView.startsWith('pl_')) {
           const pl = state.playlists.find(p => p.id === state.currentView);
           if (pl) pl.trackIds.push(newTrack.id);
         }
       }
 
-      labelEl.textContent = 'Upload MP3 Files';
+      labelEl.textContent = 'Import MP3 / MP4 Files';
       event.target.value = '';
       renderAll();
       syncStateToCloud();
@@ -875,15 +1404,19 @@
       const artist = document.getElementById('url-song-artist').value.trim() || 'Unknown Artist';
       const src = document.getElementById('url-song-src').value.trim();
 
-      if (!title || !src) return alert('Please enter both a Song Title and an MP3 URL.');
+      if (!title || !src) return alert('Please enter both a Song Title and a GitHub path or URL.');
+
+      const isMp4 = src.toLowerCase().split('?')[0].endsWith('.mp4');
 
       const newTrack = {
         id: 'trk_' + Date.now(),
         title,
         artist,
+        mediaType: isMp4 ? 'mp4' : 'mp3',
         plays: 0,
+        secondsListened: 0,
         liked: false,
-        color: 'from-cyan-500 to-blue-900',
+        color: 'from-emerald-500 to-teal-900',
         src,
         isLocalBlob: false
       };
@@ -900,7 +1433,7 @@
     };
 
     // =========================================================================
-    // RENAME SONG & ARTIST / DELETE SONG
+    // 10. RENAME SONG, ARTIST, OR AUDIO URL / DELETE SONG
     // =========================================================================
     window.openEditSongModal = (trackId, event) => {
       if (event) event.stopPropagation();
@@ -909,6 +1442,7 @@
       state.editingTrackId = trackId;
       document.getElementById('edit-song-title').value = track.title;
       document.getElementById('edit-song-artist').value = track.artist;
+      document.getElementById('edit-song-src').value = track.isLocalBlob ? '' : (track.src || '');
       document.getElementById('edit-song-modal').classList.remove('hidden');
     };
 
@@ -923,9 +1457,15 @@
 
       const newTitle = document.getElementById('edit-song-title').value.trim();
       const newArtist = document.getElementById('edit-song-artist').value.trim();
+      const newSrc = document.getElementById('edit-song-src').value.trim();
 
       if (newTitle) track.title = newTitle;
       if (newArtist) track.artist = newArtist;
+      if (newSrc) {
+        track.src = newSrc;
+        track.isLocalBlob = false;
+        track.mediaType = newSrc.toLowerCase().split('?')[0].endsWith('.mp4') ? 'mp4' : 'mp3';
+      }
 
       if (state.currentTrackId === track.id) {
         document.getElementById('player-title').textContent = track.title;
@@ -937,10 +1477,9 @@
       syncStateToCloud();
     };
 
-    window.deleteOrRemoveSong = (trackId, event) => {
+    window.deleteOrRemoveSong = async (trackId, event) => {
       if (event) event.stopPropagation();
 
-      // If viewing a custom playlist, remove it from the playlist sequence
       if (state.currentView.startsWith('pl_')) {
         const pl = state.playlists.find(p => p.id === state.currentView);
         if (pl) {
@@ -951,7 +1490,7 @@
         return;
       }
 
-      // Otherwise delete from library completely
+      await VaultDB.deleteFile(trackId);
       state.tracks = state.tracks.filter(t => t.id !== trackId);
       state.playlists.forEach(pl => {
         pl.trackIds = pl.trackIds.filter(id => id !== trackId);
@@ -962,7 +1501,7 @@
         state.isPlaying = false;
         state.currentTrackId = null;
         document.getElementById('player-title').textContent = 'No song playing';
-        document.getElementById('player-artist').textContent = 'Upload or select a track';
+        document.getElementById('player-artist').textContent = 'Select a track';
         updatePlayButtonUI();
       }
 
@@ -971,7 +1510,7 @@
     };
 
     // =========================================================================
-    // REORDER SEQUENCE (UP/DOWN BUTTONS & DRAG-AND-DROP)
+    // 11. REORDER SEQUENCE (UP/DOWN BUTTONS & DRAG-AND-DROP)
     // =========================================================================
     window.moveSongInSequence = (index, direction, event) => {
       if (event) event.stopPropagation();
@@ -994,25 +1533,19 @@
       syncStateToCloud();
     };
 
-    window.handleDragStart = (index) => {
-      state.draggedIndex = index;
-    };
-
+    window.handleDragStart = (index) => { state.draggedIndex = index; };
     window.handleDragOver = (event) => {
       event.preventDefault();
       event.currentTarget.classList.add('drag-over');
     };
-
     window.handleDragLeave = (event) => {
       event.currentTarget.classList.remove('drag-over');
     };
-
     window.handleDrop = (targetIndex, event) => {
       event.preventDefault();
       event.currentTarget.classList.remove('drag-over');
       const fromIndex = state.draggedIndex;
       state.draggedIndex = null;
-
       if (fromIndex === null || fromIndex === targetIndex) return;
 
       if (state.currentView.startsWith('pl_')) {
@@ -1030,7 +1563,7 @@
     };
 
     // =========================================================================
-    // ADD, RENAME & DELETE PLAYLISTS
+    // 12. ADD, RENAME & DELETE PLAYLISTS
     // =========================================================================
     window.openCreatePlaylistModal = () => {
       state.playlistModalMode = 'create';
@@ -1060,6 +1593,8 @@
         const newPl = {
           id: 'pl_' + Date.now(),
           name,
+          coverColor: DEFAULT_COVER_GRADIENT,
+          coverImage: null,
           trackIds: []
         };
         state.playlists.push(newPl);
@@ -1077,17 +1612,13 @@
     window.deletePlaylistById = (playlistId, event) => {
       if (event) event.stopPropagation();
       state.playlists = state.playlists.filter(p => p.id !== playlistId);
-      if (state.currentView === playlistId) {
-        state.currentView = 'all';
-      }
+      if (state.currentView === playlistId) state.currentView = 'all';
       renderAll();
       syncStateToCloud();
     };
 
     window.deleteCurrentPlaylist = () => {
-      if (state.currentView.startsWith('pl_')) {
-        deletePlaylistById(state.currentView);
-      }
+      if (state.currentView.startsWith('pl_')) deletePlaylistById(state.currentView);
     };
 
     window.openAssignPlaylistModal = (trackId, event) => {
@@ -1096,11 +1627,7 @@
       const container = document.getElementById('assign-playlist-options');
 
       if (state.playlists.length === 0) {
-        container.innerHTML = `
-          <div class="text-xs text-zinc-400 py-3 text-center">
-            No playlists created yet. Click the <b>+</b> button in the sidebar to create one.
-          </div>
-        `;
+        container.innerHTML = `<div class="text-xs text-zinc-400 py-3 text-center">No playlists yet. Click <b>+</b> in the sidebar to create one.</div>`;
       } else {
         container.innerHTML = state.playlists.map(pl => {
           const alreadyIn = pl.trackIds.includes(trackId);
@@ -1126,30 +1653,44 @@
       const pl = state.playlists.find(p => p.id === playlistId);
       if (!pl || !state.songToAssign) return;
       const idx = pl.trackIds.indexOf(state.songToAssign);
-      if (idx === -1) {
-        pl.trackIds.push(state.songToAssign);
-      } else {
-        pl.trackIds.splice(idx, 1);
-      }
+      if (idx === -1) pl.trackIds.push(state.songToAssign);
+      else pl.trackIds.splice(idx, 1);
       closeAssignPlaylistModal();
       renderAll();
       syncStateToCloud();
     };
 
     // =========================================================================
-    // PLAYBACK & TRANSPORT CONTROLS
+    // 13. PLAYBACK & TRANSPORT CONTROLS
     // =========================================================================
     function getActiveQueue() {
       const visible = getFilteredTracks();
       return visible.length > 0 ? visible : state.tracks;
     }
 
-    function loadTrackById(trackId, autoPlay = true) {
-      const track = state.tracks.find(t => t.id === trackId);
+    function findTrackAnywhere(trackId) {
+      let track = state.tracks.find(t => t.id === trackId);
+      if (!track && state.sharedPlaylistData) {
+        track = state.sharedPlaylistData.tracks.find(t => t.id === trackId);
+      }
+      return track;
+    }
+
+    async function loadTrackById(trackId, autoPlay = true) {
+      const track = findTrackAnywhere(trackId);
       if (!track) return;
 
       if (!track.src) {
-        alert('This track was uploaded as a local file on another device. Upload it with Firebase Storage enabled or re-select the MP3 file.');
+        const vaultUrl = await VaultDB.getFileUrl(track.id);
+        if (vaultUrl) {
+          track.src = vaultUrl;
+          track.isLocalBlob = true;
+        }
+      }
+
+      if (!track.src) {
+        if (state.currentView !== 'shared_view') openEditSongModal(track.id);
+        alert(`"${track.title}" has no audio URL on this device yet.`);
         return;
       }
 
@@ -1159,7 +1700,7 @@
 
       document.getElementById('player-title').textContent = track.title;
       document.getElementById('player-artist').textContent = track.artist;
-      document.getElementById('player-art').className = `w-14 h-14 rounded bg-gradient-to-br ${track.color} flex items-center justify-center text-xl shrink-0 shadow`;
+      document.getElementById('player-art').className = `w-14 h-14 rounded bg-gradient-to-br ${track.color || 'from-emerald-500 to-teal-900'} flex items-center justify-center text-xl shrink-0 shadow`;
       document.getElementById('player-art').innerHTML = `<i class="fa-solid fa-music text-white"></i>`;
       updateLikeButtonUI();
 
@@ -1167,6 +1708,7 @@
         incrementPlayCount(track.id);
         audio.play().catch(() => {});
         state.isPlaying = true;
+        lastTickTimestamp = Date.now();
       }
       updatePlayButtonUI();
       renderMainContent();
@@ -1174,11 +1716,8 @@
     }
 
     window.playById = (trackId) => {
-      if (state.currentTrackId === trackId) {
-        togglePlayPause();
-      } else {
-        loadTrackById(trackId, true);
-      }
+      if (state.currentTrackId === trackId) togglePlayPause();
+      else loadTrackById(trackId, true);
     };
 
     window.togglePlayPause = () => {
@@ -1191,9 +1730,11 @@
         if (audio.currentTime < 1) incrementPlayCount(state.currentTrackId);
         audio.play().catch(() => {});
         state.isPlaying = true;
+        lastTickTimestamp = Date.now();
       } else {
         audio.pause();
         state.isPlaying = false;
+        lastTickTimestamp = null;
       }
       updatePlayButtonUI();
       renderMainContent();
@@ -1305,15 +1846,38 @@
     }
 
     // =========================================================================
-    // ANALYTICS & RENDERING
+    // 14. ANALYTICS & RENDERING
     // =========================================================================
     function incrementPlayCount(trackId) {
       const track = state.tracks.find(t => t.id === trackId);
       if (track) {
         track.plays = (track.plays || 0) + 1;
+        if (!state.stats.artistStats[track.artist]) {
+          state.stats.artistStats[track.artist] = { plays: 0, seconds: 0 };
+        }
+        state.stats.artistStats[track.artist].plays += 1;
         renderAnalytics();
         syncStateToCloud();
       }
+    }
+
+    function getAggregatedArtistStats() {
+      const combined = {};
+      state.tracks.forEach(t => {
+        if (!combined[t.artist]) combined[t.artist] = { plays: 0, seconds: 0 };
+        combined[t.artist].plays += (t.plays || 0);
+        combined[t.artist].seconds += (t.secondsListened || 0);
+      });
+      return combined;
+    }
+
+    function formatDurationHuman(seconds) {
+      const sec = Math.round(seconds || 0);
+      if (sec < 60) return `${sec}s`;
+      const mins = Math.floor(sec / 60);
+      if (mins < 60) return `${mins}m`;
+      const hrs = (sec / 3600).toFixed(1);
+      return `${hrs}h`;
     }
 
     window.toggleLike = (trackId, event) => {
@@ -1348,6 +1912,14 @@
 
     window.switchView = (viewId) => {
       state.currentView = viewId;
+      ['all', 'analytics', 'liked', 'help'].forEach(nav => {
+        const el = document.getElementById('nav-' + nav);
+        if (el) {
+          el.className = viewId === nav
+            ? 'w-full flex items-center gap-3.5 text-sm font-semibold text-white bg-zinc-800/80 px-3 py-2 rounded-lg transition'
+            : 'w-full flex items-center gap-3.5 text-sm font-semibold text-zinc-400 hover:text-white px-3 py-2 rounded-lg transition';
+        }
+      });
       renderAll();
     };
 
@@ -1355,10 +1927,11 @@
       const query = document.getElementById('search-input').value.toLowerCase().trim();
       let list = [];
 
-      if (state.currentView.startsWith('pl_')) {
+      if (state.currentView === 'shared_view' && state.sharedPlaylistData) {
+        list = [...state.sharedPlaylistData.tracks];
+      } else if (state.currentView.startsWith('pl_')) {
         const pl = state.playlists.find(p => p.id === state.currentView);
         if (pl) {
-          // Preserve exact playlist sequence order
           list = pl.trackIds
             .map(id => state.tracks.find(t => t.id === id))
             .filter(Boolean);
@@ -1387,15 +1960,22 @@
     function renderPlaylistsSidebar() {
       const container = document.getElementById('playlist-sidebar');
       if (state.playlists.length === 0) {
-        container.innerHTML = `<div class="px-3 py-2 text-xs text-zinc-500">No playlists yet. Click + to add one.</div>`;
+        container.innerHTML = `<div class="px-3 py-2 text-xs text-zinc-500">No playlists yet.</div>`;
         return;
       }
 
       container.innerHTML = state.playlists.map(pl => {
         const active = state.currentView === pl.id;
+        const thumbHtml = pl.coverImage
+          ? `<img src="${pl.coverImage}" class="w-5 h-5 rounded object-cover shrink-0" />`
+          : `<div class="w-5 h-5 rounded bg-gradient-to-br ${pl.coverColor || DEFAULT_COVER_GRADIENT} shrink-0"></div>`;
+
         return `
           <div onclick="switchView('${pl.id}')" class="w-full px-3 py-2 rounded-md text-sm flex items-center justify-between cursor-pointer group ${active ? 'bg-zinc-800 text-white font-semibold' : 'text-zinc-400 hover:text-white hover:bg-zinc-900'} transition">
-            <span class="truncate"><i class="fa-solid fa-list-ul mr-2 text-xs"></i>${pl.name}</span>
+            <div class="flex items-center gap-2.5 truncate">
+              ${thumbHtml}
+              <span class="truncate">${pl.name}</span>
+            </div>
             <div class="flex items-center gap-2">
               <span class="text-xs text-zinc-500">${pl.trackIds.length}</span>
               <button onclick="deletePlaylistById('${pl.id}', event)" title="Delete Playlist" class="opacity-0 group-hover:opacity-100 text-zinc-500 hover:text-red-400 transition">
@@ -1408,48 +1988,104 @@
     }
 
     function renderAnalytics() {
+      const currentWeek = getWeekKey();
+      const weeklySec = state.stats.weeklySeconds[currentWeek] || 0;
+      const totalSec = state.stats.totalSecondsListened || 0;
+      const totalPlays = state.tracks.reduce((sum, t) => sum + (t.plays || 0), 0);
+
+      document.getElementById('stat-weekly-hours').textContent = `${(weeklySec / 3600).toFixed(2)} hrs`;
+      document.getElementById('stat-weekly-mins').textContent = `${Math.round(weeklySec / 60)} mins logged (${currentWeek})`;
+
+      document.getElementById('stat-total-hours').textContent = `${(totalSec / 3600).toFixed(2)} hrs`;
+      document.getElementById('stat-total-plays').textContent = `${totalPlays} total song streams`;
+
+      const activeDays = Object.keys(state.stats.dailySeconds || {}).filter(k => state.stats.dailySeconds[k] > 0).length || 1;
+      const avgDailyMins = Math.round((totalSec / 60) / activeDays);
+      document.getElementById('stat-daily-avg').textContent = `${avgDailyMins} mins`;
+
+      const chartEl = document.getElementById('weekly-bar-chart');
+      const days = [];
+      for (let i = 6; i >= 0; i--) {
+        const d = new Date();
+        d.setDate(d.getDate() - i);
+        const key = getTodayKey(d);
+        const label = d.toLocaleDateString('en-US', { weekday: 'short' });
+        const sec = state.stats.dailySeconds[key] || 0;
+        days.push({ label, sec });
+      }
+      const maxSec = Math.max(...days.map(d => d.sec), 60);
+
+      chartEl.innerHTML = days.map(day => {
+        const pct = Math.max(6, Math.round((day.sec / maxSec) * 100));
+        const minsLabel = Math.round(day.sec / 60);
+        return `
+          <div class="flex-1 flex flex-col items-center gap-1.5 h-full justify-end group">
+            <span class="text-[10px] font-mono text-zinc-400 opacity-0 group-hover:opacity-100 transition">${minsLabel}m</span>
+            <div class="w-full bg-zinc-800 rounded-t-md h-28 flex items-end overflow-hidden">
+              <div style="height: ${pct}%" class="w-full bg-gradient-to-t from-emerald-600 to-[#1db954] rounded-t-md transition-all duration-300"></div>
+            </div>
+            <span class="text-[11px] font-semibold text-zinc-400">${day.label}</span>
+          </div>
+        `;
+      }).join('');
+
       const topSongsEl = document.getElementById('top-songs-list');
       const topArtistsEl = document.getElementById('top-artists-list');
 
       if (state.tracks.length === 0) {
-        topSongsEl.innerHTML = `<div class="text-xs text-zinc-500 py-4 text-center">Upload and play songs to rank your Top Listened Songs.</div>`;
-        topArtistsEl.innerHTML = `<div class="text-xs text-zinc-500 py-4 text-center">Play songs to see your Top Listened Artists.</div>`;
+        topSongsEl.innerHTML = `<div class="text-xs text-zinc-500 py-6 text-center">No songs tracked yet.</div>`;
+        topArtistsEl.innerHTML = `<div class="text-xs text-zinc-500 py-6 text-center">No artists tracked yet.</div>`;
+        document.getElementById('stat-top-artist-name').textContent = '—';
+        document.getElementById('stat-top-artist-time').textContent = '0 mins listened';
         return;
       }
 
-      const topSongs = [...state.tracks].sort((a, b) => (b.plays || 0) - (a.plays || 0)).slice(0, 5);
+      const topSongs = [...state.tracks]
+        .sort((a, b) => (b.secondsListened || 0) - (a.secondsListened || 0) || (b.plays || 0) - (a.plays || 0))
+        .slice(0, 5);
+
       topSongsEl.innerHTML = topSongs.map((song, idx) => `
         <div onclick="playById('${song.id}')" class="flex items-center justify-between p-2 rounded-lg hover:bg-zinc-800/70 cursor-pointer transition">
-          <div class="flex items-center gap-3 overflow-hidden">
+          <div class="flex items-center gap-2.5 overflow-hidden">
             <span class="text-xs font-bold text-zinc-500 w-4">${idx + 1}</span>
             <div class="w-8 h-8 rounded bg-gradient-to-br ${song.color} flex items-center justify-center text-xs shrink-0">
               <i class="fa-solid fa-music"></i>
             </div>
-            <div class=" truncate">
+            <div class="truncate">
               <div class="text-sm font-semibold text-white truncate">${song.title}</div>
               <div class="text-xs text-zinc-400 truncate">${song.artist}</div>
             </div>
           </div>
-          <span class="text-xs font-mono text-[#1db954] bg-emerald-950/50 px-2 py-0.5 rounded-full shrink-0">${song.plays || 0} plays</span>
+          <div class="text-right shrink-0">
+            <div class="text-xs font-mono text-[#1db954]">${formatDurationHuman(song.secondsListened)}</div>
+            <div class="text-[10px] text-zinc-500">${song.plays || 0} plays</div>
+          </div>
         </div>
       `).join('');
 
-      const artistTotals = {};
-      state.tracks.forEach(t => {
-        artistTotals[t.artist] = (artistTotals[t.artist] || 0) + (t.plays || 0);
-      });
-      const topArtists = Object.entries(artistTotals).sort((a, b) => b[1] - a[1]).slice(0, 5);
+      const artistAgg = getAggregatedArtistStats();
+      const topArtists = Object.entries(artistAgg)
+        .sort((a, b) => b[1].seconds - a[1].seconds || b[1].plays - a[1].plays)
+        .slice(0, 5);
 
-      topArtistsEl.innerHTML = topArtists.map(([artist, totalPlays], idx) => `
+      if (topArtists.length > 0) {
+        document.getElementById('stat-top-artist-name').textContent = topArtists[0][0];
+        document.getElementById('stat-top-artist-time').textContent = `${formatDurationHuman(topArtists[0][1].seconds)} (${topArtists[0][1].plays} plays)`;
+      }
+
+      topArtistsEl.innerHTML = topArtists.map(([artist, info], idx) => `
         <div class="flex items-center justify-between p-2 rounded-lg bg-zinc-900/40">
-          <div class="flex items-center gap-3 overflow-hidden">
+          <div class="flex items-center gap-2.5 overflow-hidden">
             <span class="text-xs font-bold text-zinc-500 w-4">${idx + 1}</span>
             <div class="w-8 h-8 rounded-full bg-zinc-700 flex items-center justify-center text-xs font-bold text-emerald-400 shrink-0">
               ${artist.charAt(0).toUpperCase()}
             </div>
             <div class="text-sm font-semibold text-white truncate">${artist}</div>
           </div>
-          <span class="text-xs font-mono text-zinc-300 shrink-0">${totalPlays} streams</span>
+          <div class="text-right shrink-0">
+            <div class="text-xs font-mono text-[#1db954]">${formatDurationHuman(info.seconds)}</div>
+            <div class="text-[10px] text-zinc-500">${info.plays} streams</div>
+          </div>
         </div>
       `).join('');
     }
@@ -1457,33 +2093,93 @@
     function renderMainContent() {
       const titleEl = document.getElementById('view-title');
       const typeEl = document.getElementById('view-type');
+      const subtitleEl = document.getElementById('view-subtitle');
+      const coverEl = document.getElementById('view-cover');
+      const helpBox = document.getElementById('help-container');
       const analyticsBox = document.getElementById('analytics-container');
+      const songSection = document.getElementById('song-table-section');
       const plHeaderActions = document.getElementById('playlist-header-actions');
+      const sharedHeaderActions = document.getElementById('shared-playlist-actions');
 
+      helpBox.classList.add('hidden');
       analyticsBox.classList.remove('hidden');
+      songSection.classList.remove('hidden');
       plHeaderActions.classList.add('hidden');
       plHeaderActions.classList.remove('flex');
+      sharedHeaderActions.classList.add('hidden');
+      sharedHeaderActions.classList.remove('flex');
+      subtitleEl.textContent = '';
+
+      coverEl.className = `w-32 h-32 rounded-lg bg-gradient-to-br ${DEFAULT_COVER_GRADIENT} shadow-2xl flex items-center justify-center text-4xl shrink-0 overflow-hidden relative group`;
+      coverEl.innerHTML = `<i class="fa-solid fa-headphones"></i>`;
 
       const isPlaylistView = state.currentView.startsWith('pl_');
+      const isSharedView = state.currentView === 'shared_view' && !!state.sharedPlaylistData;
       const canReorder = isPlaylistView || state.currentView === 'all';
 
       if (state.currentView === 'all') {
-        typeEl.textContent = 'LIBRARY';
+        typeEl.textContent = 'MP3 VISION LIBRARY';
         titleEl.textContent = 'All Songs';
+      } else if (state.currentView === 'help') {
+        typeEl.textContent = 'GUIDE & SUPPORT';
+        titleEl.textContent = 'Help';
+        coverEl.className = 'w-32 h-32 rounded-lg bg-gradient-to-br from-sky-500 to-zinc-900 shadow-2xl flex items-center justify-center text-4xl shrink-0';
+        coverEl.innerHTML = `<i class="fa-solid fa-circle-question"></i>`;
+        helpBox.classList.remove('hidden');
+        analyticsBox.classList.add('hidden');
+        songSection.classList.add('hidden');
+        return;
       } else if (state.currentView === 'liked') {
         typeEl.textContent = 'COLLECTION';
         titleEl.textContent = 'Liked Songs';
+        coverEl.className = 'w-32 h-32 rounded-lg bg-gradient-to-br from-emerald-400 to-teal-900 shadow-2xl flex items-center justify-center text-4xl shrink-0';
+        coverEl.innerHTML = `<i class="fa-solid fa-heart"></i>`;
         analyticsBox.classList.add('hidden');
       } else if (state.currentView === 'analytics') {
-        typeEl.textContent = 'REAL-TIME INSIGHTS';
-        titleEl.textContent = 'Top Charts & Stats';
+        typeEl.textContent = 'MP3 VISION INSIGHTS';
+        titleEl.textContent = 'Detailed Listening Stats';
+        coverEl.innerHTML = `<i class="fa-solid fa-chart-line"></i>`;
+        songSection.classList.add('hidden');
       } else if (isPlaylistView) {
         const pl = state.playlists.find(p => p.id === state.currentView);
-        typeEl.textContent = 'CUSTOM PLAYLIST';
+        typeEl.textContent = 'PLAYLIST';
         titleEl.textContent = pl ? pl.name : 'Playlist';
         analyticsBox.classList.add('hidden');
         plHeaderActions.classList.remove('hidden');
         plHeaderActions.classList.add('flex');
+
+        if (pl) {
+          if (pl.coverImage) {
+            coverEl.className = 'w-32 h-32 rounded-lg bg-zinc-900 shadow-2xl shrink-0 overflow-hidden relative group cursor-pointer';
+            coverEl.innerHTML = `
+              <img src="${pl.coverImage}" class="w-full h-full object-cover" />
+              <div onclick="openCoverModal()" class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center text-xs font-bold text-white transition">
+                <i class="fa-solid fa-camera mr-1"></i> Edit Cover
+              </div>
+            `;
+          } else {
+            coverEl.className = `w-32 h-32 rounded-lg bg-gradient-to-br ${pl.coverColor || DEFAULT_COVER_GRADIENT} shadow-2xl flex items-center justify-center text-4xl shrink-0 overflow-hidden relative group cursor-pointer`;
+            coverEl.innerHTML = `
+              <i class="fa-solid fa-music"></i>
+              <div onclick="openCoverModal()" class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center text-xs font-bold text-white transition">
+                <i class="fa-solid fa-palette mr-1"></i> Edit Cover
+              </div>
+            `;
+          }
+        }
+      } else if (isSharedView) {
+        typeEl.textContent = 'SHARED PLAYLIST';
+        titleEl.textContent = state.sharedPlaylistData.name;
+        subtitleEl.textContent = `Shared by ${state.sharedPlaylistData.ownerEmail}`;
+        analyticsBox.classList.add('hidden');
+        sharedHeaderActions.classList.remove('hidden');
+        sharedHeaderActions.classList.add('flex');
+
+        if (state.sharedPlaylistData.coverImage) {
+          coverEl.innerHTML = `<img src="${state.sharedPlaylistData.coverImage}" class="w-full h-full object-cover" />`;
+        } else {
+          coverEl.className = `w-32 h-32 rounded-lg bg-gradient-to-br ${state.sharedPlaylistData.coverColor || DEFAULT_COVER_GRADIENT} shadow-2xl flex items-center justify-center text-4xl shrink-0`;
+        }
       }
 
       const filtered = getFilteredTracks();
@@ -1491,9 +2187,8 @@
 
       if (filtered.length === 0) {
         songListEl.innerHTML = `
-          <div class="py-14 text-center space-y-3">
-            <div class="text-zinc-400 text-sm font-semibold">Your music list is currently empty.</div>
-            <p class="text-xs text-zinc-500">Click "Upload MP3 Files" or "Add MP3 via URL" in the bottom-left sidebar to add your music.</p>
+          <div class="py-12 text-center text-zinc-500 text-sm">
+            No songs in this list.
           </div>
         `;
         return;
@@ -1501,53 +2196,65 @@
 
       songListEl.innerHTML = filtered.map((track, idx) => {
         const isCurrent = state.currentTrackId === track.id;
+        const isCloudReady = !track.isLocalBlob && !!track.src;
+        const isMp4 = track.mediaType === 'mp4' || (track.src && track.src.toLowerCase().includes('.mp4'));
         return `
           <div
             ${canReorder ? `draggable="true" ondragstart="handleDragStart(${idx})" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(${idx}, event)"` : ''}
             onclick="playById('${track.id}')"
             class="grid grid-cols-12 items-center px-3 py-2.5 rounded-lg hover:bg-zinc-800/60 cursor-pointer group transition ${isCurrent ? 'bg-zinc-800/90' : ''}"
           >
-            <!-- Sequence Number + Up/Down Order Controls -->
             <div class="col-span-1 flex items-center gap-1.5 text-sm ${isCurrent ? 'text-[#1db954] font-bold' : 'text-zinc-400'}" onclick="event.stopPropagation()">
               <span class="w-4 text-center">
                 ${isCurrent && state.isPlaying ? '<i class="fa-solid fa-volume-high animate-pulse"></i>' : idx + 1}
               </span>
               ${canReorder ? `
                 <div class="flex flex-col text-[10px] text-zinc-500 opacity-0 group-hover:opacity-100 transition">
-                  <button onclick="moveSongInSequence(${idx}, -1, event)" title="Move Up" class="hover:text-white leading-none"><i class="fa-solid fa-caret-up"></i></button>
-                  <button onclick="moveSongInSequence(${idx}, 1, event)" title="Move Down" class="hover:text-white leading-none"><i class="fa-solid fa-caret-down"></i></button>
+                  <button onclick="moveSongInSequence(${idx}, -1, event)" class="hover:text-white leading-none"><i class="fa-solid fa-caret-up"></i></button>
+                  <button onclick="moveSongInSequence(${idx}, 1, event)" class="hover:text-white leading-none"><i class="fa-solid fa-caret-down"></i></button>
                 </div>
               ` : ''}
             </div>
 
-            <!-- Song Title -->
             <div class="col-span-4 flex items-center gap-3 pr-2 overflow-hidden">
-              <div class="w-10 h-10 rounded bg-gradient-to-br ${track.color} flex items-center justify-center shrink-0">
+              <div class="w-10 h-10 rounded bg-gradient-to-br ${track.color || 'from-emerald-500 to-teal-900'} flex items-center justify-center shrink-0">
                 <i class="fa-solid fa-music text-xs"></i>
               </div>
-              <span class="text-sm font-semibold truncate ${isCurrent ? 'text-[#1db954]' : 'text-white'}">${track.title}</span>
+              <div class="truncate">
+                <div class="flex items-center gap-1.5">
+                  <span class="text-sm font-semibold truncate ${isCurrent ? 'text-[#1db954]' : 'text-white'}">${track.title}</span>
+                  ${isMp4 ? '<span class="text-[9px] font-bold uppercase bg-zinc-700 text-zinc-200 px-1.5 py-0.5 rounded">MP4 Audio</span>' : ''}
+                </div>
+                <div class="text-[10px] ${isCloudReady ? 'text-emerald-400' : 'text-zinc-400'}">
+                  ${isCloudReady ? '<i class="fa-solid fa-cloud"></i> Cloud Synced' : '<i class="fa-solid fa-database"></i> Saved in Browser Vault'}
+                </div>
+              </div>
             </div>
 
-            <!-- Artist Name -->
             <div class="col-span-3 text-sm text-zinc-400 truncate pr-2">${track.artist}</div>
 
-            <!-- Play Count -->
-            <div class="col-span-1 text-right text-xs font-mono text-zinc-400">${track.plays || 0}</div>
+            <div class="col-span-1 text-right text-xs font-mono text-zinc-400">
+              ${isSharedView ? '—' : `
+                <div>${formatDurationHuman(track.secondsListened)}</div>
+                <div class="text-[10px] text-zinc-500">${track.plays || 0} plays</div>
+              `}
+            </div>
 
-            <!-- Edit / Rename / Playlist / Delete Actions -->
             <div class="col-span-3 flex items-center justify-end gap-3" onclick="event.stopPropagation()">
-              <button onclick="toggleLike('${track.id}', event)" title="Like Song" class="${track.liked ? 'text-[#1db954]' : 'text-zinc-500 hover:text-white'}">
-                <i class="${track.liked ? 'fa-solid' : 'fa-regular'} fa-heart"></i>
-              </button>
-              <button onclick="openEditSongModal('${track.id}', event)" title="Rename Song & Artist" class="text-zinc-400 hover:text-white">
-                <i class="fa-solid fa-pen text-xs"></i>
-              </button>
-              <button onclick="openAssignPlaylistModal('${track.id}', event)" title="Add to Playlist" class="text-zinc-400 hover:text-white">
-                <i class="fa-solid fa-folder-plus text-xs"></i>
-              </button>
-              <button onclick="deleteOrRemoveSong('${track.id}', event)" title="${isPlaylistView ? 'Remove from Playlist' : 'Delete Song'}" class="text-zinc-500 hover:text-red-400">
-                <i class="fa-solid ${isPlaylistView ? 'fa-minus' : 'fa-trash'} text-xs"></i>
-              </button>
+              ${isSharedView ? '' : `
+                <button onclick="toggleLike('${track.id}', event)" class="${track.liked ? 'text-[#1db954]' : 'text-zinc-500 hover:text-white'}">
+                  <i class="${track.liked ? 'fa-solid' : 'fa-regular'} fa-heart"></i>
+                </button>
+                <button onclick="openEditSongModal('${track.id}', event)" class="text-zinc-400 hover:text-white">
+                  <i class="fa-solid fa-pen text-xs"></i>
+                </button>
+                <button onclick="openAssignPlaylistModal('${track.id}', event)" class="text-zinc-400 hover:text-white">
+                  <i class="fa-solid fa-folder-plus text-xs"></i>
+                </button>
+                <button onclick="deleteOrRemoveSong('${track.id}', event)" class="text-zinc-500 hover:text-red-400">
+                  <i class="fa-solid ${isPlaylistView ? 'fa-minus' : 'fa-trash'} text-xs"></i>
+                </button>
+              `}
             </div>
           </div>
         `;

@@ -155,10 +155,6 @@
         </div>
 
         <div class="flex items-center gap-3">
-          <span id="cloud-status" class="text-xs text-zinc-400 hidden sm:flex items-center gap-1.5">
-            <i class="fa-solid fa-circle text-[8px] text-zinc-500"></i> Not signed in
-          </span>
-
           <button id="auth-btn" onclick="openAuthModal()" class="bg-white text-black font-bold text-sm px-4 py-1.5 rounded-full hover:scale-105 transition flex items-center gap-2">
             <i class="fa-regular fa-user"></i>
             <span id="auth-label">Log In / Sign Up</span>
@@ -182,7 +178,7 @@
             </div>
           </div>
 
-          <!-- Custom Playlist Management Buttons (Sharing Removed) -->
+          <!-- Custom Playlist Management Buttons -->
           <div id="playlist-header-actions" class="hidden items-center gap-2 flex-wrap">
             <button onclick="openCoverModal()" class="bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-semibold px-3.5 py-2 rounded-full flex items-center gap-1.5 transition">
               <i class="fa-solid fa-palette text-[#1db954]"></i> Customize Cover
@@ -455,9 +451,6 @@
         <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 space-y-1">
           <div class="text-xs text-zinc-400">Signed in as</div>
           <div id="profile-email" class="text-sm font-bold text-white truncate"></div>
-          <div class="text-xs text-[#1db954] pt-1 flex items-center gap-1.5">
-            <i class="fa-solid fa-check-circle"></i> Stats & Playlists Synced to Firebase
-          </div>
         </div>
         <div>
           <label class="text-xs font-bold text-zinc-300 uppercase">Current Device Name</label>
@@ -1010,14 +1003,10 @@
 
     function updateAuthHeaderUI() {
       const authLabel = document.getElementById('auth-label');
-      const cloudStatus = document.getElementById('cloud-status');
-
       if (state.user) {
         authLabel.textContent = state.user.email.split('@')[0];
-        cloudStatus.innerHTML = `<i class="fa-solid fa-circle text-[8px] text-[#1db954]"></i> Stats & Library Synced`;
       } else {
         authLabel.textContent = 'Log In / Sign Up';
-        cloudStatus.innerHTML = `<i class="fa-solid fa-circle text-[8px] text-zinc-500"></i> Local Mode`;
       }
     }
 

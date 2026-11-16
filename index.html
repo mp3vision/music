@@ -3,15 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PulseStream — MP3 Player & Cloud Sync</title>
+  <title>PulseStream — Cloud MP3 Player</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   <style>
     :root {
       --spotify-green: #1db954;
-      --bg-dark: #121212;
-      --bg-card: #181818;
-      --bg-card-hover: #282828;
     }
     body {
       background-color: #000;
@@ -20,7 +17,6 @@
       overflow: hidden;
       user-select: none;
     }
-    /* Custom Range Sliders */
     input[type="range"] {
       -webkit-appearance: none;
       appearance: none;
@@ -43,24 +39,32 @@
       background: var(--spotify-green);
       transform: scale(1.2);
     }
-    /* Custom Scrollbar */
+    .drag-over {
+      border-top: 2px solid #1db954 !important;
+      background-color: rgba(29, 185, 84, 0.12) !important;
+    }
     ::-webkit-scrollbar { width: 8px; }
     ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: #444; border-radius: 4px; }
-    ::-webkit-scrollbar-thumb:hover { background: #666; }
+    ::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #52525b; }
   </style>
 </head>
 <body class="h-screen flex flex-col">
 
-  <!-- REMOTE DEVICE SYNC BANNER -->
-  <div id="remote-sync-banner" class="hidden bg-[#1db954] text-black px-4 py-1.5 text-sm font-semibold flex items-center justify-between">
+  <!-- CROSS-DEVICE SYNC BANNER -->
+  <div id="remote-sync-banner" class="hidden bg-[#1db954] text-black px-4 py-1.5 text-sm font-semibold flex items-center justify-between shrink-0">
     <div class="flex items-center gap-2">
       <i class="fa-solid fa-tower-broadcast animate-pulse"></i>
-      <span id="remote-sync-text">Active session detected on another device</span>
+      <span id="remote-sync-text">Active playback session detected on another device</span>
     </div>
-    <button onclick="applyRemoteSession()" class="bg-black text-white px-3 py-0.5 rounded-full text-xs hover:scale-105 transition">
-      Sync & Resume Here
-    </button>
+    <div class="flex items-center gap-2">
+      <button onclick="applyRemoteSession()" class="bg-black text-white px-3 py-0.5 rounded-full text-xs hover:scale-105 transition">
+        Sync & Resume Here
+      </button>
+      <button onclick="document.getElementById('remote-sync-banner').classList.add('hidden')" class="text-black/70 hover:text-black px-1">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
   </div>
 
   <!-- MAIN WORKSPACE -->
@@ -68,7 +72,6 @@
     
     <!-- LEFT SIDEBAR -->
     <aside class="w-64 bg-[#121212] rounded-lg flex flex-col overflow-hidden shrink-0">
-      <!-- Logo & Primary Nav -->
       <div class="p-5 space-y-4">
         <div class="flex items-center gap-2 text-xl font-bold tracking-tight text-white">
           <i class="fa-brands fa-spotify text-[#1db954] text-3xl"></i>
@@ -92,28 +95,32 @@
       <!-- Playlists Header -->
       <div class="px-5 pt-4 pb-2 flex items-center justify-between">
         <span class="text-xs font-bold uppercase tracking-wider text-zinc-400">Your Playlists</span>
-        <button onclick="createNewPlaylist()" title="Create Playlist" class="text-zinc-400 hover:text-white transition">
+        <button onclick="openCreatePlaylistModal()" title="Create New Playlist" class="text-zinc-400 hover:text-white transition px-1.5 py-0.5 rounded hover:bg-zinc-800">
           <i class="fa-solid fa-plus"></i>
         </button>
       </div>
 
-      <!-- Playlist List -->
+      <!-- Playlist Sidebar List -->
       <div id="playlist-sidebar" class="flex-1 overflow-y-auto px-3 space-y-1"></div>
 
-      <!-- Upload Local MP3 Button -->
-      <div class="p-4 border-t border-zinc-800">
-        <label class="w-full flex items-center justify-center gap-2 bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-bold py-2.5 px-4 rounded-full cursor-pointer transition">
-          <i class="fa-solid fa-file-audio text-[#1db954]"></i>
-          <span>Import Local MP3s</span>
+      <!-- Add Music Actions -->
+      <div class="p-4 border-t border-zinc-800 space-y-2">
+        <label class="w-full flex items-center justify-center gap-2 bg-[#1db954] hover:bg-emerald-400 text-black text-xs font-bold py-2.5 px-4 rounded-full cursor-pointer transition">
+          <i class="fa-solid fa-cloud-arrow-up"></i>
+          <span id="upload-btn-label">Upload MP3 Files</span>
           <input type="file" id="mp3-upload" accept="audio/*" multiple class="hidden" onchange="handleFileUpload(event)" />
         </label>
+        <button onclick="openUrlTrackModal()" class="w-full flex items-center justify-center gap-2 bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-semibold py-2 px-4 rounded-full transition">
+          <i class="fa-solid fa-link text-[#1db954]"></i>
+          <span>Add MP3 via URL</span>
+        </button>
       </div>
     </aside>
 
     <!-- CENTER CONTENT AREA -->
     <main class="flex-1 bg-gradient-to-b from-zinc-900 via-[#121212] to-[#121212] rounded-lg flex flex-col overflow-hidden">
       
-      <!-- Top Bar (Search + Auth / Device Status) -->
+      <!-- Top Bar -->
       <header class="h-16 px-6 flex items-center justify-between bg-black/30 backdrop-blur-md shrink-0">
         <div class="relative w-72">
           <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-zinc-400 text-sm"></i>
@@ -121,20 +128,19 @@
             type="text"
             id="search-input"
             oninput="renderMainContent()"
-            placeholder="What do you want to play?"
+            placeholder="Search songs or artists..."
             class="w-full bg-zinc-800/90 hover:bg-zinc-800 focus:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-white text-sm rounded-full pl-10 pr-4 py-2 text-white placeholder-zinc-400"
           />
         </div>
 
         <div class="flex items-center gap-3">
-          <button onclick="simulateOtherDeviceUpdate()" title="Simulate playing on phone" class="text-xs bg-zinc-800 hover:bg-zinc-700 text-zinc-300 px-3 py-1.5 rounded-full flex items-center gap-1.5 transition">
-            <i class="fa-solid fa-mobile-screen-button text-[#1db954]"></i>
-            <span>Simulate Phone Sync</span>
-          </button>
+          <span id="cloud-status" class="text-xs text-zinc-400 hidden sm:flex items-center gap-1.5">
+            <i class="fa-solid fa-circle text-[8px] text-zinc-500"></i> Not signed in
+          </span>
 
-          <button id="auth-btn" onclick="toggleAuthModal()" class="bg-white text-black font-bold text-sm px-4 py-1.5 rounded-full hover:scale-105 transition flex items-center gap-2">
+          <button id="auth-btn" onclick="openAuthModal()" class="bg-white text-black font-bold text-sm px-4 py-1.5 rounded-full hover:scale-105 transition flex items-center gap-2">
             <i class="fa-regular fa-user"></i>
-            <span id="auth-label">Log In</span>
+            <span id="auth-label">Log In / Sign Up</span>
           </button>
         </div>
       </header>
@@ -143,20 +149,31 @@
       <div class="flex-1 overflow-y-auto p-6 space-y-8" id="main-scroll">
         
         <!-- View Header Banner -->
-        <div class="flex items-end gap-6">
-          <div id="view-cover" class="w-40 h-40 rounded-lg bg-gradient-to-br from-emerald-500 to-zinc-900 shadow-2xl flex items-center justify-center text-5xl">
-            <i class="fa-solid fa-music"></i>
+        <div class="flex items-end justify-between gap-6 flex-wrap">
+          <div class="flex items-end gap-6">
+            <div id="view-cover" class="w-36 h-36 rounded-lg bg-gradient-to-br from-emerald-500 to-zinc-900 shadow-2xl flex items-center justify-center text-5xl shrink-0">
+              <i class="fa-solid fa-music"></i>
+            </div>
+            <div>
+              <p class="text-xs font-bold uppercase tracking-widest text-zinc-400" id="view-type">LIBRARY</p>
+              <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight mt-1 mb-2" id="view-title">All Songs</h1>
+              <p class="text-sm text-zinc-400" id="view-subtitle">Drag rows or use ▲/▼ arrows to reorder sequence</p>
+            </div>
           </div>
-          <div>
-            <p class="text-xs font-bold uppercase tracking-widest text-zinc-400" id="view-type">LIBRARY</p>
-            <h1 class="text-5xl font-extrabold tracking-tight mt-1 mb-3" id="view-title">All Songs</h1>
-            <p class="text-sm text-zinc-400" id="view-subtitle">Stream built-in tracks or drop your own MP3 files</p>
+
+          <!-- Playlist Management Buttons (Shown when viewing a custom playlist) -->
+          <div id="playlist-header-actions" class="hidden items-center gap-2">
+            <button onclick="renameCurrentPlaylist()" class="bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-semibold px-3.5 py-2 rounded-full flex items-center gap-1.5 transition">
+              <i class="fa-solid fa-pen"></i> Rename Playlist
+            </button>
+            <button onclick="deleteCurrentPlaylist()" class="bg-red-950/70 hover:bg-red-900 text-red-200 text-xs font-semibold px-3.5 py-2 rounded-full flex items-center gap-1.5 transition">
+              <i class="fa-solid fa-trash"></i> Delete Playlist
+            </button>
           </div>
         </div>
 
-        <!-- TOP ANALYTICS SECTION (Shown in Analytics View or Compact on Home) -->
+        <!-- TOP ANALYTICS SECTION -->
         <div id="analytics-container" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <!-- Top Listened Songs -->
           <div class="bg-[#181818] p-5 rounded-xl border border-zinc-800/80">
             <div class="flex items-center justify-between mb-4">
               <h2 class="text-lg font-bold flex items-center gap-2">
@@ -167,7 +184,6 @@
             <div id="top-songs-list" class="space-y-2"></div>
           </div>
 
-          <!-- Top Listened Artists -->
           <div class="bg-[#181818] p-5 rounded-xl border border-zinc-800/80">
             <div class="flex items-center justify-between mb-4">
               <h2 class="text-lg font-bold flex items-center gap-2">
@@ -181,12 +197,12 @@
 
         <!-- SONG TABLE -->
         <div>
-          <div class="grid grid-cols-12 text-xs font-semibold uppercase tracking-wider text-zinc-400 border-b border-zinc-800 pb-2 px-4">
-            <div class="col-span-1">#</div>
-            <div class="col-span-5">Title</div>
+          <div class="grid grid-cols-12 text-xs font-semibold uppercase tracking-wider text-zinc-400 border-b border-zinc-800 pb-2 px-3">
+            <div class="col-span-1"># / Order</div>
+            <div class="col-span-4">Title</div>
             <div class="col-span-3">Artist</div>
             <div class="col-span-1 text-right">Plays</div>
-            <div class="col-span-2 text-right">Actions</div>
+            <div class="col-span-3 text-right">Edit / Actions</div>
           </div>
           <div id="song-list" class="divide-y divide-zinc-800/40 mt-2"></div>
         </div>
@@ -197,221 +213,307 @@
 
   <!-- BOTTOM PLAYER BAR -->
   <footer class="h-24 bg-black border-t border-zinc-900 px-4 flex items-center justify-between shrink-0">
-    
-    <!-- Left: Now Playing Info -->
+    <!-- Now Playing Info -->
     <div class="w-1/4 flex items-center gap-4 min-w-[180px]">
       <div id="player-art" class="w-14 h-14 rounded bg-zinc-800 flex items-center justify-center text-xl shrink-0">
         <i class="fa-solid fa-compact-disc text-zinc-500"></i>
       </div>
       <div class="overflow-hidden">
-        <div id="player-title" class="text-sm font-semibold text-white truncate">Select a song</div>
-        <div id="player-artist" class="text-xs text-zinc-400 truncate">No artist playing</div>
+        <div id="player-title" class="text-sm font-semibold text-white truncate">No song playing</div>
+        <div id="player-artist" class="text-xs text-zinc-400 truncate">Upload or select a track</div>
       </div>
-      <button onclick="toggleLikeCurrent()" id="player-like-btn" class="text-zinc-400 hover:text-white ml-2">
+      <button onclick="toggleLikeCurrent()" id="player-like-btn" class="text-zinc-400 hover:text-white ml-1">
         <i class="fa-regular fa-heart"></i>
       </button>
     </div>
 
-    <!-- Center: Transport Controls + Seek Bar -->
+    <!-- Transport Controls + Seek Bar -->
     <div class="w-2/4 max-w-xl flex flex-col items-center gap-2">
       <div class="flex items-center gap-6">
-        <!-- Shuffle -->
         <button onclick="toggleShuffle()" id="btn-shuffle" title="Shuffle" class="text-zinc-400 hover:text-white text-sm transition relative">
           <i class="fa-solid fa-shuffle"></i>
         </button>
-
-        <!-- Previous -->
         <button onclick="prevSong()" title="Previous" class="text-zinc-300 hover:text-white text-lg transition">
           <i class="fa-solid fa-backward-step"></i>
         </button>
-
-        <!-- Play / Pause -->
         <button onclick="togglePlayPause()" id="btn-play" class="w-9 h-9 rounded-full bg-white text-black flex items-center justify-center hover:scale-105 transition">
           <i class="fa-solid fa-play ml-0.5"></i>
         </button>
-
-        <!-- Next -->
         <button onclick="nextSong(true)" title="Next" class="text-zinc-300 hover:text-white text-lg transition">
           <i class="fa-solid fa-forward-step"></i>
         </button>
-
-        <!-- Loop (Off -> Playlist -> Song) -->
         <button onclick="cycleLoopMode()" id="btn-loop" title="Loop Off" class="text-zinc-400 hover:text-white text-sm transition relative">
           <i class="fa-solid fa-repeat"></i>
           <span id="loop-badge" class="hidden absolute -top-1.5 -right-2 bg-[#1db954] text-black text-[9px] font-extrabold px-1 rounded-full">1</span>
         </button>
       </div>
 
-      <!-- Progress / Seek Bar -->
       <div class="w-full flex items-center gap-2 text-xs text-zinc-400 font-mono">
         <span id="time-current" class="w-10 text-right">0:00</span>
-        <input
-          type="range"
-          id="seek-bar"
-          value="0"
-          min="0"
-          max="100"
-          step="0.1"
-          oninput="seekAudio(this.value)"
-          class="flex-1"
-        />
+        <input type="range" id="seek-bar" value="0" min="0" max="100" step="0.1" oninput="seekAudio(this.value)" class="flex-1" />
         <span id="time-total" class="w-10">0:00</span>
       </div>
     </div>
 
-    <!-- Right: Device Status & Volume Adjust -->
+    <!-- Device Status & Volume Adjust -->
     <div class="w-1/4 flex items-center justify-end gap-3 min-w-[180px]">
-      <span id="device-indicator" class="text-[11px] text-[#1db954] flex items-center gap-1 bg-emerald-950/60 px-2.5 py-1 rounded-full">
-        <i class="fa-solid fa-laptop"></i> Web Player
+      <span id="device-indicator" class="text-[11px] text-[#1db954] hidden md:flex items-center gap-1 bg-emerald-950/60 px-2.5 py-1 rounded-full">
+        <i class="fa-solid fa-laptop"></i> <span id="device-label">Web Player</span>
       </span>
-
       <button onclick="toggleMute()" id="btn-mute" class="text-zinc-400 hover:text-white w-5">
         <i class="fa-solid fa-volume-high"></i>
       </button>
-
-      <input
-        type="range"
-        id="volume-bar"
-        value="80"
-        min="0"
-        max="100"
-        oninput="changeVolume(this.value)"
-        class="w-24"
-      />
+      <input type="range" id="volume-bar" value="80" min="0" max="100" oninput="changeVolume(this.value)" class="w-24" />
     </div>
   </footer>
 
-  <!-- LOGIN / CLOUD SYNC MODAL -->
-  <div id="auth-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50">
-    <div class="bg-[#181818] border border-zinc-800 rounded-2xl w-96 p-6 shadow-2xl">
+  <!-- ======================================================================= -->
+  <!-- MODALS -->
+  <!-- ======================================================================= -->
+
+  <!-- 1. REAL FIREBASE AUTH MODAL -->
+  <div id="auth-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div class="bg-[#181818] border border-zinc-800 rounded-2xl w-full max-w-md p-6 shadow-2xl">
       <div class="flex items-center justify-between mb-4">
-        <h3 class="text-xl font-bold">Account & Device Sync</h3>
-        <button onclick="toggleAuthModal()" class="text-zinc-400 hover:text-white">
+        <h3 class="text-xl font-bold flex items-center gap-2">
+          <i class="fa-brands fa-spotify text-[#1db954]"></i> Account & Cloud Sync
+        </h3>
+        <button onclick="closeAuthModal()" class="text-zinc-400 hover:text-white">
           <i class="fa-solid fa-xmark"></i>
         </button>
       </div>
-      <p class="text-xs text-zinc-400 mb-4">
-        Log in with an account ID to sync your playlists, top artist stats, and active playback position across devices.
-      </p>
-      <div class="space-y-3">
+
+      <!-- Logged Out View -->
+      <div id="auth-logged-out-view" class="space-y-4">
+        <div class="grid grid-cols-2 bg-zinc-900 p-1 rounded-lg text-xs font-bold text-center">
+          <button id="tab-login" onclick="switchAuthTab('login')" class="py-2 rounded-md bg-zinc-800 text-white transition">Log In</button>
+          <button id="tab-signup" onclick="switchAuthTab('signup')" class="py-2 rounded-md text-zinc-400 hover:text-white transition">Create Account</button>
+        </div>
+
+        <div id="auth-error" class="hidden bg-red-950/80 border border-red-700 text-red-200 text-xs p-3 rounded-lg"></div>
+
         <div>
-          <label class="text-xs font-bold text-zinc-300 uppercase">Username / Email</label>
-          <input id="login-username" type="text" placeholder="e.g. alex@music.io" class="w-full mt-1 bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#1db954]" />
+          <label class="text-xs font-bold text-zinc-300 uppercase">Email Address</label>
+          <input id="auth-email" type="email" placeholder="you@example.com" class="w-full mt-1 bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#1db954]" />
         </div>
         <div>
-          <label class="text-xs font-bold text-zinc-300 uppercase">Device Name</label>
-          <input id="login-device" type="text" value="Desktop Browser" class="w-full mt-1 bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#1db954]" />
+          <label class="text-xs font-bold text-zinc-300 uppercase">Password</label>
+          <input id="auth-password" type="password" placeholder="At least 6 characters" class="w-full mt-1 bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#1db954]" />
         </div>
-        <button onclick="performLogin()" class="w-full bg-[#1db954] hover:bg-emerald-400 text-black font-bold py-2.5 rounded-full transition mt-2">
-          Log In & Sync State
+        <div>
+          <label class="text-xs font-bold text-zinc-300 uppercase">This Device's Name (For Sync)</label>
+          <input id="auth-device" type="text" value="Desktop Browser" class="w-full mt-1 bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#1db954]" />
+        </div>
+
+        <button id="auth-submit-btn" onclick="handleAuthSubmit()" class="w-full bg-[#1db954] hover:bg-emerald-400 text-black font-bold py-2.5 rounded-full transition">
+          Log In
         </button>
-        <button onclick="performLogout()" id="logout-btn" class="hidden w-full bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-semibold py-2 rounded-full transition">
-          Log Out
+      </div>
+
+      <!-- Logged In View -->
+      <div id="auth-logged-in-view" class="hidden space-y-4">
+        <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 space-y-1">
+          <div class="text-xs text-zinc-400">Signed in as</div>
+          <div id="profile-email" class="text-sm font-bold text-white truncate"></div>
+          <div class="text-xs text-[#1db954] pt-1 flex items-center gap-1.5">
+            <i class="fa-solid fa-check-circle"></i> Real-time Firestore Cloud Sync Active
+          </div>
+        </div>
+        <div>
+          <label class="text-xs font-bold text-zinc-300 uppercase">Current Device Name</label>
+          <div class="flex gap-2 mt-1">
+            <input id="active-device-input" type="text" class="flex-1 bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#1db954]" />
+            <button onclick="saveDeviceName()" class="bg-zinc-800 hover:bg-zinc-700 px-4 rounded-lg text-xs font-bold">Update</button>
+          </div>
+        </div>
+        <button onclick="handleSignOut()" class="w-full bg-red-950/80 hover:bg-red-900 text-red-200 font-bold py-2.5 rounded-full transition">
+          Sign Out
         </button>
       </div>
     </div>
   </div>
 
-  <!-- ADD TO PLAYLIST MODAL -->
-  <div id="playlist-modal" class="hidden fixed inset-0 bg-black/75 flex items-center justify-center z-50">
+  <!-- 2. EDIT SONG & ARTIST MODAL -->
+  <div id="edit-song-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div class="bg-[#181818] border border-zinc-800 rounded-2xl w-full max-w-sm p-6 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between">
+        <h3 class="text-lg font-bold">Rename Song & Artist</h3>
+        <button onclick="closeEditSongModal()" class="text-zinc-400 hover:text-white">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div>
+        <label class="text-xs font-bold text-zinc-400 uppercase">Song Title</label>
+        <input id="edit-song-title" type="text" class="w-full mt-1 bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#1db954]" />
+      </div>
+      <div>
+        <label class="text-xs font-bold text-zinc-400 uppercase">Artist Name</label>
+        <input id="edit-song-artist" type="text" class="w-full mt-1 bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#1db954]" />
+      </div>
+      <div class="flex gap-2 pt-2">
+        <button onclick="closeEditSongModal()" class="flex-1 bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-bold py-2.5 rounded-full">Cancel</button>
+        <button onclick="saveEditedSong()" class="flex-1 bg-[#1db954] hover:bg-emerald-400 text-black text-xs font-bold py-2.5 rounded-full">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. CREATE / RENAME PLAYLIST MODAL -->
+  <div id="playlist-name-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div class="bg-[#181818] border border-zinc-800 rounded-2xl w-full max-w-sm p-6 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between">
+        <h3 id="playlist-modal-heading" class="text-lg font-bold">Create Playlist</h3>
+        <button onclick="closePlaylistNameModal()" class="text-zinc-400 hover:text-white">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div>
+        <label class="text-xs font-bold text-zinc-400 uppercase">Playlist Name</label>
+        <input id="playlist-name-input" type="text" placeholder="e.g. Workout Mix" class="w-full mt-1 bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#1db954]" />
+      </div>
+      <div class="flex gap-2 pt-2">
+        <button onclick="closePlaylistNameModal()" class="flex-1 bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-bold py-2.5 rounded-full">Cancel</button>
+        <button onclick="confirmPlaylistNameModal()" class="flex-1 bg-[#1db954] hover:bg-emerald-400 text-black text-xs font-bold py-2.5 rounded-full">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. ASSIGN SONG TO PLAYLISTS MODAL -->
+  <div id="assign-playlist-modal" class="hidden fixed inset-0 bg-black/75 flex items-center justify-center z-50 p-4">
     <div class="bg-[#181818] border border-zinc-800 rounded-xl w-80 p-5">
       <div class="flex items-center justify-between mb-3">
-        <h4 class="font-bold text-sm">Add Song to Playlist</h4>
-        <button onclick="closePlaylistModal()" class="text-zinc-400 hover:text-white">
+        <h4 class="font-bold text-sm">Add / Remove from Playlists</h4>
+        <button onclick="closeAssignPlaylistModal()" class="text-zinc-400 hover:text-white">
           <i class="fa-solid fa-xmark"></i>
         </button>
       </div>
-      <div id="playlist-modal-options" class="space-y-1.5 max-h-60 overflow-y-auto"></div>
+      <div id="assign-playlist-options" class="space-y-1.5 max-h-60 overflow-y-auto"></div>
     </div>
   </div>
 
-  <!-- APPLICATION SCRIPT -->
-  <script>
+  <!-- 5. ADD MP3 BY URL MODAL -->
+  <div id="url-track-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div class="bg-[#181818] border border-zinc-800 rounded-2xl w-full max-w-sm p-6 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between">
+        <h3 class="text-lg font-bold">Add MP3 by URL</h3>
+        <button onclick="closeUrlTrackModal()" class="text-zinc-400 hover:text-white">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div>
+        <label class="text-xs font-bold text-zinc-400 uppercase">Song Title</label>
+        <input id="url-song-title" type="text" placeholder="Song Title" class="w-full mt-1 bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#1db954]" />
+      </div>
+      <div>
+        <label class="text-xs font-bold text-zinc-400 uppercase">Artist Name</label>
+        <input id="url-song-artist" type="text" placeholder="Artist Name" class="w-full mt-1 bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#1db954]" />
+      </div>
+      <div>
+        <label class="text-xs font-bold text-zinc-400 uppercase">MP3 URL or Relative Path</label>
+        <input id="url-song-src" type="text" placeholder="https://.../song.mp3 or ./song.mp3" class="w-full mt-1 bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#1db954]" />
+      </div>
+      <div class="flex gap-2 pt-2">
+        <button onclick="closeUrlTrackModal()" class="flex-1 bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-bold py-2.5 rounded-full">Cancel</button>
+        <button onclick="addTrackFromUrl()" class="flex-1 bg-[#1db954] hover:bg-emerald-400 text-black text-xs font-bold py-2.5 rounded-full">Add Song</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================================= -->
+  <!-- FIREBASE & APPLICATION LOGIC -->
+  <!-- ======================================================================= -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/13.3.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/13.3.0/firebase-analytics.js";
+    import {
+      getAuth,
+      createUserWithEmailAndPassword,
+      signInWithEmailAndPassword,
+      signOut,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/13.3.0/firebase-auth.js";
+    import {
+      getFirestore,
+      doc,
+      setDoc,
+      getDoc,
+      onSnapshot
+    } from "https://www.gstatic.com/firebasejs/13.3.0/firebase-firestore.js";
+    import {
+      getStorage,
+      ref as storageRef,
+      uploadBytes,
+      getDownloadURL
+    } from "https://www.gstatic.com/firebasejs/13.3.0/firebase-storage.js";
+
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyDFW_xA5QInCCHG0vupzOLoBxcjZHA9_8E",
+      authDomain: "pulsestreammp3.firebaseapp.com",
+      databaseURL: "https://pulsestreammp3-default-rtdb.firebaseio.com",
+      projectId: "pulsestreammp3",
+      storageBucket: "pulsestreammp3.firebasestorage.app",
+      messagingSenderId: "965245532164",
+      appId: "1:965245532164:web:7a2f3c58f65dd2e9071d51",
+      measurementId: "G-HRM65R5HEL"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    let analytics = null;
+    try { analytics = getAnalytics(app); } catch (e) {}
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const storage = getStorage(app);
+
     // =========================================================================
-    // 1. PROCEDURAL AUDIO GENERATOR (Ensures immediate playback without broken URLs)
-    // =========================================================================
-    function createDemoWavUrl(baseFreq, tempoBpm, durationSec = 18) {
-      const sampleRate = 22050;
-      const numSamples = sampleRate * durationSec;
-      const buffer = new ArrayBuffer(44 + numSamples * 2);
-      const view = new DataView(buffer);
-
-      const writeStr = (offset, str) => {
-        for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i));
-      };
-
-      writeStr(0, 'RIFF');
-      view.setUint32(4, 36 + numSamples * 2, true);
-      writeStr(8, 'WAVE');
-      writeStr(12, 'fmt ');
-      view.setUint32(16, 16, true);
-      view.setUint16(20, 1, true);
-      view.setUint16(22, 1, true);
-      view.setUint32(24, sampleRate, true);
-      view.setUint32(28, sampleRate * 2, true);
-      view.setUint16(32, 2, true);
-      view.setUint16(34, 16, true);
-      writeStr(36, 'data');
-      view.setUint32(40, numSamples * 2, true);
-
-      const chordRatios = [1, 1.25, 1.5, 1.875];
-      const beatLength = 60 / tempoBpm;
-
-      for (let i = 0; i < numSamples; i++) {
-        const t = i / sampleRate;
-        const beatIndex = Math.floor(t / beatLength);
-        const noteFreq = baseFreq * chordRatios[beatIndex % chordRatios.length];
-        const env = Math.exp(-3 * ((t % beatLength) / beatLength));
-        const wave = Math.sin(2 * Math.PI * noteFreq * t) * 0.6 + Math.sin(2 * Math.PI * (baseFreq / 2) * t) * 0.3;
-        const sample = Math.max(-1, Math.min(1, wave * env));
-        view.setInt16(44 + i * 2, sample * 16000, true);
-      }
-
-      return URL.createObjectURL(new Blob([buffer], { type: 'audio/wav' }));
-    }
-
-    // =========================================================================
-    // 2. APPLICATION STATE & INITIAL LIBRARY
+    // STATE (NO DEFAULT DEMO TRACKS)
     // =========================================================================
     const audio = new Audio();
-    const syncChannel = new BroadcastChannel('pulsestream_cloud_sync');
+    let unsubscribeFirestore = null;
+    let isApplyingCloudUpdate = false;
 
-    let state = {
+    const state = {
       user: null,
-      deviceName: 'Desktop Browser',
+      deviceId: localStorage.getItem('ps_device_id') || ('dev_' + Math.random().toString(36).slice(2, 9)),
+      deviceName: localStorage.getItem('ps_device_name') || detectDeviceName(),
+      authMode: 'login',
       currentView: 'all', // 'all', 'liked', 'analytics', or playlist ID
-      currentIndex: 0,
+      currentTrackId: null,
       isPlaying: false,
       isShuffle: false,
       loopMode: 'off', // 'off' | 'all' | 'one'
       volume: 0.8,
       isMuted: false,
+      editingTrackId: null,
+      playlistModalMode: 'create', // 'create' | 'rename'
       songToAssign: null,
-      playlists: [
-        { id: 'pl_1', name: 'Late Night Coding', trackIds: ['t1', 't3', 't5'] },
-        { id: 'pl_2', name: 'Gym Synthwave', trackIds: ['t2', 't4'] }
-      ],
-      tracks: [
-        { id: 't1', title: 'Midnight Neon', artist: 'Kavinsky Pulse', plays: 14, liked: true, color: 'from-purple-600 to-indigo-900', src: createDemoWavUrl(220, 110, 20) },
-        { id: 't2', title: 'Solar Horizon', artist: 'Aether & Echo', plays: 22, liked: true, color: 'from-amber-500 to-red-800', src: createDemoWavUrl(261.63, 128, 18) },
-        { id: 't3', title: 'Cybernetic Rain', artist: 'Kavinsky Pulse', plays: 9, liked: false, color: 'from-cyan-500 to-blue-900', src: createDemoWavUrl(196, 95, 22) },
-        { id: 't4', title: 'Velvet Gravity', artist: 'Nova Drift', plays: 18, liked: false, color: 'from-emerald-500 to-teal-900', src: createDemoWavUrl(329.63, 120, 16) },
-        { id: 't5', title: 'Starlight Protocol', artist: 'Aether & Echo', plays: 11, liked: true, color: 'from-pink-500 to-rose-900', src: createDemoWavUrl(293.66, 105, 19) }
-      ]
+      draggedIndex: null,
+      playlists: [],
+      tracks: [] // Starts completely empty with no demo music
     };
 
+    localStorage.setItem('ps_device_id', state.deviceId);
     let pendingRemoteSession = null;
 
+    function detectDeviceName() {
+      const ua = navigator.userAgent;
+      if (/iPhone|iPad|iPod/i.test(ua)) return 'iPhone / iOS Web';
+      if (/Android/i.test(ua)) return 'Android Web';
+      if (/Mac/i.test(ua)) return 'Mac Browser';
+      if (/Win/i.test(ua)) return 'Windows PC';
+      return 'Web Player';
+    }
+
     // =========================================================================
-    // 3. INITIALIZATION & AUDIO EVENT LISTENERS
+    // INITIALIZE & LISTENERS
     // =========================================================================
     window.addEventListener('DOMContentLoaded', () => {
-      loadSavedUserSession();
+      loadLocalBackup();
       audio.volume = state.volume;
-      loadTrack(state.currentIndex, false);
+      document.getElementById('device-label').textContent = state.deviceName;
+      document.getElementById('auth-device').value = state.deviceName;
       renderAll();
 
-      // Update seek bar as song plays
       audio.addEventListener('timeupdate', () => {
         if (!isNaN(audio.duration) && audio.duration > 0) {
           const progress = (audio.currentTime / audio.duration) * 100;
@@ -421,38 +523,637 @@
         }
       });
 
-      // Handle Song End (Loop One, Loop Playlist, Shuffle, or Stop)
       audio.addEventListener('ended', () => {
         if (state.loopMode === 'one') {
           audio.currentTime = 0;
-          incrementPlayCount(state.tracks[state.currentIndex].id);
+          if (state.currentTrackId) incrementPlayCount(state.currentTrackId);
           audio.play();
         } else {
           nextSong(false);
         }
       });
 
-      // Listen for Cross-Tab / Cross-Device Broadcasts
-      syncChannel.onmessage = (event) => {
-        const data = event.data;
-        if (state.user && data.user === state.user && data.deviceName !== state.deviceName) {
-          pendingRemoteSession = data;
-          const banner = document.getElementById('remote-sync-banner');
-          const bannerText = document.getElementById('remote-sync-text');
-          const remoteTrack = state.tracks.find(t => t.id === data.trackId) || state.tracks[0];
-          bannerText.textContent = `${data.deviceName} is playing "${remoteTrack.title}" at ${formatTime(data.currentTime)}`;
-          banner.classList.remove('hidden');
+      // Listen for Firebase Authentication state changes
+      onAuthStateChanged(auth, async (user) => {
+        state.user = user;
+        updateAuthHeaderUI();
+        if (user) {
+          await subscribeToUserCloudData(user.uid);
+        } else {
+          if (unsubscribeFirestore) {
+            unsubscribeFirestore();
+            unsubscribeFirestore = null;
+          }
         }
-      };
+      });
     });
 
     // =========================================================================
-    // 4. PLAYBACK & TRANSPORT CONTROLS
+    // REAL FIREBASE AUTHENTICATION
     // =========================================================================
-    function loadTrack(index, autoPlay = true) {
-      if (index < 0 || index >= state.tracks.length) return;
-      state.currentIndex = index;
-      const track = state.tracks[index];
+    window.openAuthModal = () => {
+      document.getElementById('auth-error').classList.add('hidden');
+      if (state.user) {
+        document.getElementById('auth-logged-out-view').classList.add('hidden');
+        document.getElementById('auth-logged-in-view').classList.remove('hidden');
+        document.getElementById('profile-email').textContent = state.user.email;
+        document.getElementById('active-device-input').value = state.deviceName;
+      } else {
+        document.getElementById('auth-logged-out-view').classList.remove('hidden');
+        document.getElementById('auth-logged-in-view').classList.add('hidden');
+      }
+      document.getElementById('auth-modal').classList.remove('hidden');
+    };
+
+    window.closeAuthModal = () => {
+      document.getElementById('auth-modal').classList.add('hidden');
+    };
+
+    window.switchAuthTab = (mode) => {
+      state.authMode = mode;
+      const loginTab = document.getElementById('tab-login');
+      const signupTab = document.getElementById('tab-signup');
+      const submitBtn = document.getElementById('auth-submit-btn');
+      document.getElementById('auth-error').classList.add('hidden');
+
+      if (mode === 'login') {
+        loginTab.className = 'py-2 rounded-md bg-zinc-800 text-white transition';
+        signupTab.className = 'py-2 rounded-md text-zinc-400 hover:text-white transition';
+        submitBtn.textContent = 'Log In';
+      } else {
+        signupTab.className = 'py-2 rounded-md bg-zinc-800 text-white transition';
+        loginTab.className = 'py-2 rounded-md text-zinc-400 hover:text-white transition';
+        submitBtn.textContent = 'Create Account';
+      }
+    };
+
+    window.handleAuthSubmit = async () => {
+      const email = document.getElementById('auth-email').value.trim();
+      const password = document.getElementById('auth-password').value;
+      const device = document.getElementById('auth-device').value.trim() || 'Web Player';
+      const errorBox = document.getElementById('auth-error');
+      const submitBtn = document.getElementById('auth-submit-btn');
+
+      if (!email || !password) {
+        errorBox.textContent = 'Please enter both your email address and password.';
+        errorBox.classList.remove('hidden');
+        return;
+      }
+
+      state.deviceName = device;
+      localStorage.setItem('ps_device_name', device);
+      document.getElementById('device-label').textContent = device;
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Please wait...';
+      errorBox.classList.add('hidden');
+
+      try {
+        if (state.authMode === 'signup') {
+          await createUserWithEmailAndPassword(auth, email, password);
+        } else {
+          await signInWithEmailAndPassword(auth, email, password);
+        }
+        closeAuthModal();
+      } catch (err) {
+        let msg = err.message;
+        if (err.code === 'auth/operation-not-allowed') {
+          msg = 'Enable Email/Password sign-in in your Firebase Console -> Authentication -> Sign-in method.';
+        } else if (err.code === 'auth/invalid-credential' || err.code === 'auth/wrong-password') {
+          msg = 'Incorrect email or password.';
+        } else if (err.code === 'auth/email-already-in-use') {
+          msg = 'An account with this email already exists. Switch to Log In.';
+        }
+        errorBox.textContent = msg;
+        errorBox.classList.remove('hidden');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = state.authMode === 'login' ? 'Log In' : 'Create Account';
+      }
+    };
+
+    window.saveDeviceName = () => {
+      const newName = document.getElementById('active-device-input').value.trim();
+      if (newName) {
+        state.deviceName = newName;
+        localStorage.setItem('ps_device_name', newName);
+        document.getElementById('device-label').textContent = newName;
+        syncStateToCloud();
+        closeAuthModal();
+      }
+    };
+
+    window.handleSignOut = async () => {
+      await signOut(auth);
+      closeAuthModal();
+    };
+
+    function updateAuthHeaderUI() {
+      const authLabel = document.getElementById('auth-label');
+      const cloudStatus = document.getElementById('cloud-status');
+
+      if (state.user) {
+        authLabel.textContent = state.user.email.split('@')[0];
+        cloudStatus.innerHTML = `<i class="fa-solid fa-circle text-[8px] text-[#1db954]"></i> Cloud Synced`;
+      } else {
+        authLabel.textContent = 'Log In / Sign Up';
+        cloudStatus.innerHTML = `<i class="fa-solid fa-circle text-[8px] text-zinc-500"></i> Local Mode`;
+      }
+    }
+
+    // =========================================================================
+    // CLOUD FIRESTORE REAL-TIME SYNC
+    // =========================================================================
+    async function subscribeToUserCloudData(uid) {
+      if (unsubscribeFirestore) unsubscribeFirestore();
+      const userDocRef = doc(db, 'user_sessions', uid);
+
+      try {
+        const initialSnap = await getDoc(userDocRef);
+        if (!initialSnap.exists() && (state.tracks.length > 0 || state.playlists.length > 0)) {
+          await syncStateToCloud();
+        }
+      } catch (e) {
+        console.warn('Firestore read warning:', e);
+      }
+
+      unsubscribeFirestore = onSnapshot(userDocRef, (snapshot) => {
+        if (!snapshot.exists()) return;
+        const data = snapshot.data();
+
+        isApplyingCloudUpdate = true;
+
+        // Merge cloud tracks (preserve local blob URLs if track is local-only)
+        if (Array.isArray(data.tracks)) {
+          const localMap = {};
+          state.tracks.forEach(t => { if (t.isLocalBlob) localMap[t.id] = t.src; });
+          state.tracks = data.tracks.map(t => ({
+            ...t,
+            src: localMap[t.id] || t.src
+          }));
+        }
+
+        if (Array.isArray(data.playlists)) {
+          state.playlists = data.playlists;
+        }
+
+        state.isShuffle = !!data.isShuffle;
+        state.loopMode = data.loopMode || 'off';
+        updateTransportBadgesUI();
+        renderAll();
+
+        // Check if update came from another device
+        if (data.deviceId && data.deviceId !== state.deviceId && data.currentTrackId) {
+          const remoteTrack = state.tracks.find(t => t.id === data.currentTrackId);
+          if (remoteTrack) {
+            pendingRemoteSession = data;
+            const banner = document.getElementById('remote-sync-banner');
+            const bannerText = document.getElementById('remote-sync-text');
+            bannerText.textContent = `${data.deviceName || 'Another device'} is on "${remoteTrack.title}" (${formatTime(data.currentTime || 0)})`;
+            banner.classList.remove('hidden');
+          }
+        } else if (!state.currentTrackId && data.currentTrackId) {
+          const idx = state.tracks.findIndex(t => t.id === data.currentTrackId);
+          if (idx !== -1) {
+            loadTrackById(data.currentTrackId, false);
+            audio.currentTime = data.currentTime || 0;
+          }
+        }
+
+        isApplyingCloudUpdate = false;
+      });
+    }
+
+    async function syncStateToCloud() {
+      saveLocalBackup();
+      if (!state.user || isApplyingCloudUpdate) return;
+
+      const sanitizedTracks = state.tracks.map(t => ({
+        id: t.id,
+        title: t.title,
+        artist: t.artist,
+        plays: t.plays || 0,
+        liked: !!t.liked,
+        color: t.color || 'from-emerald-500 to-teal-900',
+        src: t.isLocalBlob ? '' : t.src,
+        isLocalBlob: !!t.isLocalBlob
+      }));
+
+      const payload = {
+        email: state.user.email,
+        deviceId: state.deviceId,
+        deviceName: state.deviceName,
+        currentTrackId: state.currentTrackId || null,
+        currentTime: audio.currentTime || 0,
+        isShuffle: state.isShuffle,
+        loopMode: state.loopMode,
+        playlists: state.playlists,
+        tracks: sanitizedTracks,
+        updatedAt: Date.now()
+      };
+
+      try {
+        await setDoc(doc(db, 'user_sessions', state.user.uid), payload, { merge: true });
+      } catch (err) {
+        console.warn('Cloud sync error (check Firestore Rules):', err);
+      }
+    }
+
+    window.applyRemoteSession = () => {
+      if (!pendingRemoteSession) return;
+      loadTrackById(pendingRemoteSession.currentTrackId, true);
+      audio.currentTime = pendingRemoteSession.currentTime || 0;
+      document.getElementById('remote-sync-banner').classList.add('hidden');
+    };
+
+    function saveLocalBackup() {
+      const backup = {
+        playlists: state.playlists,
+        tracks: state.tracks.filter(t => !t.isLocalBlob),
+        isShuffle: state.isShuffle,
+        loopMode: state.loopMode
+      };
+      localStorage.setItem('ps_local_backup', JSON.stringify(backup));
+    }
+
+    function loadLocalBackup() {
+      const raw = localStorage.getItem('ps_local_backup');
+      if (!raw) return;
+      try {
+        const parsed = JSON.parse(raw);
+        state.playlists = parsed.playlists || [];
+        state.tracks = parsed.tracks || [];
+        state.isShuffle = !!parsed.isShuffle;
+        state.loopMode = parsed.loopMode || 'off';
+        updateTransportBadgesUI();
+      } catch (e) {}
+    }
+
+    // =========================================================================
+    // UPLOAD MP3 FILES (FIREBASE CLOUD STORAGE + FALLBACK) & ADD VIA URL
+    // =========================================================================
+    window.handleFileUpload = async (event) => {
+      const files = Array.from(event.target.files);
+      if (!files.length) return;
+
+      const labelEl = document.getElementById('upload-btn-label');
+      const gradients = [
+        'from-emerald-500 to-teal-900',
+        'from-purple-500 to-indigo-900',
+        'from-rose-500 to-pink-900',
+        'from-blue-500 to-cyan-900',
+        'from-amber-500 to-red-900'
+      ];
+
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const cleanName = file.name.replace(/\.[^/.]+$/, '');
+        const parts = cleanName.split(' - ');
+        const artist = parts.length > 1 ? parts[0].trim() : 'Unknown Artist';
+        const title = parts.length > 1 ? parts.slice(1).join(' - ').trim() : cleanName;
+        const trackId = 'trk_' + Date.now() + '_' + i;
+
+        let trackUrl = URL.createObjectURL(file);
+        let isLocalBlob = true;
+
+        // If logged in, try uploading MP3 to Firebase Storage for cross-device streaming
+        if (state.user) {
+          try {
+            labelEl.textContent = `Uploading ${i + 1}/${files.length}...`;
+            const fileRef = storageRef(storage, `users/${state.user.uid}/tracks/${trackId}_${file.name}`);
+            await uploadBytes(fileRef, file);
+            trackUrl = await getDownloadURL(fileRef);
+            isLocalBlob = false;
+          } catch (storageErr) {
+            console.warn('Firebase Storage not enabled yet; using local browser playback.', storageErr);
+          }
+        }
+
+        const newTrack = {
+          id: trackId,
+          title,
+          artist,
+          plays: 0,
+          liked: false,
+          color: gradients[(state.tracks.length + i) % gradients.length],
+          src: trackUrl,
+          isLocalBlob
+        };
+
+        state.tracks.push(newTrack);
+
+        // If user is currently inside a custom playlist, also add it to that playlist
+        if (state.currentView.startsWith('pl_')) {
+          const pl = state.playlists.find(p => p.id === state.currentView);
+          if (pl) pl.trackIds.push(newTrack.id);
+        }
+      }
+
+      labelEl.textContent = 'Upload MP3 Files';
+      event.target.value = '';
+      renderAll();
+      syncStateToCloud();
+
+      if (!state.currentTrackId && state.tracks.length > 0) {
+        loadTrackById(state.tracks[0].id, true);
+      }
+    };
+
+    window.openUrlTrackModal = () => {
+      document.getElementById('url-song-title').value = '';
+      document.getElementById('url-song-artist').value = '';
+      document.getElementById('url-song-src').value = '';
+      document.getElementById('url-track-modal').classList.remove('hidden');
+    };
+
+    window.closeUrlTrackModal = () => {
+      document.getElementById('url-track-modal').classList.add('hidden');
+    };
+
+    window.addTrackFromUrl = () => {
+      const title = document.getElementById('url-song-title').value.trim();
+      const artist = document.getElementById('url-song-artist').value.trim() || 'Unknown Artist';
+      const src = document.getElementById('url-song-src').value.trim();
+
+      if (!title || !src) return alert('Please enter both a Song Title and an MP3 URL.');
+
+      const newTrack = {
+        id: 'trk_' + Date.now(),
+        title,
+        artist,
+        plays: 0,
+        liked: false,
+        color: 'from-cyan-500 to-blue-900',
+        src,
+        isLocalBlob: false
+      };
+
+      state.tracks.push(newTrack);
+      if (state.currentView.startsWith('pl_')) {
+        const pl = state.playlists.find(p => p.id === state.currentView);
+        if (pl) pl.trackIds.push(newTrack.id);
+      }
+
+      closeUrlTrackModal();
+      renderAll();
+      syncStateToCloud();
+    };
+
+    // =========================================================================
+    // RENAME SONG & ARTIST / DELETE SONG
+    // =========================================================================
+    window.openEditSongModal = (trackId, event) => {
+      if (event) event.stopPropagation();
+      const track = state.tracks.find(t => t.id === trackId);
+      if (!track) return;
+      state.editingTrackId = trackId;
+      document.getElementById('edit-song-title').value = track.title;
+      document.getElementById('edit-song-artist').value = track.artist;
+      document.getElementById('edit-song-modal').classList.remove('hidden');
+    };
+
+    window.closeEditSongModal = () => {
+      document.getElementById('edit-song-modal').classList.add('hidden');
+      state.editingTrackId = null;
+    };
+
+    window.saveEditedSong = () => {
+      const track = state.tracks.find(t => t.id === state.editingTrackId);
+      if (!track) return;
+
+      const newTitle = document.getElementById('edit-song-title').value.trim();
+      const newArtist = document.getElementById('edit-song-artist').value.trim();
+
+      if (newTitle) track.title = newTitle;
+      if (newArtist) track.artist = newArtist;
+
+      if (state.currentTrackId === track.id) {
+        document.getElementById('player-title').textContent = track.title;
+        document.getElementById('player-artist').textContent = track.artist;
+      }
+
+      closeEditSongModal();
+      renderAll();
+      syncStateToCloud();
+    };
+
+    window.deleteOrRemoveSong = (trackId, event) => {
+      if (event) event.stopPropagation();
+
+      // If viewing a custom playlist, remove it from the playlist sequence
+      if (state.currentView.startsWith('pl_')) {
+        const pl = state.playlists.find(p => p.id === state.currentView);
+        if (pl) {
+          pl.trackIds = pl.trackIds.filter(id => id !== trackId);
+          renderAll();
+          syncStateToCloud();
+        }
+        return;
+      }
+
+      // Otherwise delete from library completely
+      state.tracks = state.tracks.filter(t => t.id !== trackId);
+      state.playlists.forEach(pl => {
+        pl.trackIds = pl.trackIds.filter(id => id !== trackId);
+      });
+
+      if (state.currentTrackId === trackId) {
+        audio.pause();
+        state.isPlaying = false;
+        state.currentTrackId = null;
+        document.getElementById('player-title').textContent = 'No song playing';
+        document.getElementById('player-artist').textContent = 'Upload or select a track';
+        updatePlayButtonUI();
+      }
+
+      renderAll();
+      syncStateToCloud();
+    };
+
+    // =========================================================================
+    // REORDER SEQUENCE (UP/DOWN BUTTONS & DRAG-AND-DROP)
+    // =========================================================================
+    window.moveSongInSequence = (index, direction, event) => {
+      if (event) event.stopPropagation();
+      const targetIndex = index + direction;
+
+      if (state.currentView.startsWith('pl_')) {
+        const pl = state.playlists.find(p => p.id === state.currentView);
+        if (!pl || targetIndex < 0 || targetIndex >= pl.trackIds.length) return;
+        const temp = pl.trackIds[index];
+        pl.trackIds[index] = pl.trackIds[targetIndex];
+        pl.trackIds[targetIndex] = temp;
+      } else {
+        if (targetIndex < 0 || targetIndex >= state.tracks.length) return;
+        const temp = state.tracks[index];
+        state.tracks[index] = state.tracks[targetIndex];
+        state.tracks[targetIndex] = temp;
+      }
+
+      renderAll();
+      syncStateToCloud();
+    };
+
+    window.handleDragStart = (index) => {
+      state.draggedIndex = index;
+    };
+
+    window.handleDragOver = (event) => {
+      event.preventDefault();
+      event.currentTarget.classList.add('drag-over');
+    };
+
+    window.handleDragLeave = (event) => {
+      event.currentTarget.classList.remove('drag-over');
+    };
+
+    window.handleDrop = (targetIndex, event) => {
+      event.preventDefault();
+      event.currentTarget.classList.remove('drag-over');
+      const fromIndex = state.draggedIndex;
+      state.draggedIndex = null;
+
+      if (fromIndex === null || fromIndex === targetIndex) return;
+
+      if (state.currentView.startsWith('pl_')) {
+        const pl = state.playlists.find(p => p.id === state.currentView);
+        if (!pl) return;
+        const [movedId] = pl.trackIds.splice(fromIndex, 1);
+        pl.trackIds.splice(targetIndex, 0, movedId);
+      } else if (state.currentView === 'all') {
+        const [movedTrack] = state.tracks.splice(fromIndex, 1);
+        state.tracks.splice(targetIndex, 0, movedTrack);
+      }
+
+      renderAll();
+      syncStateToCloud();
+    };
+
+    // =========================================================================
+    // ADD, RENAME & DELETE PLAYLISTS
+    // =========================================================================
+    window.openCreatePlaylistModal = () => {
+      state.playlistModalMode = 'create';
+      document.getElementById('playlist-modal-heading').textContent = 'Create New Playlist';
+      document.getElementById('playlist-name-input').value = '';
+      document.getElementById('playlist-name-modal').classList.remove('hidden');
+    };
+
+    window.renameCurrentPlaylist = () => {
+      const pl = state.playlists.find(p => p.id === state.currentView);
+      if (!pl) return;
+      state.playlistModalMode = 'rename';
+      document.getElementById('playlist-modal-heading').textContent = 'Rename Playlist';
+      document.getElementById('playlist-name-input').value = pl.name;
+      document.getElementById('playlist-name-modal').classList.remove('hidden');
+    };
+
+    window.closePlaylistNameModal = () => {
+      document.getElementById('playlist-name-modal').classList.add('hidden');
+    };
+
+    window.confirmPlaylistNameModal = () => {
+      const name = document.getElementById('playlist-name-input').value.trim();
+      if (!name) return;
+
+      if (state.playlistModalMode === 'create') {
+        const newPl = {
+          id: 'pl_' + Date.now(),
+          name,
+          trackIds: []
+        };
+        state.playlists.push(newPl);
+        state.currentView = newPl.id;
+      } else {
+        const pl = state.playlists.find(p => p.id === state.currentView);
+        if (pl) pl.name = name;
+      }
+
+      closePlaylistNameModal();
+      renderAll();
+      syncStateToCloud();
+    };
+
+    window.deletePlaylistById = (playlistId, event) => {
+      if (event) event.stopPropagation();
+      state.playlists = state.playlists.filter(p => p.id !== playlistId);
+      if (state.currentView === playlistId) {
+        state.currentView = 'all';
+      }
+      renderAll();
+      syncStateToCloud();
+    };
+
+    window.deleteCurrentPlaylist = () => {
+      if (state.currentView.startsWith('pl_')) {
+        deletePlaylistById(state.currentView);
+      }
+    };
+
+    window.openAssignPlaylistModal = (trackId, event) => {
+      if (event) event.stopPropagation();
+      state.songToAssign = trackId;
+      const container = document.getElementById('assign-playlist-options');
+
+      if (state.playlists.length === 0) {
+        container.innerHTML = `
+          <div class="text-xs text-zinc-400 py-3 text-center">
+            No playlists created yet. Click the <b>+</b> button in the sidebar to create one.
+          </div>
+        `;
+      } else {
+        container.innerHTML = state.playlists.map(pl => {
+          const alreadyIn = pl.trackIds.includes(trackId);
+          return `
+            <button onclick="toggleTrackInPlaylist('${pl.id}')" class="w-full flex items-center justify-between px-3 py-2 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-sm transition">
+              <span class="truncate">${pl.name}</span>
+              <span class="text-xs ${alreadyIn ? 'text-[#1db954]' : 'text-zinc-500'}">
+                ${alreadyIn ? '<i class="fa-solid fa-check"></i> Added' : '<i class="fa-solid fa-plus"></i> Add'}
+              </span>
+            </button>
+          `;
+        }).join('');
+      }
+      document.getElementById('assign-playlist-modal').classList.remove('hidden');
+    };
+
+    window.closeAssignPlaylistModal = () => {
+      document.getElementById('assign-playlist-modal').classList.add('hidden');
+      state.songToAssign = null;
+    };
+
+    window.toggleTrackInPlaylist = (playlistId) => {
+      const pl = state.playlists.find(p => p.id === playlistId);
+      if (!pl || !state.songToAssign) return;
+      const idx = pl.trackIds.indexOf(state.songToAssign);
+      if (idx === -1) {
+        pl.trackIds.push(state.songToAssign);
+      } else {
+        pl.trackIds.splice(idx, 1);
+      }
+      closeAssignPlaylistModal();
+      renderAll();
+      syncStateToCloud();
+    };
+
+    // =========================================================================
+    // PLAYBACK & TRANSPORT CONTROLS
+    // =========================================================================
+    function getActiveQueue() {
+      const visible = getFilteredTracks();
+      return visible.length > 0 ? visible : state.tracks;
+    }
+
+    function loadTrackById(trackId, autoPlay = true) {
+      const track = state.tracks.find(t => t.id === trackId);
+      if (!track) return;
+
+      if (!track.src) {
+        alert('This track was uploaded as a local file on another device. Upload it with Firebase Storage enabled or re-select the MP3 file.');
+        return;
+      }
+
+      state.currentTrackId = track.id;
       audio.src = track.src;
       audio.load();
 
@@ -464,7 +1165,7 @@
 
       if (autoPlay) {
         incrementPlayCount(track.id);
-        audio.play();
+        audio.play().catch(() => {});
         state.isPlaying = true;
       }
       updatePlayButtonUI();
@@ -472,17 +1173,23 @@
       syncStateToCloud();
     }
 
-    function togglePlayPause() {
-      if (!audio.src) {
-        loadTrack(0, true);
+    window.playById = (trackId) => {
+      if (state.currentTrackId === trackId) {
+        togglePlayPause();
+      } else {
+        loadTrackById(trackId, true);
+      }
+    };
+
+    window.togglePlayPause = () => {
+      if (!state.currentTrackId) {
+        const queue = getActiveQueue();
+        if (queue.length > 0) loadTrackById(queue[0].id, true);
         return;
       }
       if (audio.paused) {
-        // Count play if starting from 0
-        if (audio.currentTime < 1) {
-          incrementPlayCount(state.tracks[state.currentIndex].id);
-        }
-        audio.play();
+        if (audio.currentTime < 1) incrementPlayCount(state.currentTrackId);
+        audio.play().catch(() => {});
         state.isPlaying = true;
       } else {
         audio.pause();
@@ -491,94 +1198,100 @@
       updatePlayButtonUI();
       renderMainContent();
       syncStateToCloud();
-    }
+    };
 
-    function nextSong(manualClick = true) {
-      const visibleTracks = getFilteredTracks();
-      const currentList = visibleTracks.length > 0 ? visibleTracks : state.tracks;
+    window.nextSong = (manualClick = true) => {
+      const queue = getActiveQueue();
+      if (queue.length === 0) return;
 
-      if (state.isShuffle && currentList.length > 1) {
+      if (state.isShuffle && queue.length > 1) {
         let randomTrack;
         do {
-          randomTrack = currentList[Math.floor(Math.random() * currentList.length)];
-        } while (randomTrack.id === state.tracks[state.currentIndex].id);
-        const globalIdx = state.tracks.findIndex(t => t.id === randomTrack.id);
-        loadTrack(globalIdx, true);
+          randomTrack = queue[Math.floor(Math.random() * queue.length)];
+        } while (randomTrack.id === state.currentTrackId);
+        loadTrackById(randomTrack.id, true);
         return;
       }
 
-      const nextIndex = state.currentIndex + 1;
-      if (nextIndex < state.tracks.length) {
-        loadTrack(nextIndex, true);
+      const currentIdx = queue.findIndex(t => t.id === state.currentTrackId);
+      const nextIdx = currentIdx + 1;
+
+      if (nextIdx < queue.length) {
+        loadTrackById(queue[nextIdx].id, true);
       } else if (state.loopMode === 'all' || manualClick) {
-        loadTrack(0, true);
+        loadTrackById(queue[0].id, true);
       } else {
         state.isPlaying = false;
         updatePlayButtonUI();
       }
-    }
+    };
 
-    function prevSong() {
+    window.prevSong = () => {
       if (audio.currentTime > 3) {
         audio.currentTime = 0;
         return;
       }
-      const prevIndex = (state.currentIndex - 1 + state.tracks.length) % state.tracks.length;
-      loadTrack(prevIndex, true);
-    }
+      const queue = getActiveQueue();
+      if (queue.length === 0) return;
+      const currentIdx = queue.findIndex(t => t.id === state.currentTrackId);
+      const prevIdx = (currentIdx - 1 + queue.length) % queue.length;
+      loadTrackById(queue[prevIdx].id, true);
+    };
 
-    function toggleShuffle() {
+    window.toggleShuffle = () => {
       state.isShuffle = !state.isShuffle;
-      const btn = document.getElementById('btn-shuffle');
-      btn.className = state.isShuffle
-        ? 'text-[#1db954] text-sm transition relative'
-        : 'text-zinc-400 hover:text-white text-sm transition relative';
+      updateTransportBadgesUI();
       syncStateToCloud();
-    }
+    };
 
-    function cycleLoopMode() {
+    window.cycleLoopMode = () => {
       const modes = ['off', 'all', 'one'];
       state.loopMode = modes[(modes.indexOf(state.loopMode) + 1) % modes.length];
+      updateTransportBadgesUI();
+      syncStateToCloud();
+    };
 
-      const btn = document.getElementById('btn-loop');
+    function updateTransportBadgesUI() {
+      const shuffleBtn = document.getElementById('btn-shuffle');
+      shuffleBtn.className = state.isShuffle
+        ? 'text-[#1db954] text-sm transition relative'
+        : 'text-zinc-400 hover:text-white text-sm transition relative';
+
+      const loopBtn = document.getElementById('btn-loop');
       const badge = document.getElementById('loop-badge');
 
       if (state.loopMode === 'off') {
-        btn.className = 'text-zinc-400 hover:text-white text-sm transition relative';
-        btn.title = 'Loop Off';
+        loopBtn.className = 'text-zinc-400 hover:text-white text-sm transition relative';
         badge.classList.add('hidden');
       } else if (state.loopMode === 'all') {
-        btn.className = 'text-[#1db954] text-sm transition relative';
-        btn.title = 'Loop Playlist';
+        loopBtn.className = 'text-[#1db954] text-sm transition relative';
         badge.classList.add('hidden');
       } else {
-        btn.className = 'text-[#1db954] text-sm transition relative';
-        btn.title = 'Loop Current Song';
+        loopBtn.className = 'text-[#1db954] text-sm transition relative';
         badge.classList.remove('hidden');
       }
-      syncStateToCloud();
     }
 
-    function seekAudio(percent) {
+    window.seekAudio = (percent) => {
       if (!isNaN(audio.duration)) {
         audio.currentTime = (percent / 100) * audio.duration;
         syncStateToCloud();
       }
-    }
+    };
 
-    function changeVolume(val) {
+    window.changeVolume = (val) => {
       state.volume = val / 100;
       audio.volume = state.volume;
       state.isMuted = state.volume === 0;
       updateVolumeIcon();
-    }
+    };
 
-    function toggleMute() {
+    window.toggleMute = () => {
       state.isMuted = !state.isMuted;
       audio.volume = state.isMuted ? 0 : state.volume;
       document.getElementById('volume-bar').value = state.isMuted ? 0 : state.volume * 100;
       updateVolumeIcon();
-    }
+    };
 
     function updateVolumeIcon() {
       const btn = document.getElementById('btn-mute');
@@ -592,302 +1305,68 @@
     }
 
     // =========================================================================
-    // 5. ANALYTICS (TOP SONGS & TOP ARTISTS) & PLAYLISTS
+    // ANALYTICS & RENDERING
     // =========================================================================
     function incrementPlayCount(trackId) {
       const track = state.tracks.find(t => t.id === trackId);
       if (track) {
-        track.plays += 1;
+        track.plays = (track.plays || 0) + 1;
         renderAnalytics();
         syncStateToCloud();
       }
     }
 
-    function renderAnalytics() {
-      // 1. Top Listened Songs (Sorted descending by plays)
-      const topSongs = [...state.tracks].sort((a, b) => b.plays - a.plays).slice(0, 5);
-      const topSongsEl = document.getElementById('top-songs-list');
-      topSongsEl.innerHTML = topSongs.map((song, idx) => `
-        <div onclick="playById('${song.id}')" class="flex items-center justify-between p-2 rounded-lg hover:bg-zinc-800/70 cursor-pointer transition">
-          <div class="flex items-center gap-3">
-            <span class="text-xs font-bold text-zinc-500 w-4">${idx + 1}</span>
-            <div class="w-8 h-8 rounded bg-gradient-to-br ${song.color} flex items-center justify-center text-xs">
-              <i class="fa-solid fa-music"></i>
-            </div>
-            <div>
-              <div class="text-sm font-semibold text-white">${song.title}</div>
-              <div class="text-xs text-zinc-400">${song.artist}</div>
-            </div>
-          </div>
-          <span class="text-xs font-mono text-[#1db954] bg-emerald-950/50 px-2 py-0.5 rounded-full">${song.plays} plays</span>
-        </div>
-      `).join('');
-
-      // 2. Top Listened Artists (Aggregated sum of plays per artist)
-      const artistTotals = {};
-      state.tracks.forEach(t => {
-        artistTotals[t.artist] = (artistTotals[t.artist] || 0) + t.plays;
-      });
-      const topArtists = Object.entries(artistTotals)
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 5);
-
-      const topArtistsEl = document.getElementById('top-artists-list');
-      topArtistsEl.innerHTML = topArtists.map(([artist, totalPlays], idx) => `
-        <div class="flex items-center justify-between p-2 rounded-lg bg-zinc-900/40">
-          <div class="flex items-center gap-3">
-            <span class="text-xs font-bold text-zinc-500 w-4">${idx + 1}</span>
-            <div class="w-8 h-8 rounded-full bg-zinc-700 flex items-center justify-center text-xs font-bold text-emerald-400">
-              ${artist.charAt(0).toUpperCase()}
-            </div>
-            <div class="text-sm font-semibold text-white">${artist}</div>
-          </div>
-          <span class="text-xs font-mono text-zinc-300">${totalPlays} total streams</span>
-        </div>
-      `).join('');
-    }
-
-    function createNewPlaylist() {
-      const name = prompt('Enter new playlist name:');
-      if (!name || !name.trim()) return;
-      const newPl = {
-        id: 'pl_' + Date.now(),
-        name: name.trim(),
-        trackIds: []
-      };
-      state.playlists.push(newPl);
-      renderPlaylistsSidebar();
-      switchView(newPl.id);
-      syncStateToCloud();
-    }
-
-    function openAddToPlaylistModal(trackId, event) {
-      event.stopPropagation();
-      state.songToAssign = trackId;
-      const container = document.getElementById('playlist-modal-options');
-      container.innerHTML = state.playlists.map(pl => {
-        const alreadyIn = pl.trackIds.includes(trackId);
-        return `
-          <button onclick="toggleTrackInPlaylist('${pl.id}')" class="w-full flex items-center justify-between px-3 py-2 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-sm transition">
-            <span>${pl.name}</span>
-            <span class="text-xs ${alreadyIn ? 'text-[#1db954]' : 'text-zinc-500'}">
-              ${alreadyIn ? '<i class="fa-solid fa-check"></i> Added' : '<i class="fa-solid fa-plus"></i> Add'}
-            </span>
-          </button>
-        `;
-      }).join('');
-      document.getElementById('playlist-modal').classList.remove('hidden');
-    }
-
-    function toggleTrackInPlaylist(playlistId) {
-      const pl = state.playlists.find(p => p.id === playlistId);
-      if (!pl || !state.songToAssign) return;
-      const idx = pl.trackIds.indexOf(state.songToAssign);
-      if (idx === -1) {
-        pl.trackIds.push(state.songToAssign);
-      } else {
-        pl.trackIds.splice(idx, 1);
-      }
-      closePlaylistModal();
-      renderAll();
-      syncStateToCloud();
-    }
-
-    function closePlaylistModal() {
-      document.getElementById('playlist-modal').classList.add('hidden');
-      state.songToAssign = null;
-    }
-
-    // =========================================================================
-    // 6. LOCAL MP3 FILE UPLOAD HANDLER
-    // =========================================================================
-    function handleFileUpload(event) {
-      const files = Array.from(event.target.files);
-      if (!files.length) return;
-
-      const gradients = [
-        'from-emerald-500 to-teal-900',
-        'from-purple-500 to-indigo-900',
-        'from-rose-500 to-pink-900',
-        'from-blue-500 to-cyan-900'
-      ];
-
-      files.forEach((file, i) => {
-        const cleanName = file.name.replace(/\.[^/.]+$/, '');
-        const parts = cleanName.split(' - ');
-        const artist = parts.length > 1 ? parts[0].trim() : 'Local MP3 Artist';
-        const title = parts.length > 1 ? parts.slice(1).join(' - ').trim() : cleanName;
-
-        state.tracks.unshift({
-          id: 'local_' + Date.now() + '_' + i,
-          title,
-          artist,
-          plays: 0,
-          liked: false,
-          color: gradients[i % gradients.length],
-          src: URL.createObjectURL(file)
-        });
-      });
-
-      renderAll();
-      loadTrack(0, true);
-    }
-
-    // =========================================================================
-    // 7. AUTHENTICATION & CROSS-DEVICE CLOUD SYNC
-    // =========================================================================
-    function toggleAuthModal() {
-      document.getElementById('auth-modal').classList.toggle('hidden');
-    }
-
-    function performLogin() {
-      const username = document.getElementById('login-username').value.trim();
-      const device = document.getElementById('login-device').value.trim() || 'Web Player';
-      if (!username) return alert('Please enter a username or email.');
-
-      state.user = username.toLowerCase();
-      state.deviceName = device;
-      localStorage.setItem('pulsestream_active_user', state.user);
-      localStorage.setItem('pulsestream_device_name', state.deviceName);
-
-      // Restore cloud profile if it exists
-      const savedCloud = localStorage.getItem('pulsestream_cloud_' + state.user);
-      if (savedCloud) {
-        const parsed = JSON.parse(savedCloud);
-        state.playlists = parsed.playlists || state.playlists;
-        state.isShuffle = !!parsed.isShuffle;
-        state.loopMode = parsed.loopMode || 'off';
-        // Merge saved play counts & likes
-        if (parsed.trackStats) {
-          state.tracks.forEach(t => {
-            if (parsed.trackStats[t.id]) {
-              t.plays = parsed.trackStats[t.id].plays;
-              t.liked = parsed.trackStats[t.id].liked;
-            }
-          });
-        }
-        // Resume last played song & timestamp
-        if (parsed.trackId) {
-          const idx = state.tracks.findIndex(t => t.id === parsed.trackId);
-          if (idx !== -1) {
-            loadTrack(idx, false);
-            audio.currentTime = parsed.currentTime || 0;
-          }
-        }
-      } else {
+    window.toggleLike = (trackId, event) => {
+      if (event) event.stopPropagation();
+      const t = state.tracks.find(x => x.id === trackId);
+      if (t) {
+        t.liked = !t.liked;
+        updateLikeButtonUI();
+        renderMainContent();
         syncStateToCloud();
       }
+    };
 
-      updateAuthUI();
-      renderAll();
-      toggleAuthModal();
+    window.toggleLikeCurrent = () => {
+      if (state.currentTrackId) window.toggleLike(state.currentTrackId);
+    };
+
+    function updateLikeButtonUI() {
+      const current = state.tracks.find(t => t.id === state.currentTrackId);
+      const btn = document.getElementById('player-like-btn');
+      btn.innerHTML = current && current.liked
+        ? '<i class="fa-solid fa-heart text-[#1db954]"></i>'
+        : '<i class="fa-regular fa-heart"></i>';
     }
 
-    function performLogout() {
-      state.user = null;
-      localStorage.removeItem('pulsestream_active_user');
-      updateAuthUI();
-      toggleAuthModal();
+    function updatePlayButtonUI() {
+      const btn = document.getElementById('btn-play');
+      btn.innerHTML = state.isPlaying
+        ? '<i class="fa-solid fa-pause"></i>'
+        : '<i class="fa-solid fa-play ml-0.5"></i>';
     }
 
-    function loadSavedUserSession() {
-      const savedUser = localStorage.getItem('pulsestream_active_user');
-      const savedDevice = localStorage.getItem('pulsestream_device_name');
-      if (savedUser) {
-        state.user = savedUser;
-        state.deviceName = savedDevice || 'Desktop Browser';
-        document.getElementById('login-username').value = state.user;
-        document.getElementById('login-device').value = state.deviceName;
-        updateAuthUI();
-      }
-    }
-
-    function updateAuthUI() {
-      const label = document.getElementById('auth-label');
-      const logoutBtn = document.getElementById('logout-btn');
-      const deviceIndicator = document.getElementById('device-indicator');
-
-      if (state.user) {
-        label.textContent = state.user;
-        logoutBtn.classList.remove('hidden');
-        deviceIndicator.innerHTML = `<i class="fa-solid fa-cloud-arrow-up"></i> ${state.deviceName}`;
-      } else {
-        label.textContent = 'Log In';
-        logoutBtn.classList.add('hidden');
-        deviceIndicator.innerHTML = `<i class="fa-solid fa-laptop"></i> Offline Mode`;
-      }
-    }
-
-    function syncStateToCloud() {
-      if (!state.user) return;
-      const trackStats = {};
-      state.tracks.forEach(t => {
-        trackStats[t.id] = { plays: t.plays, liked: t.liked };
-      });
-
-      const payload = {
-        user: state.user,
-        deviceName: state.deviceName,
-        trackId: state.tracks[state.currentIndex]?.id,
-        currentTime: audio.currentTime || 0,
-        isShuffle: state.isShuffle,
-        loopMode: state.loopMode,
-        playlists: state.playlists,
-        trackStats,
-        updatedAt: Date.now()
-      };
-
-      localStorage.setItem('pulsestream_cloud_' + state.user, JSON.stringify(payload));
-      syncChannel.postMessage(payload);
-    }
-
-    // Simulates logging in on a mobile phone and listening to a track
-    function simulateOtherDeviceUpdate() {
-      if (!state.user) {
-        state.user = 'demo@spotify.io';
-        updateAuthUI();
-      }
-      const randomIdx = (state.currentIndex + 1) % state.tracks.length;
-      const simulatedPayload = {
-        user: state.user,
-        deviceName: 'iPhone 16 Pro',
-        trackId: state.tracks[randomIdx].id,
-        currentTime: 8.5
-      };
-      pendingRemoteSession = simulatedPayload;
-      const banner = document.getElementById('remote-sync-banner');
-      const bannerText = document.getElementById('remote-sync-text');
-      bannerText.textContent = `iPhone 16 Pro (${state.user}) paused "${state.tracks[randomIdx].title}" at 0:08`;
-      banner.classList.remove('hidden');
-    }
-
-    function applyRemoteSession() {
-      if (!pendingRemoteSession) return;
-      const idx = state.tracks.findIndex(t => t.id === pendingRemoteSession.trackId);
-      if (idx !== -1) {
-        loadTrack(idx, true);
-        audio.currentTime = pendingRemoteSession.currentTime || 0;
-      }
-      document.getElementById('remote-sync-banner').classList.add('hidden');
-    }
-
-    // =========================================================================
-    // 8. UI RENDERING HELPERS
-    // =========================================================================
-    function switchView(viewId) {
+    window.switchView = (viewId) => {
       state.currentView = viewId;
       renderAll();
-    }
+    };
 
     function getFilteredTracks() {
       const query = document.getElementById('search-input').value.toLowerCase().trim();
-      let list = state.tracks;
+      let list = [];
 
-      if (state.currentView === 'liked') {
-        list = list.filter(t => t.liked);
-      } else if (state.currentView.startsWith('pl_')) {
+      if (state.currentView.startsWith('pl_')) {
         const pl = state.playlists.find(p => p.id === state.currentView);
-        list = pl ? list.filter(t => pl.trackIds.includes(t.id)) : [];
+        if (pl) {
+          // Preserve exact playlist sequence order
+          list = pl.trackIds
+            .map(id => state.tracks.find(t => t.id === id))
+            .filter(Boolean);
+        }
+      } else if (state.currentView === 'liked') {
+        list = state.tracks.filter(t => t.liked);
+      } else {
+        list = [...state.tracks];
       }
 
       if (query) {
@@ -907,23 +1386,86 @@
 
     function renderPlaylistsSidebar() {
       const container = document.getElementById('playlist-sidebar');
+      if (state.playlists.length === 0) {
+        container.innerHTML = `<div class="px-3 py-2 text-xs text-zinc-500">No playlists yet. Click + to add one.</div>`;
+        return;
+      }
+
       container.innerHTML = state.playlists.map(pl => {
         const active = state.currentView === pl.id;
         return `
-          <button onclick="switchView('${pl.id}')" class="w-full text-left px-3 py-2 rounded-md text-sm flex items-center justify-between ${active ? 'bg-zinc-800 text-white font-semibold' : 'text-zinc-400 hover:text-white hover:bg-zinc-900'} transition">
+          <div onclick="switchView('${pl.id}')" class="w-full px-3 py-2 rounded-md text-sm flex items-center justify-between cursor-pointer group ${active ? 'bg-zinc-800 text-white font-semibold' : 'text-zinc-400 hover:text-white hover:bg-zinc-900'} transition">
             <span class="truncate"><i class="fa-solid fa-list-ul mr-2 text-xs"></i>${pl.name}</span>
-            <span class="text-xs text-zinc-500">${pl.trackIds.length}</span>
-          </button>
+            <div class="flex items-center gap-2">
+              <span class="text-xs text-zinc-500">${pl.trackIds.length}</span>
+              <button onclick="deletePlaylistById('${pl.id}', event)" title="Delete Playlist" class="opacity-0 group-hover:opacity-100 text-zinc-500 hover:text-red-400 transition">
+                <i class="fa-solid fa-trash text-xs"></i>
+              </button>
+            </div>
+          </div>
         `;
       }).join('');
+    }
+
+    function renderAnalytics() {
+      const topSongsEl = document.getElementById('top-songs-list');
+      const topArtistsEl = document.getElementById('top-artists-list');
+
+      if (state.tracks.length === 0) {
+        topSongsEl.innerHTML = `<div class="text-xs text-zinc-500 py-4 text-center">Upload and play songs to rank your Top Listened Songs.</div>`;
+        topArtistsEl.innerHTML = `<div class="text-xs text-zinc-500 py-4 text-center">Play songs to see your Top Listened Artists.</div>`;
+        return;
+      }
+
+      const topSongs = [...state.tracks].sort((a, b) => (b.plays || 0) - (a.plays || 0)).slice(0, 5);
+      topSongsEl.innerHTML = topSongs.map((song, idx) => `
+        <div onclick="playById('${song.id}')" class="flex items-center justify-between p-2 rounded-lg hover:bg-zinc-800/70 cursor-pointer transition">
+          <div class="flex items-center gap-3 overflow-hidden">
+            <span class="text-xs font-bold text-zinc-500 w-4">${idx + 1}</span>
+            <div class="w-8 h-8 rounded bg-gradient-to-br ${song.color} flex items-center justify-center text-xs shrink-0">
+              <i class="fa-solid fa-music"></i>
+            </div>
+            <div class=" truncate">
+              <div class="text-sm font-semibold text-white truncate">${song.title}</div>
+              <div class="text-xs text-zinc-400 truncate">${song.artist}</div>
+            </div>
+          </div>
+          <span class="text-xs font-mono text-[#1db954] bg-emerald-950/50 px-2 py-0.5 rounded-full shrink-0">${song.plays || 0} plays</span>
+        </div>
+      `).join('');
+
+      const artistTotals = {};
+      state.tracks.forEach(t => {
+        artistTotals[t.artist] = (artistTotals[t.artist] || 0) + (t.plays || 0);
+      });
+      const topArtists = Object.entries(artistTotals).sort((a, b) => b[1] - a[1]).slice(0, 5);
+
+      topArtistsEl.innerHTML = topArtists.map(([artist, totalPlays], idx) => `
+        <div class="flex items-center justify-between p-2 rounded-lg bg-zinc-900/40">
+          <div class="flex items-center gap-3 overflow-hidden">
+            <span class="text-xs font-bold text-zinc-500 w-4">${idx + 1}</span>
+            <div class="w-8 h-8 rounded-full bg-zinc-700 flex items-center justify-center text-xs font-bold text-emerald-400 shrink-0">
+              ${artist.charAt(0).toUpperCase()}
+            </div>
+            <div class="text-sm font-semibold text-white truncate">${artist}</div>
+          </div>
+          <span class="text-xs font-mono text-zinc-300 shrink-0">${totalPlays} streams</span>
+        </div>
+      `).join('');
     }
 
     function renderMainContent() {
       const titleEl = document.getElementById('view-title');
       const typeEl = document.getElementById('view-type');
       const analyticsBox = document.getElementById('analytics-container');
+      const plHeaderActions = document.getElementById('playlist-header-actions');
 
       analyticsBox.classList.remove('hidden');
+      plHeaderActions.classList.add('hidden');
+      plHeaderActions.classList.remove('flex');
+
+      const isPlaylistView = state.currentView.startsWith('pl_');
+      const canReorder = isPlaylistView || state.currentView === 'all';
 
       if (state.currentView === 'all') {
         typeEl.textContent = 'LIBRARY';
@@ -934,91 +1476,82 @@
         analyticsBox.classList.add('hidden');
       } else if (state.currentView === 'analytics') {
         typeEl.textContent = 'REAL-TIME INSIGHTS';
-        titleEl.textContent = 'Top Listened Songs & Artists';
-      } else if (state.currentView.startsWith('pl_')) {
+        titleEl.textContent = 'Top Charts & Stats';
+      } else if (isPlaylistView) {
         const pl = state.playlists.find(p => p.id === state.currentView);
-        typeEl.textContent = 'PLAYLIST';
+        typeEl.textContent = 'CUSTOM PLAYLIST';
         titleEl.textContent = pl ? pl.name : 'Playlist';
         analyticsBox.classList.add('hidden');
+        plHeaderActions.classList.remove('hidden');
+        plHeaderActions.classList.add('flex');
       }
 
       const filtered = getFilteredTracks();
       const songListEl = document.getElementById('song-list');
 
       if (filtered.length === 0) {
-        songListEl.innerHTML = `<div class="py-12 text-center text-zinc-500 text-sm">No songs match this view. Try adding tracks or importing local MP3s.</div>`;
+        songListEl.innerHTML = `
+          <div class="py-14 text-center space-y-3">
+            <div class="text-zinc-400 text-sm font-semibold">Your music list is currently empty.</div>
+            <p class="text-xs text-zinc-500">Click "Upload MP3 Files" or "Add MP3 via URL" in the bottom-left sidebar to add your music.</p>
+          </div>
+        `;
         return;
       }
 
       songListEl.innerHTML = filtered.map((track, idx) => {
-        const isCurrent = state.tracks[state.currentIndex]?.id === track.id;
+        const isCurrent = state.currentTrackId === track.id;
         return `
-          <div onclick="playById('${track.id}')" class="grid grid-cols-12 items-center px-4 py-3 rounded-lg hover:bg-zinc-800/60 cursor-pointer group transition ${isCurrent ? 'bg-zinc-800/90' : ''}">
-            <div class="col-span-1 text-sm ${isCurrent ? 'text-[#1db954] font-bold' : 'text-zinc-400'}">
-              ${isCurrent && state.isPlaying ? '<i class="fa-solid fa-volume-high animate-pulse"></i>' : idx + 1}
+          <div
+            ${canReorder ? `draggable="true" ondragstart="handleDragStart(${idx})" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(${idx}, event)"` : ''}
+            onclick="playById('${track.id}')"
+            class="grid grid-cols-12 items-center px-3 py-2.5 rounded-lg hover:bg-zinc-800/60 cursor-pointer group transition ${isCurrent ? 'bg-zinc-800/90' : ''}"
+          >
+            <!-- Sequence Number + Up/Down Order Controls -->
+            <div class="col-span-1 flex items-center gap-1.5 text-sm ${isCurrent ? 'text-[#1db954] font-bold' : 'text-zinc-400'}" onclick="event.stopPropagation()">
+              <span class="w-4 text-center">
+                ${isCurrent && state.isPlaying ? '<i class="fa-solid fa-volume-high animate-pulse"></i>' : idx + 1}
+              </span>
+              ${canReorder ? `
+                <div class="flex flex-col text-[10px] text-zinc-500 opacity-0 group-hover:opacity-100 transition">
+                  <button onclick="moveSongInSequence(${idx}, -1, event)" title="Move Up" class="hover:text-white leading-none"><i class="fa-solid fa-caret-up"></i></button>
+                  <button onclick="moveSongInSequence(${idx}, 1, event)" title="Move Down" class="hover:text-white leading-none"><i class="fa-solid fa-caret-down"></i></button>
+                </div>
+              ` : ''}
             </div>
-            <div class="col-span-5 flex items-center gap-3">
+
+            <!-- Song Title -->
+            <div class="col-span-4 flex items-center gap-3 pr-2 overflow-hidden">
               <div class="w-10 h-10 rounded bg-gradient-to-br ${track.color} flex items-center justify-center shrink-0">
                 <i class="fa-solid fa-music text-xs"></i>
               </div>
               <span class="text-sm font-semibold truncate ${isCurrent ? 'text-[#1db954]' : 'text-white'}">${track.title}</span>
             </div>
-            <div class="col-span-3 text-sm text-zinc-400 truncate">${track.artist}</div>
-            <div class="col-span-1 text-right text-xs font-mono text-zinc-400">${track.plays}</div>
-            <div class="col-span-2 flex items-center justify-end gap-3" onclick="event.stopPropagation()">
-              <button onclick="toggleLike('${track.id}')" title="Like" class="${track.liked ? 'text-[#1db954]' : 'text-zinc-500 hover:text-white'}">
+
+            <!-- Artist Name -->
+            <div class="col-span-3 text-sm text-zinc-400 truncate pr-2">${track.artist}</div>
+
+            <!-- Play Count -->
+            <div class="col-span-1 text-right text-xs font-mono text-zinc-400">${track.plays || 0}</div>
+
+            <!-- Edit / Rename / Playlist / Delete Actions -->
+            <div class="col-span-3 flex items-center justify-end gap-3" onclick="event.stopPropagation()">
+              <button onclick="toggleLike('${track.id}', event)" title="Like Song" class="${track.liked ? 'text-[#1db954]' : 'text-zinc-500 hover:text-white'}">
                 <i class="${track.liked ? 'fa-solid' : 'fa-regular'} fa-heart"></i>
               </button>
-              <button onclick="openAddToPlaylistModal('${track.id}', event)" title="Add to Playlist" class="text-zinc-400 hover:text-white">
-                <i class="fa-solid fa-plus"></i>
+              <button onclick="openEditSongModal('${track.id}', event)" title="Rename Song & Artist" class="text-zinc-400 hover:text-white">
+                <i class="fa-solid fa-pen text-xs"></i>
+              </button>
+              <button onclick="openAssignPlaylistModal('${track.id}', event)" title="Add to Playlist" class="text-zinc-400 hover:text-white">
+                <i class="fa-solid fa-folder-plus text-xs"></i>
+              </button>
+              <button onclick="deleteOrRemoveSong('${track.id}', event)" title="${isPlaylistView ? 'Remove from Playlist' : 'Delete Song'}" class="text-zinc-500 hover:text-red-400">
+                <i class="fa-solid ${isPlaylistView ? 'fa-minus' : 'fa-trash'} text-xs"></i>
               </button>
             </div>
           </div>
         `;
       }).join('');
-    }
-
-    function playById(trackId) {
-      const idx = state.tracks.findIndex(t => t.id === trackId);
-      if (idx !== -1) {
-        if (state.currentIndex === idx) {
-          togglePlayPause();
-        } else {
-          loadTrack(idx, true);
-        }
-      }
-    }
-
-    function toggleLike(trackId) {
-      const t = state.tracks.find(x => x.id === trackId);
-      if (t) {
-        t.liked = !t.liked;
-        updateLikeButtonUI();
-        renderMainContent();
-        syncStateToCloud();
-      }
-    }
-
-    function toggleLikeCurrent() {
-      const current = state.tracks[state.currentIndex];
-      if (current) toggleLike(current.id);
-    }
-
-    function updateLikeButtonUI() {
-      const current = state.tracks[state.currentIndex];
-      const btn = document.getElementById('player-like-btn');
-      if (current && current.liked) {
-        btn.innerHTML = '<i class="fa-solid fa-heart text-[#1db954]"></i>';
-      } else {
-        btn.innerHTML = '<i class="fa-regular fa-heart"></i>';
-      }
-    }
-
-    function updatePlayButtonUI() {
-      const btn = document.getElementById('btn-play');
-      btn.innerHTML = state.isPlaying
-        ? '<i class="fa-solid fa-pause"></i>'
-        : '<i class="fa-solid fa-play ml-0.5"></i>';
     }
 
     function formatTime(sec) {

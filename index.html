@@ -165,10 +165,19 @@
           <input
             type="text"
             id="search-input"
-            oninput="renderMainContent()"
+            oninput="handleSearchInput()"
+            onkeyup="handleSearchInput()"
             placeholder="Search songs or artists..."
-            class="w-full bg-zinc-800/90 hover:bg-zinc-800 focus:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-[#1db954] text-sm rounded-full pl-10 pr-4 py-2 text-white placeholder-zinc-400 transition"
+            class="w-full bg-zinc-800/90 hover:bg-zinc-800 focus:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-[#1db954] text-sm rounded-full pl-10 pr-8 py-2 text-white placeholder-zinc-400 transition"
           />
+          <button
+            id="clear-search-btn"
+            onclick="clearSearchInput()"
+            title="Clear search"
+            class="hidden absolute right-3 top-2.5 text-zinc-400 hover:text-white text-xs"
+          >
+            <i class="fa-solid fa-xmark"></i>
+          </button>
         </div>
 
         <div class="flex items-center gap-3">
@@ -209,95 +218,95 @@
           </div>
         </div>
 
-        <!-- FULL APP TUTORIAL VIEW (REPLACES INTRODUCTION) -->
+        <!-- SIMPLE & COMPLETE USER TUTORIAL VIEW -->
         <div id="tutorial-container" class="hidden space-y-6 max-w-5xl">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             
-            <!-- 1. Adding & Importing Audio -->
-            <div class="bg-[#181818] border border-zinc-800/80 rounded-2xl p-5 space-y-2.5 shadow-xl">
+            <!-- 1. Adding Music -->
+            <div class="bg-[#181818] border border-zinc-800/80 rounded-2xl p-5 space-y-2 shadow-xl">
               <div class="flex items-center gap-2.5 text-[#1db954] font-bold text-base">
                 <i class="fa-solid fa-file-audio text-lg"></i>
-                <h3>1. Adding & Importing Audio (MP3 & MP4)</h3>
+                <h3>1. Adding Songs & Videos</h3>
               </div>
               <p class="text-xs text-zinc-300 leading-relaxed">
-                Click <b>Import Files</b> in the sidebar to upload local <code>.mp3</code> or <code>.mp4</code> files (video files play as audio-only). Imported files are stored permanently in your browser's <b>IndexedDB Vault</b> so they stay saved even after refreshing. You can also click <b>Add MP3/MP4 via URL</b> to link cloud or GitHub-hosted audio files.
+                Click <b>Import Files</b> in the bottom-left menu to pick <code>.mp3</code> or <code>.mp4</code> files from your device (videos play as audio-only). Your songs stay saved even after you close or refresh the page. You can also click <b>Add MP3/MP4 via URL</b> to stream a song using a direct web link.
               </p>
             </div>
 
-            <!-- 2. Playlists & Custom Covers -->
-            <div class="bg-[#181818] border border-zinc-800/80 rounded-2xl p-5 space-y-2.5 shadow-xl">
+            <!-- 2. Playing & Searching -->
+            <div class="bg-[#181818] border border-zinc-800/80 rounded-2xl p-5 space-y-2 shadow-xl">
               <div class="flex items-center gap-2.5 text-sky-400 font-bold text-base">
-                <i class="fa-solid fa-folder-plus text-lg"></i>
-                <h3>2. Playlists, Reordering & Custom Covers</h3>
+                <i class="fa-solid fa-magnifying-glass text-lg"></i>
+                <h3>2. Playing, Searching & Shortcuts</h3>
               </div>
               <p class="text-xs text-zinc-300 leading-relaxed">
-                Click the <b>+</b> icon next to Playlists in the sidebar to create a playlist. On any song row, click the <b>Folder+</b> icon to assign or remove it from playlists. Inside a playlist or All Songs, drag and drop rows (or use the up/down arrows) to reorder your queue. Open any playlist to click <b>Customize Cover</b> (choose a color theme or upload a custom image), <b>Rename</b>, or <b>Delete</b>.
+                Click any song row to start playing. Use the top search bar to find songs by title or artist instantly. At the bottom bar, use <b>Shuffle</b>, <b>Previous</b>, <b>Play/Pause</b>, <b>Next</b>, <b>Loop</b> (loop all or loop 1 song), and the volume slider. Keyboard shortcuts: press <b>Spacebar</b> to pause/play, and <b>Left / Right Arrows</b> to skip backward or forward 5 seconds.
               </p>
             </div>
 
-            <!-- 3. Editing Tracks & Search -->
-            <div class="bg-[#181818] border border-zinc-800/80 rounded-2xl p-5 space-y-2.5 shadow-xl">
+            <!-- 3. Editing & Liking Songs -->
+            <div class="bg-[#181818] border border-zinc-800/80 rounded-2xl p-5 space-y-2 shadow-xl">
               <div class="flex items-center gap-2.5 text-purple-400 font-bold text-base">
-                <i class="fa-solid fa-pen-to-square text-lg"></i>
-                <h3>3. Song Info Editor, Likes & Instant Search</h3>
+                <i class="fa-solid fa-heart text-lg"></i>
+                <h3>3. Liking, Editing & Deleting Songs</h3>
               </div>
               <p class="text-xs text-zinc-300 leading-relaxed">
-                Use the top search bar to filter tracks by title or artist in real time. Click the <b>Heart</b> icon on any track (or in the bottom player bar) to save it to <b>Liked Songs</b>. Click the <b>Pen</b> icon on any song to edit its Title, Artist Name, or Cloud Audio URL, or click the <b>Trash</b> icon to remove it.
+                Click the <b>Heart</b> icon on any song (or on the bottom player) to save it to <b>Liked Songs</b>. Click the <b>Pen</b> icon on a song to rename its title, change the artist name, or update its audio link. Click the <b>Trash</b> icon to delete a song from your library.
               </p>
             </div>
 
-            <!-- 4. Synced Lyrics & .VTT Upload -->
-            <div class="bg-[#181818] border border-zinc-800/80 rounded-2xl p-5 space-y-2.5 shadow-xl">
+            <!-- 4. Playlists & Custom Covers -->
+            <div class="bg-[#181818] border border-zinc-800/80 rounded-2xl p-5 space-y-2 shadow-xl">
+              <div class="flex items-center gap-2.5 text-amber-400 font-bold text-base">
+                <i class="fa-solid fa-folder-plus text-lg"></i>
+                <h3>4. Playlists, Song Order & Covers</h3>
+              </div>
+              <p class="text-xs text-zinc-300 leading-relaxed">
+                Click the <b>+</b> button next to <b>Playlists</b> in the sidebar to create a new playlist. Click the <b>Folder+</b> icon on any song to add or remove it from your playlists. Drag and drop songs up or down (or click the small up/down arrows) to change the play order. Inside a playlist, you can click <b>Customize Cover</b> (pick a color theme or upload your own picture), <b>Rename</b>, or <b>Delete</b>.
+              </p>
+            </div>
+
+            <!-- 5. Lyrics (.VTT or Typing) -->
+            <div class="bg-[#181818] border border-zinc-800/80 rounded-2xl p-5 space-y-2 shadow-xl">
               <div class="flex items-center gap-2.5 text-emerald-400 font-bold text-base">
                 <i class="fa-solid fa-closed-captioning text-lg"></i>
-                <h3>4. Synced Lyrics (Type or Upload .VTT)</h3>
+                <h3>5. Synced Lyrics (.VTT Upload or Typing)</h3>
               </div>
               <p class="text-xs text-zinc-300 leading-relaxed">
-                Click <b>Studio</b> in the bottom-right bar and select the <b>Lyrics</b> tab. Click <b>Upload .VTT</b> to import a WebVTT subtitle/lyric file—timestamps are automatically parsed into clickable, auto-highlighting lines! Prefer typing? Click <b>Type / Edit</b> to type plain lyrics or timestamped lines like <code>[00:15] First verse</code>. Click any timestamped line during playback to jump directly to that moment.
+                Click <b>Studio</b> in the bottom-right corner and open the <b>Lyrics</b> tab. Click <b>.VTT</b> to upload a lyric/subtitle file—your lyrics will automatically highlight in time with the music! Or click <b>Type</b> to paste or write lyrics yourself (add timestamps like <code>[00:15]</code> before a line to make it clickable and synced).
               </p>
             </div>
 
-            <!-- 5. 5-Band EQ & Ambient Mixer -->
-            <div class="bg-[#181818] border border-zinc-800/80 rounded-2xl p-5 space-y-2.5 shadow-xl">
-              <div class="flex items-center gap-2.5 text-amber-400 font-bold text-base">
-                <i class="fa-solid fa-sliders text-lg"></i>
-                <h3>5. 5-Band Equalizer & Ambient Sound Mixer</h3>
-              </div>
-              <p class="text-xs text-zinc-300 leading-relaxed">
-                Inside the <b>Studio</b> drawer, switch to <b>5-Band EQ</b> to sculpt frequencies (60Hz to 14kHz) or pick a preset (Deep Bass, Crystal Vocals, Club, Acoustic). Switch to the <b>Ambient</b> tab to layer procedural background atmospheres—<b>Soft Rainfall</b>, <b>Lo-Fi Vinyl Crackle</b>, and <b>Deep Space Brown Noise</b>—directly underneath your music.
-              </p>
-            </div>
-
-            <!-- 6. Playback Speed, Sleep Timer & Shortcuts -->
-            <div class="bg-[#181818] border border-zinc-800/80 rounded-2xl p-5 space-y-2.5 shadow-xl">
+            <!-- 6. Equalizer & Ambient Mixer -->
+            <div class="bg-[#181818] border border-zinc-800/80 rounded-2xl p-5 space-y-2 shadow-xl">
               <div class="flex items-center gap-2.5 text-pink-400 font-bold text-base">
-                <i class="fa-solid fa-gauge-high text-lg"></i>
-                <h3>6. Speed / Pitch Mode, Sleep Timer & Keys</h3>
+                <i class="fa-solid fa-sliders text-lg"></i>
+                <h3>6. Sound Equalizer & Ambient Mixer</h3>
               </div>
               <p class="text-xs text-zinc-300 leading-relaxed">
-                In the bottom-right player bar, click <b>1.0x</b> to cycle through normal, sped-up Nightcore (<code>1.25x</code>, <code>1.5x</code>), or slowed-down (<code>0.85x</code>) pitch modes. Click the <b>Moon</b> icon to set an automatic Sleep Timer (15m, 30m, or 60m). Use keyboard shortcuts anytime: <b>Spacebar</b> to Play/Pause, and <b>Left / Right Arrows</b> to seek 5 seconds.
+                Inside the <b>Studio</b> panel, open <b>5-Band EQ</b> to boost bass, sharpen vocals, or choose a ready-made sound preset. Open the <b>Ambient</b> tab to mix relaxing background sounds—<b>Soft Rainfall</b>, <b>Vinyl Crackle</b>, or <b>Brown Noise</b>—right over your songs.
               </p>
             </div>
 
-            <!-- 7. Detailed Listening Stats -->
-            <div class="bg-[#181818] border border-zinc-800/80 rounded-2xl p-5 space-y-2.5 shadow-xl">
+            <!-- 7. Speed & Sleep Timer -->
+            <div class="bg-[#181818] border border-zinc-800/80 rounded-2xl p-5 space-y-2 shadow-xl">
+              <div class="flex items-center gap-2.5 text-indigo-400 font-bold text-base">
+                <i class="fa-solid fa-moon text-lg"></i>
+                <h3>7. Playback Speed & Sleep Timer</h3>
+              </div>
+              <p class="text-xs text-zinc-300 leading-relaxed">
+                In the bottom-right bar, click <b>1.0x</b> to speed up (<code>1.25x</code>, <code>1.5x</code>) or slow down (<code>0.85x</code>) your music. Click the <b>Moon</b> icon to set an automatic Sleep Timer (15, 30, or 60 minutes) that pauses your music when time runs out.
+              </p>
+            </div>
+
+            <!-- 8. Listening Stats & Account Sync -->
+            <div class="bg-[#181818] border border-zinc-800/80 rounded-2xl p-5 space-y-2 shadow-xl">
               <div class="flex items-center gap-2.5 text-orange-400 font-bold text-base">
                 <i class="fa-solid fa-chart-line text-lg"></i>
-                <h3>7. Detailed Listening Stats & Activity Chart</h3>
+                <h3>8. Listening Stats & Multi-Device Sync</h3>
               </div>
               <p class="text-xs text-zinc-300 leading-relaxed">
-                Open <b>Detailed Stats</b> in the sidebar to view your Hours This Week, Total Hours Played, Daily Average, #1 Top Artist, 7-Day Activity Bar Chart, Top Listened Songs, and Top Artists—all tracked down to the second as you listen.
-              </p>
-            </div>
-
-            <!-- 8. Account Sync & Cross-Device Hand-off -->
-            <div class="bg-[#181818] border border-zinc-800/80 rounded-2xl p-5 space-y-2.5 shadow-xl">
-              <div class="flex items-center gap-2.5 text-cyan-400 font-bold text-base">
-                <i class="fa-solid fa-tower-broadcast text-lg"></i>
-                <h3>8. Account Login & Cross-Device Resume</h3>
-              </div>
-              <p class="text-xs text-zinc-300 leading-relaxed">
-                Click <b>Log In / Sign Up</b> in the top-right corner to sync your library metadata, playlists, lyrics, and listening stats across devices. If you're playing a song on another device, a green banner appears at the top allowing you to <b>Sync & Resume</b> from the exact timestamp.
+                Click <b>Detailed Stats</b> in the sidebar to see your weekly listening hours, total hours played, daily average, 7-day activity chart, top songs, and top artists. Click <b>Log In / Sign Up</b> at the top right to save your playlists, lyrics, and stats to your account and resume playback across devices.
               </p>
             </div>
 
@@ -352,7 +361,7 @@
                 <i class="fa-solid fa-bolt text-amber-400"></i>
               </div>
               <div id="stat-daily-avg" class="text-2xl sm:text-3xl font-extrabold text-white mt-2">0 mins</div>
-              <div class="text-xs text-zinc-500 mt-1">Per active listening day</div>
+              <div id="stat-daily-avg-sub" class="text-xs text-zinc-500 mt-1">Per active listening day</div>
             </div>
 
             <div class="bg-[#181818] p-4 rounded-xl border border-zinc-800/80">
@@ -732,8 +741,8 @@
         <input id="edit-song-artist" type="text" class="w-full mt-1 bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#1db954]" />
       </div>
       <div>
-        <label class="text-xs font-bold text-zinc-400 uppercase">Cloud / GitHub Audio Path (.mp3 or .mp4)</label>
-        <input id="edit-song-src" type="text" placeholder="e.g. ./mysong.mp3 or ./video.mp4" class="w-full mt-1 bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#1db954]" />
+        <label class="text-xs font-bold text-zinc-400 uppercase">Direct Audio URL (.mp3 or .mp4)</label>
+        <input id="edit-song-src" type="text" placeholder="e.g. https://example.com/song.mp3" class="w-full mt-1 bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#1db954]" />
       </div>
       <div class="flex gap-2 pt-2">
         <button onclick="closeEditSongModal()" class="flex-1 bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-bold py-2.5 rounded-full">Cancel</button>
@@ -775,11 +784,11 @@
     </div>
   </div>
 
-  <!-- 6. ADD MP3/MP4 BY URL / GITHUB MODAL -->
+  <!-- 6. ADD MP3/MP4 BY URL MODAL -->
   <div id="url-track-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-4">
     <div class="bg-[#181818] border border-zinc-800 rounded-2xl w-full max-w-md p-6 shadow-2xl space-y-4">
       <div class="flex items-center justify-between">
-        <h3 class="text-lg font-bold">Add Cloud MP3 or MP4 (Audio Only)</h3>
+        <h3 class="text-lg font-bold">Add MP3 or MP4 via URL</h3>
         <button onclick="closeUrlTrackModal()" class="text-zinc-400 hover:text-white">
           <i class="fa-solid fa-xmark"></i>
         </button>
@@ -793,8 +802,8 @@
         <input id="url-song-artist" type="text" placeholder="e.g. The Weeknd" class="w-full mt-1 bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#1db954]" />
       </div>
       <div>
-        <label class="text-xs font-bold text-zinc-400 uppercase">GitHub Filename or Direct MP3/MP4 URL</label>
-        <input id="url-song-src" type="text" placeholder="./song1.mp3 or ./track.mp4" class="w-full mt-1 bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#1db954]" />
+        <label class="text-xs font-bold text-zinc-400 uppercase">Direct MP3/MP4 URL</label>
+        <input id="url-song-src" type="text" placeholder="https://example.com/song.mp3" class="w-full mt-1 bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#1db954]" />
       </div>
       <div class="flex gap-2 pt-2">
         <button onclick="closeUrlTrackModal()" class="flex-1 bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-bold py-2.5 rounded-full">Cancel</button>
@@ -1070,6 +1079,7 @@
       deviceName: localStorage.getItem('mp3v_device_name') || detectDeviceName(),
       authMode: 'login',
       currentView: 'all',
+      searchQuery: '',
       currentTrackId: null,
       isPlaying: false,
       isShuffle: false,
@@ -1118,7 +1128,37 @@
     }
 
     // =========================================================================
-    // 5. INITIALIZATION & KEYBOARD SHORTCUTS
+    // 5. SEARCH INPUT HANDLERS (FIXED: WORKS FROM ANY VIEW & IN REAL TIME)
+    // =========================================================================
+    window.handleSearchInput = () => {
+      const inputEl = document.getElementById('search-input');
+      const clearBtn = document.getElementById('clear-search-btn');
+      state.searchQuery = inputEl.value;
+
+      if (state.searchQuery.trim().length > 0) {
+        clearBtn.classList.remove('hidden');
+        // Automatically switch from Tutorial or Stats to song results when searching
+        if (state.currentView === 'tutorial' || state.currentView === 'analytics') {
+          window.switchView('all');
+          return;
+        }
+      } else {
+        clearBtn.classList.add('hidden');
+      }
+
+      renderMainContent();
+    };
+
+    window.clearSearchInput = () => {
+      const inputEl = document.getElementById('search-input');
+      inputEl.value = '';
+      state.searchQuery = '';
+      document.getElementById('clear-search-btn').classList.add('hidden');
+      renderMainContent();
+    };
+
+    // =========================================================================
+    // 6. INITIALIZATION & KEYBOARD SHORTCUTS
     // =========================================================================
     window.addEventListener('DOMContentLoaded', async () => {
       loadLocalBackup();
@@ -1210,7 +1250,7 @@
     }
 
     // =========================================================================
-    // 6. STUDIO FEATURES: LYRICS (MANUAL TYPE OR .VTT UPLOAD), SPEED & SLEEP
+    // 7. STUDIO FEATURES: LYRICS (MANUAL TYPE OR .VTT UPLOAD), SPEED & SLEEP
     // =========================================================================
     window.toggleStudioDrawer = () => {
       const drawer = document.getElementById('side-studio-drawer');
@@ -1237,7 +1277,6 @@
         if (!line || line === 'WEBVTT' || line.startsWith('NOTE') || /^\d+$/.test(line)) {
           continue;
         }
-        // Match WebVTT cue timing: 00:01:15.000 --> 00:01:20.000 or 01:15.000 --> 01:20.000
         const vttMatch = line.match(/^(?:(\d{1,2}):)?(\d{2}):(\d{2})[.,]\d{1,3}\s*-->/);
         if (vttMatch) {
           const hrs = parseInt(vttMatch[1] || '0', 10);
@@ -1407,7 +1446,7 @@
     };
 
     // =========================================================================
-    // 7. PLAYLIST COVER CUSTOMIZER
+    // 8. PLAYLIST COVER CUSTOMIZER
     // =========================================================================
     window.openCoverModal = () => {
       const pl = state.playlists.find(p => p.id === state.currentView);
@@ -1509,7 +1548,7 @@
     }
 
     // =========================================================================
-    // 8. FIREBASE AUTHENTICATION
+    // 9. FIREBASE AUTHENTICATION
     // =========================================================================
     window.openAuthModal = () => {
       document.getElementById('auth-error').classList.add('hidden');
@@ -1608,7 +1647,7 @@
     }
 
     // =========================================================================
-    // 9. REALTIME DATABASE SYNC
+    // 10. REALTIME DATABASE SYNC
     // =========================================================================
     async function subscribeToRealtimeDatabase(uid) {
       if (unsubscribeRtdb) unsubscribeRtdb();
@@ -1784,7 +1823,7 @@
     }
 
     // =========================================================================
-    // 10. IMPORT MP3 / MP4 FILES & ADD VIA URL
+    // 11. IMPORT MP3 / MP4 FILES & ADD VIA URL
     // =========================================================================
     window.handleFileUpload = async (event) => {
       const files = Array.from(event.target.files);
@@ -1864,7 +1903,7 @@
       const artist = document.getElementById('url-song-artist').value.trim() || 'Unknown Artist';
       const src = document.getElementById('url-song-src').value.trim();
 
-      if (!title || !src) return alert('Please enter both a Song Title and a GitHub path or URL.');
+      if (!title || !src) return alert('Please enter both a Song Title and a Direct Audio URL.');
 
       const isMp4 = src.toLowerCase().split('?')[0].endsWith('.mp4');
 
@@ -1894,7 +1933,7 @@
     };
 
     // =========================================================================
-    // 11. RENAME SONG, ARTIST, OR AUDIO URL / DELETE SONG
+    // 12. RENAME SONG, ARTIST, OR AUDIO URL / DELETE SONG
     // =========================================================================
     window.openEditSongModal = (trackId, event) => {
       if (event) event.stopPropagation();
@@ -1971,7 +2010,7 @@
     };
 
     // =========================================================================
-    // 12. REORDER SEQUENCE & PLAYLIST MANAGEMENT
+    // 13. REORDER SEQUENCE & PLAYLIST MANAGEMENT
     // =========================================================================
     window.moveSongInSequence = (index, direction, event) => {
       if (event) event.stopPropagation();
@@ -2119,7 +2158,7 @@
     };
 
     // =========================================================================
-    // 13. PLAYBACK & TRANSPORT CONTROLS
+    // 14. PLAYBACK & TRANSPORT CONTROLS
     // =========================================================================
     function getActiveQueue() {
       const visible = getFilteredTracks();
@@ -2300,7 +2339,7 @@
     }
 
     // =========================================================================
-    // 14. ANALYTICS & RENDERING
+    // 15. ANALYTICS & RENDERING
     // =========================================================================
     function incrementPlayCount(trackId) {
       const track = state.tracks.find(t => t.id === trackId);
@@ -2378,7 +2417,8 @@
     };
 
     function getFilteredTracks() {
-      const query = document.getElementById('search-input').value.toLowerCase().trim();
+      const inputEl = document.getElementById('search-input');
+      const query = (inputEl ? inputEl.value : state.searchQuery).toLowerCase().trim();
       let list = [];
 
       if (state.currentView.startsWith('pl_')) {
@@ -2395,10 +2435,11 @@
       }
 
       if (query) {
-        list = list.filter(t =>
-          t.title.toLowerCase().includes(query) ||
-          t.artist.toLowerCase().includes(query)
-        );
+        list = list.filter(t => {
+          const titleMatch = (t.title || '').toLowerCase().includes(query);
+          const artistMatch = (t.artist || '').toLowerCase().includes(query);
+          return titleMatch || artistMatch;
+        });
       }
       return list;
     }
@@ -2562,14 +2603,16 @@
       coverEl.className = `w-32 h-32 rounded-lg bg-gradient-to-br ${DEFAULT_COVER_GRADIENT} shadow-2xl flex items-center justify-center text-4xl shrink-0 overflow-hidden relative group`;
       coverEl.innerHTML = `<i class="fa-solid fa-headphones"></i>`;
 
+      const rawQuery = (document.getElementById('search-input')?.value || '').trim();
       const isPlaylistView = state.currentView.startsWith('pl_');
-      const canReorder = isPlaylistView || state.currentView === 'all';
+      const canReorder = (isPlaylistView || state.currentView === 'all') && !rawQuery;
 
       if (state.currentView === 'all') {
         typeEl.textContent = 'MP3 VISION LIBRARY';
         titleEl.textContent = 'All Songs';
+        if (rawQuery) subtitleEl.textContent = `Showing search results for "${rawQuery}"`;
       } else if (state.currentView === 'tutorial') {
-        typeEl.textContent = 'COMPLETE FEATURE GUIDE';
+        typeEl.textContent = 'APP GUIDE';
         titleEl.textContent = 'Tutorial';
         subtitleEl.textContent = 'Everything you can do in MP3 Vision';
         coverEl.className = 'w-32 h-32 rounded-lg bg-gradient-to-br from-sky-500 to-zinc-900 shadow-2xl flex items-center justify-center text-4xl shrink-0';
@@ -2580,6 +2623,7 @@
       } else if (state.currentView === 'liked') {
         typeEl.textContent = 'COLLECTION';
         titleEl.textContent = 'Liked Songs';
+        if (rawQuery) subtitleEl.textContent = `Searching Liked Songs for "${rawQuery}"`;
         coverEl.className = 'w-32 h-32 rounded-lg bg-gradient-to-br from-emerald-400 to-teal-900 shadow-2xl flex items-center justify-center text-4xl shrink-0';
         coverEl.innerHTML = `<i class="fa-solid fa-heart"></i>`;
       } else if (state.currentView === 'analytics') {
@@ -2593,6 +2637,7 @@
         const pl = state.playlists.find(p => p.id === state.currentView);
         typeEl.textContent = 'PLAYLIST';
         titleEl.textContent = pl ? pl.name : 'Playlist';
+        if (rawQuery) subtitleEl.textContent = `Searching playlist for "${rawQuery}"`;
         plHeaderActions.classList.remove('hidden');
         plHeaderActions.classList.add('flex');
 
@@ -2623,7 +2668,7 @@
       if (filtered.length === 0) {
         songListEl.innerHTML = `
           <div class="py-12 text-center text-zinc-500 text-sm">
-            No songs in this list.
+            ${rawQuery ? `No songs found matching "${rawQuery}".` : 'No songs in this list.'}
           </div>
         `;
         return;

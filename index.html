@@ -73,40 +73,41 @@
     
     <!-- LEFT SIDEBAR -->
     <aside class="w-64 bg-[#121212] rounded-lg flex flex-col overflow-hidden shrink-0 border border-zinc-900">
-      <div class="p-5 space-y-4">
+      <div class="p-4 space-y-3 shrink-0">
         <div class="flex items-center gap-3 text-xl font-bold tracking-tight text-white">
-          <svg class="w-10 h-10 shrink-0 drop-shadow" viewBox="0 0 120 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <svg class="w-10 h-10 shrink-0 drop-shadow-md" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
             <defs>
-              <linearGradient id="mp3vGrad" x1="0" y1="40" x2="120" y2="40" gradientUnits="userSpaceOnUse">
-                <stop offset="0%" stop-color="#1db954"/>
-                <stop offset="55%" stop-color="#06b6d4"/>
-                <stop offset="100%" stop-color="#2563eb"/>
+              <linearGradient id="mp3vCircleGrad" x1="25" y1="95" x2="95" y2="25" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#2563eb"/>
+                <stop offset="50%" stop-color="#06b6d4"/>
+                <stop offset="100%" stop-color="#1db954"/>
+              </linearGradient>
+              <linearGradient id="mp3vHighlight" x1="35" y1="30" x2="85" y2="85" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#ffffff" stop-opacity="0.45"/>
+                <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
               </linearGradient>
             </defs>
-            <path d="M26 62H18C10.268 62 4 55.732 4 48C4 40.916 9.261 35.063 16.091 34.132C18.675 21.503 29.852 12 43.25 12C54.996 12 65.039 19.286 69.115 29.591C71.351 28.57 73.836 28 76.45 28C86.253 28 94.2 35.947 94.2 45.75C94.2 46.185 94.184 46.616 94.153 47.043C100.885 48.395 106 54.349 106 61.5C106 61.668 105.997 61.834 105.991 62H88" stroke="url(#mp3vGrad)" stroke-width="7" stroke-linecap="round"/>
-            <rect x="20" y="38" width="5" height="24" rx="2.5" fill="url(#mp3vGrad)"/>
-            <rect x="30" y="28" width="5" height="34" rx="2.5" fill="url(#mp3vGrad)"/>
-            <rect x="40" y="22" width="5" height="40" rx="2.5" fill="url(#mp3vGrad)"/>
-            <rect x="74" y="36" width="5" height="26" rx="2.5" fill="url(#mp3vGrad)"/>
-            <rect x="84" y="42" width="5" height="20" rx="2.5" fill="url(#mp3vGrad)"/>
-            <path d="M48 34L61 63L82 22" stroke="url(#mp3vGrad)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="60" cy="60" r="56" fill="#1e2229" stroke="url(#mp3vCircleGrad)" stroke-width="4"/>
+            <path d="M51 39L83 30C85.5 29.3 88 31.2 88 33.8V71C88 79.3 80.5 85.5 72 84C65.2 82.8 60.5 76.5 61.5 69.8C62.5 63.3 68.5 59 75 59.5C76.5 59.6 78 60 79 60.5V43.5L55 50.2V77C55 85.3 47.5 91.5 39 90C32.2 88.8 27.5 82.5 28.5 75.8C29.5 69.3 35.5 65 42 65.5C43.5 65.6 45 66 46 66.5V44.5C46 41.9 48.2 39.7 51 39Z" fill="url(#mp3vCircleGrad)"/>
+            <path d="M51 39L83 30C85.5 29.3 88 31.2 88 33.8V71C88 79.3 80.5 85.5 72 84C65.2 82.8 60.5 76.5 61.5 69.8C62.5 63.3 68.5 59 75 59.5C76.5 59.6 78 60 79 60.5V43.5L55 50.2V77C55 85.3 47.5 91.5 39 90C32.2 88.8 27.5 82.5 28.5 75.8C29.5 69.3 35.5 65 42 65.5C43.5 65.6 45 66 46 66.5V44.5C46 41.9 48.2 39.7 51 39Z" fill="url(#mp3vHighlight)"/>
+            <path d="M62 53.5C62 52.3 63.3 51.6 64.3 52.2L73.5 57.7C74.5 58.3 74.5 59.7 73.5 60.3L64.3 65.8C63.3 66.4 62 65.7 62 64.5V53.5Z" fill="#ffffff"/>
           </svg>
           <div>
             <span class="text-white">MP3</span> <span class="text-[#1db954]">Vision</span>
           </div>
         </div>
 
-        <nav class="space-y-1.5 pt-1">
-          <button onclick="switchView('all')" id="nav-all" class="w-full flex items-center gap-3.5 text-sm font-semibold text-white bg-zinc-800/80 px-3 py-2 rounded-lg transition">
+        <nav class="space-y-1">
+          <button onclick="switchView('all')" id="nav-all" class="w-full flex items-center gap-3 text-sm font-semibold text-white bg-zinc-800/80 px-3 py-1.5 rounded-lg transition">
             <i class="fa-solid fa-house text-base w-5"></i> Home / All Songs
           </button>
-          <button onclick="switchView('analytics')" id="nav-analytics" class="w-full flex items-center gap-3.5 text-sm font-semibold text-zinc-400 hover:text-white px-3 py-2 rounded-lg transition">
-            <i class="fa-solid fa-chart-line text-base w-5 text-[#1db954]"></i> Detailed Listening Stats
+          <button onclick="switchView('analytics')" id="nav-analytics" class="w-full flex items-center gap-3 text-sm font-semibold text-zinc-400 hover:text-white px-3 py-1.5 rounded-lg transition">
+            <i class="fa-solid fa-chart-line text-base w-5 text-[#1db954]"></i> Detailed Stats
           </button>
-          <button onclick="switchView('liked')" id="nav-liked" class="w-full flex items-center gap-3.5 text-sm font-semibold text-zinc-400 hover:text-white px-3 py-2 rounded-lg transition">
+          <button onclick="switchView('liked')" id="nav-liked" class="w-full flex items-center gap-3 text-sm font-semibold text-zinc-400 hover:text-white px-3 py-1.5 rounded-lg transition">
             <i class="fa-solid fa-heart text-base w-5 text-emerald-400"></i> Liked Songs
           </button>
-          <button onclick="switchView('help')" id="nav-help" class="w-full flex items-center gap-3.5 text-sm font-semibold text-zinc-400 hover:text-white px-3 py-2 rounded-lg transition">
+          <button onclick="switchView('help')" id="nav-help" class="w-full flex items-center gap-3 text-sm font-semibold text-zinc-400 hover:text-white px-3 py-1.5 rounded-lg transition">
             <i class="fa-solid fa-circle-question text-base w-5 text-sky-400"></i> Help
           </button>
         </nav>
@@ -115,40 +116,40 @@
       <hr class="border-zinc-800 mx-4" />
 
       <!-- Playlists Header -->
-      <div class="px-5 pt-4 pb-2 flex items-center justify-between">
-        <span class="text-xs font-bold uppercase tracking-wider text-zinc-400">Your Playlists</span>
+      <div class="px-5 pt-3 pb-1 flex items-center justify-between shrink-0">
+        <span class="text-xs font-bold uppercase tracking-wider text-zinc-400">Playlists</span>
         <button onclick="openCreatePlaylistModal()" title="Create New Playlist" class="text-zinc-400 hover:text-white transition px-1.5 py-0.5 rounded hover:bg-zinc-800">
           <i class="fa-solid fa-plus"></i>
         </button>
       </div>
 
-      <!-- Playlist Sidebar List -->
-      <div id="playlist-sidebar" class="flex-1 overflow-y-auto px-3 space-y-1"></div>
+      <!-- Playlist Sidebar List (Scrollable) -->
+      <div id="playlist-sidebar" class="flex-1 overflow-y-auto px-3 space-y-1 min-h-[40px]"></div>
 
-      <!-- Add Music & Support -->
-      <div class="p-4 border-t border-zinc-800 space-y-2">
-        <button onclick="openUrlTrackModal()" class="w-full flex items-center justify-center gap-2 bg-[#1db954] hover:bg-emerald-400 text-black text-xs font-bold py-2.5 px-4 rounded-full transition">
+      <!-- Add Music & Support (Fixed at bottom of sidebar, clear of player bar) -->
+      <div class="p-3 border-t border-zinc-800 space-y-2 shrink-0 bg-[#121212]">
+        <button onclick="openUrlTrackModal()" class="w-full flex items-center justify-center gap-2 bg-[#1db954] hover:bg-emerald-400 text-black text-xs font-bold py-2 px-3 rounded-full transition">
           <i class="fa-solid fa-cloud"></i>
           <span>Add MP3/MP4 via URL</span>
         </button>
-        <label class="w-full flex items-center justify-center gap-2 bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-semibold py-2 px-4 rounded-full cursor-pointer transition">
+        <label class="w-full flex items-center justify-center gap-2 bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-semibold py-1.5 px-3 rounded-full cursor-pointer transition">
           <i class="fa-solid fa-file-audio text-[#1db954]"></i>
-          <span id="upload-btn-label">Import MP3 / MP4 Files</span>
+          <span id="upload-btn-label">Import Files</span>
           <input type="file" id="mp3-upload" accept=".mp3,.mp4,audio/mpeg,video/mp4,audio/*" multiple class="hidden" onchange="handleFileUpload(event)" />
         </label>
 
-        <div class="pt-2">
+        <div class="pt-1">
           <a
             href="https://buymeacoffee.com/mp3vision"
             target="_blank"
             rel="noopener noreferrer"
-            class="w-full flex items-center justify-center gap-2 bg-[#FFDD00] hover:bg-yellow-300 text-black text-xs font-extrabold py-2.5 px-4 rounded-full shadow transition hover:scale-[1.02]"
+            class="w-full flex items-center justify-center gap-2 bg-[#FFDD00] hover:bg-yellow-300 text-black text-xs font-extrabold py-2 px-3 rounded-full shadow transition hover:scale-[1.02]"
           >
             <i class="fa-solid fa-mug-hot text-sm"></i>
             <span>Buy Me a Coffee</span>
           </a>
-          <p class="text-[11px] text-zinc-400 text-center mt-1.5 leading-tight">
-            Support MP3 Vision to keep it <span class="text-white font-semibold">100% ad-free</span> — no ads at all!
+          <p class="text-[10px] text-zinc-400 text-center mt-1 leading-tight">
+            Support MP3 Vision: <span class="text-white font-semibold">no ads at all!</span>
           </p>
         </div>
       </div>
@@ -240,7 +241,7 @@
           </div>
         </div>
 
-        <!-- DETAILED LISTENING ANALYTICS DASHBOARD (Hidden on Home Page) -->
+        <!-- DETAILED LISTENING ANALYTICS DASHBOARD -->
         <div id="analytics-container" class="hidden space-y-6">
           
           <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -432,12 +433,15 @@
 
   <!-- BOTTOM PLAYER BAR -->
   <footer class="h-24 bg-black border-t border-zinc-900 px-4 flex items-center justify-between shrink-0 relative">
-    <!-- Live Frequency Visualizer Canvas -->
     <canvas id="audio-visualizer" class="absolute top-0 left-0 w-full h-1 pointer-events-none opacity-80"></canvas>
 
     <!-- Now Playing Info -->
     <div class="w-1/4 flex items-center gap-3.5 min-w-[200px]">
-      <img id="bottom-brand-logo" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 80'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='40' x2='120' y2='40' gradientUnits='userSpaceOnUse'%3E%3Cstop offset='0%25' stop-color='%231db954'/%3E%3Cstop offset='55%25' stop-color='%2306b6d4'/%3E%3Cstop offset='100%25' stop-color='%232563eb'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M26 62H18C10.268 62 4 55.732 4 48C4 40.916 9.261 35.063 16.091 34.132C18.675 21.503 29.852 12 43.25 12C54.996 12 65.039 19.286 69.115 29.591C71.351 28.57 73.836 28 76.45 28C86.253 28 94.2 35.947 94.2 45.75C94.2 46.185 94.184 46.616 94.153 47.043C100.885 48.395 106 54.349 106 61.5C106 61.668 105.997 61.834 105.991 62H88' stroke='url(%23g)' stroke-width='7' stroke-linecap='round' fill='none'/%3E%3Crect x='20' y='38' width='5' height='24' rx='2.5' fill='url(%23g)'/%3E%3Crect x='30' y='28' width='5' height='34' rx='2.5' fill='url(%23g)'/%3E%3Crect x='40' y='22' width='5' height='40' rx='2.5' fill='url(%23g)'/%3E%3Crect x='74' y='36' width='5' height='26' rx='2.5' fill='url(%23g)'/%3E%3Crect x='84' y='42' width='5' height='20' rx='2.5' fill='url(%23g)'/%3E%3Cpath d='M48 34L61 63L82 22' stroke='url(%23g)' stroke-width='8' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E" alt="MP3 Vision" class="w-9 h-7 object-contain opacity-85 hidden sm:block shrink-0" />
+      <svg class="w-9 h-9 shrink-0 hidden sm:block drop-shadow" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="60" cy="60" r="56" fill="#1e2229" stroke="url(#mp3vCircleGradBtm)" stroke-width="4"/>
+        <path d="M51 39L83 30C85.5 29.3 88 31.2 88 33.8V71C88 79.3 80.5 85.5 72 84C65.2 82.8 60.5 76.5 61.5 69.8C62.5 63.3 68.5 59 75 59.5C76.5 59.6 78 60 79 60.5V43.5L55 50.2V77C55 85.3 47.5 91.5 39 90C32.2 88.8 27.5 82.5 28.5 75.8C29.5 69.3 35.5 65 42 65.5C43.5 65.6 45 66 46 66.5V44.5C46 41.9 48.2 39.7 51 39Z" fill="url(#mp3vCircleGradBtm)"/>
+        <path d="M62 53.5C62 52.3 63.3 51.6 64.3 52.2L73.5 57.7C74.5 58.3 74.5 59.7 73.5 60.3L64.3 65.8C63.3 66.4 62 65.7 62 64.5V53.5Z" fill="#ffffff"/>
+      </svg>
       <div id="player-art" class="w-14 h-14 rounded-lg bg-zinc-800 ring-1 ring-white/20 flex items-center justify-center text-xl shrink-0">
         <i class="fa-solid fa-compact-disc text-zinc-500"></i>
       </div>
@@ -478,20 +482,17 @@
       </div>
     </div>
 
-    <!-- Unique Studio Controls: Speed, Sleep Timer, Lyrics/EQ/Ambient Drawer, Volume -->
+    <!-- Studio Controls: Speed, Sleep Timer, Lyrics/EQ/Ambient Drawer, Volume -->
     <div class="w-1/4 flex items-center justify-end gap-2.5 min-w-[240px]">
-      <!-- Playback Speed / Pitch Mode -->
-      <button onclick="cyclePlaybackSpeed()" id="btn-speed" title="Playback Speed (Normal / Nightcore / Slowed)" class="text-[11px] font-mono font-bold bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 px-2 py-1 rounded-md transition">
+      <button onclick="cyclePlaybackSpeed()" id="btn-speed" title="Playback Speed" class="text-[11px] font-mono font-bold bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 px-2 py-1 rounded-md transition">
         1.0x
       </button>
 
-      <!-- Sleep Timer -->
       <button onclick="cycleSleepTimer()" id="btn-sleep" title="Sleep Timer" class="text-zinc-400 hover:text-white text-xs bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 px-2 py-1 rounded-md transition flex items-center gap-1">
         <i class="fa-solid fa-moon"></i>
         <span id="sleep-timer-label" class="hidden font-mono text-[10px] text-[#1db954]"></span>
       </button>
 
-      <!-- Lyrics / 5-Band EQ / Ambient Drawer Toggle -->
       <button onclick="toggleStudioDrawer()" id="btn-studio" title="Lyrics, Equalizer & Ambient Mixer" class="text-zinc-400 hover:text-white text-xs bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 px-2.5 py-1 rounded-md transition flex items-center gap-1">
         <i class="fa-solid fa-sliders text-[#1db954]"></i>
         <span class="hidden xl:inline">Studio</span>
@@ -821,9 +822,7 @@
         analyser.connect(audioCtx.destination);
 
         startVisualizerLoop();
-      } catch (e) {
-        console.warn('Web Audio init skipped:', e);
-      }
+      } catch (e) {}
     }
 
     function startVisualizerLoop() {
@@ -886,9 +885,7 @@
       const level = (percent / 100) * 0.18;
 
       if (level <= 0) {
-        if (ambientNodes[type]) {
-          ambientNodes[type].gain.gain.value = 0;
-        }
+        if (ambientNodes[type]) ambientNodes[type].gain.gain.value = 0;
         return;
       }
 
@@ -1017,12 +1014,10 @@
       await restoreVaultUrlsForAllTracks();
 
       audio.volume = state.volume;
-      document.getElementById('device-label').textContent = state.deviceName;
       document.getElementById('auth-device').value = state.deviceName;
 
       renderAll();
 
-      // Keyboard Shortcuts (Space = Play/Pause, Arrows = Seek/Volume)
       window.addEventListener('keydown', (e) => {
         if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) return;
         if (e.code === 'Space') {
@@ -1142,7 +1137,7 @@
       }
 
       const lines = track.lyrics.split('\n');
-      display.innerHTML = lines.map((line, i) => {
+      display.innerHTML = lines.map((line) => {
         const match = line.match(/^\[(\d{1,2}):(\d{2})\]\s*(.*)$/);
         if (match) {
           const sec = parseInt(match[1], 10) * 60 + parseInt(match[2], 10);
@@ -1391,7 +1386,6 @@
 
       state.deviceName = device;
       localStorage.setItem('mp3v_device_name', device);
-      document.getElementById('device-label').textContent = device;
 
       submitBtn.disabled = true;
       submitBtn.textContent = 'Please wait...';
@@ -1418,7 +1412,6 @@
       if (newName) {
         state.deviceName = newName;
         localStorage.setItem('mp3v_device_name', newName);
-        document.getElementById('device-label').textContent = newName;
         syncStateToCloud();
         closeAuthModal();
       }
@@ -1669,7 +1662,7 @@
         }
       }
 
-      labelEl.textContent = 'Import MP3 / MP4 Files';
+      labelEl.textContent = 'Import Files';
       event.target.value = '';
       renderAll();
       syncStateToCloud();
@@ -2201,8 +2194,8 @@
         const el = document.getElementById('nav-' + nav);
         if (el) {
           el.className = viewId === nav
-            ? 'w-full flex items-center gap-3.5 text-sm font-semibold text-white bg-zinc-800/80 px-3 py-2 rounded-lg transition'
-            : 'w-full flex items-center gap-3.5 text-sm font-semibold text-zinc-400 hover:text-white px-3 py-2 rounded-lg transition';
+            ? 'w-full flex items-center gap-3 text-sm font-semibold text-white bg-zinc-800/80 px-3 py-1.5 rounded-lg transition'
+            : 'w-full flex items-center gap-3 text-sm font-semibold text-zinc-400 hover:text-white px-3 py-1.5 rounded-lg transition';
         }
       });
       renderAll();
@@ -2243,7 +2236,7 @@
     function renderPlaylistsSidebar() {
       const container = document.getElementById('playlist-sidebar');
       if (state.playlists.length === 0) {
-        container.innerHTML = `<div class="px-3 py-2 text-xs text-zinc-500">No playlists yet.</div>`;
+        container.innerHTML = `<div class="px-3 py-1.5 text-xs text-zinc-500">No playlists yet.</div>`;
         return;
       }
 
@@ -2254,7 +2247,7 @@
           : `<div class="w-5 h-5 rounded bg-gradient-to-br ${pl.coverColor || DEFAULT_COVER_GRADIENT} shrink-0"></div>`;
 
         return `
-          <div onclick="switchView('${pl.id}')" class="w-full px-3 py-2 rounded-md text-sm flex items-center justify-between cursor-pointer group ${active ? 'bg-zinc-800 text-white font-semibold' : 'text-zinc-400 hover:text-white hover:bg-zinc-900'} transition">
+          <div onclick="switchView('${pl.id}')" class="w-full px-3 py-1.5 rounded-md text-sm flex items-center justify-between cursor-pointer group ${active ? 'bg-zinc-800 text-white font-semibold' : 'text-zinc-400 hover:text-white hover:bg-zinc-900'} transition">
             <div class="flex items-center gap-2.5 truncate">
               ${thumbHtml}
               <span class="truncate">${pl.name}</span>

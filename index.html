@@ -107,8 +107,8 @@
           <button onclick="switchView('liked')" id="nav-liked" class="w-full flex items-center gap-3 text-sm font-semibold text-zinc-400 hover:text-white px-3 py-1.5 rounded-lg transition">
             <i class="fa-solid fa-heart text-base w-5 text-emerald-400"></i> Liked Songs
           </button>
-          <button onclick="switchView('help')" id="nav-help" class="w-full flex items-center gap-3 text-sm font-semibold text-zinc-400 hover:text-white px-3 py-1.5 rounded-lg transition">
-            <i class="fa-solid fa-circle-question text-base w-5 text-sky-400"></i> Help
+          <button onclick="switchView('tutorial')" id="nav-tutorial" class="w-full flex items-center gap-3 text-sm font-semibold text-zinc-400 hover:text-white px-3 py-1.5 rounded-lg transition">
+            <i class="fa-solid fa-graduation-cap text-base w-5 text-sky-400"></i> Tutorial
           </button>
         </nav>
       </div>
@@ -209,15 +209,98 @@
           </div>
         </div>
 
-        <!-- HELP PAGE VIEW -->
-        <div id="help-container" class="hidden space-y-6 max-w-2xl">
-          <div class="bg-[#181818] border border-zinc-800/80 rounded-2xl p-8 space-y-5 shadow-xl">
-            <h2 class="text-2xl sm:text-3xl font-bold text-white tracking-tight">Introduction to MP3 Vision</h2>
-            <div class="space-y-3 text-base text-zinc-200 leading-relaxed">
-              <p>Upload MP3 tracks once and play them forever!</p>
-              <p>Login to sync account stats.</p>
-              <p class="pt-2 text-[#1db954] font-semibold">Thank you for using MP3 Vision!</p>
+        <!-- FULL APP TUTORIAL VIEW (REPLACES INTRODUCTION) -->
+        <div id="tutorial-container" class="hidden space-y-6 max-w-5xl">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            
+            <!-- 1. Adding & Importing Audio -->
+            <div class="bg-[#181818] border border-zinc-800/80 rounded-2xl p-5 space-y-2.5 shadow-xl">
+              <div class="flex items-center gap-2.5 text-[#1db954] font-bold text-base">
+                <i class="fa-solid fa-file-audio text-lg"></i>
+                <h3>1. Adding & Importing Audio (MP3 & MP4)</h3>
+              </div>
+              <p class="text-xs text-zinc-300 leading-relaxed">
+                Click <b>Import Files</b> in the sidebar to upload local <code>.mp3</code> or <code>.mp4</code> files (video files play as audio-only). Imported files are stored permanently in your browser's <b>IndexedDB Vault</b> so they stay saved even after refreshing. You can also click <b>Add MP3/MP4 via URL</b> to link cloud or GitHub-hosted audio files.
+              </p>
             </div>
+
+            <!-- 2. Playlists & Custom Covers -->
+            <div class="bg-[#181818] border border-zinc-800/80 rounded-2xl p-5 space-y-2.5 shadow-xl">
+              <div class="flex items-center gap-2.5 text-sky-400 font-bold text-base">
+                <i class="fa-solid fa-folder-plus text-lg"></i>
+                <h3>2. Playlists, Reordering & Custom Covers</h3>
+              </div>
+              <p class="text-xs text-zinc-300 leading-relaxed">
+                Click the <b>+</b> icon next to Playlists in the sidebar to create a playlist. On any song row, click the <b>Folder+</b> icon to assign or remove it from playlists. Inside a playlist or All Songs, drag and drop rows (or use the up/down arrows) to reorder your queue. Open any playlist to click <b>Customize Cover</b> (choose a color theme or upload a custom image), <b>Rename</b>, or <b>Delete</b>.
+              </p>
+            </div>
+
+            <!-- 3. Editing Tracks & Search -->
+            <div class="bg-[#181818] border border-zinc-800/80 rounded-2xl p-5 space-y-2.5 shadow-xl">
+              <div class="flex items-center gap-2.5 text-purple-400 font-bold text-base">
+                <i class="fa-solid fa-pen-to-square text-lg"></i>
+                <h3>3. Song Info Editor, Likes & Instant Search</h3>
+              </div>
+              <p class="text-xs text-zinc-300 leading-relaxed">
+                Use the top search bar to filter tracks by title or artist in real time. Click the <b>Heart</b> icon on any track (or in the bottom player bar) to save it to <b>Liked Songs</b>. Click the <b>Pen</b> icon on any song to edit its Title, Artist Name, or Cloud Audio URL, or click the <b>Trash</b> icon to remove it.
+              </p>
+            </div>
+
+            <!-- 4. Synced Lyrics & .VTT Upload -->
+            <div class="bg-[#181818] border border-zinc-800/80 rounded-2xl p-5 space-y-2.5 shadow-xl">
+              <div class="flex items-center gap-2.5 text-emerald-400 font-bold text-base">
+                <i class="fa-solid fa-closed-captioning text-lg"></i>
+                <h3>4. Synced Lyrics (Type or Upload .VTT)</h3>
+              </div>
+              <p class="text-xs text-zinc-300 leading-relaxed">
+                Click <b>Studio</b> in the bottom-right bar and select the <b>Lyrics</b> tab. Click <b>Upload .VTT</b> to import a WebVTT subtitle/lyric file—timestamps are automatically parsed into clickable, auto-highlighting lines! Prefer typing? Click <b>Type / Edit</b> to type plain lyrics or timestamped lines like <code>[00:15] First verse</code>. Click any timestamped line during playback to jump directly to that moment.
+              </p>
+            </div>
+
+            <!-- 5. 5-Band EQ & Ambient Mixer -->
+            <div class="bg-[#181818] border border-zinc-800/80 rounded-2xl p-5 space-y-2.5 shadow-xl">
+              <div class="flex items-center gap-2.5 text-amber-400 font-bold text-base">
+                <i class="fa-solid fa-sliders text-lg"></i>
+                <h3>5. 5-Band Equalizer & Ambient Sound Mixer</h3>
+              </div>
+              <p class="text-xs text-zinc-300 leading-relaxed">
+                Inside the <b>Studio</b> drawer, switch to <b>5-Band EQ</b> to sculpt frequencies (60Hz to 14kHz) or pick a preset (Deep Bass, Crystal Vocals, Club, Acoustic). Switch to the <b>Ambient</b> tab to layer procedural background atmospheres—<b>Soft Rainfall</b>, <b>Lo-Fi Vinyl Crackle</b>, and <b>Deep Space Brown Noise</b>—directly underneath your music.
+              </p>
+            </div>
+
+            <!-- 6. Playback Speed, Sleep Timer & Shortcuts -->
+            <div class="bg-[#181818] border border-zinc-800/80 rounded-2xl p-5 space-y-2.5 shadow-xl">
+              <div class="flex items-center gap-2.5 text-pink-400 font-bold text-base">
+                <i class="fa-solid fa-gauge-high text-lg"></i>
+                <h3>6. Speed / Pitch Mode, Sleep Timer & Keys</h3>
+              </div>
+              <p class="text-xs text-zinc-300 leading-relaxed">
+                In the bottom-right player bar, click <b>1.0x</b> to cycle through normal, sped-up Nightcore (<code>1.25x</code>, <code>1.5x</code>), or slowed-down (<code>0.85x</code>) pitch modes. Click the <b>Moon</b> icon to set an automatic Sleep Timer (15m, 30m, or 60m). Use keyboard shortcuts anytime: <b>Spacebar</b> to Play/Pause, and <b>Left / Right Arrows</b> to seek 5 seconds.
+              </p>
+            </div>
+
+            <!-- 7. Detailed Listening Stats -->
+            <div class="bg-[#181818] border border-zinc-800/80 rounded-2xl p-5 space-y-2.5 shadow-xl">
+              <div class="flex items-center gap-2.5 text-orange-400 font-bold text-base">
+                <i class="fa-solid fa-chart-line text-lg"></i>
+                <h3>7. Detailed Listening Stats & Activity Chart</h3>
+              </div>
+              <p class="text-xs text-zinc-300 leading-relaxed">
+                Open <b>Detailed Stats</b> in the sidebar to view your Hours This Week, Total Hours Played, Daily Average, #1 Top Artist, 7-Day Activity Bar Chart, Top Listened Songs, and Top Artists—all tracked down to the second as you listen.
+              </p>
+            </div>
+
+            <!-- 8. Account Sync & Cross-Device Hand-off -->
+            <div class="bg-[#181818] border border-zinc-800/80 rounded-2xl p-5 space-y-2.5 shadow-xl">
+              <div class="flex items-center gap-2.5 text-cyan-400 font-bold text-base">
+                <i class="fa-solid fa-tower-broadcast text-lg"></i>
+                <h3>8. Account Login & Cross-Device Resume</h3>
+              </div>
+              <p class="text-xs text-zinc-300 leading-relaxed">
+                Click <b>Log In / Sign Up</b> in the top-right corner to sync your library metadata, playlists, lyrics, and listening stats across devices. If you're playing a song on another device, a green banner appears at the top allowing you to <b>Sync & Resume</b> from the exact timestamp.
+              </p>
+            </div>
+
           </div>
 
           <div class="bg-gradient-to-r from-zinc-900 to-[#181818] border border-yellow-500/30 rounded-2xl p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xl">
@@ -343,22 +426,42 @@
         </button>
       </div>
 
-      <!-- TAB 1: SYNCED LYRICS & NOTES -->
+      <!-- TAB 1: SYNCED LYRICS (VTT UPLOAD OR MANUAL TYPE) -->
       <div id="studio-panel-lyrics" class="flex-1 flex flex-col p-4 overflow-hidden space-y-3">
-        <div class="flex items-center justify-between">
+        <div class="flex items-center justify-between gap-2">
           <span id="lyrics-song-label" class="text-xs font-bold text-[#1db954] truncate">Select a song</span>
-          <button onclick="toggleLyricsEditMode()" id="lyrics-edit-btn" class="text-xs bg-zinc-800 hover:bg-zinc-700 px-2.5 py-1 rounded-full text-zinc-300">
-            <i class="fa-solid fa-pen"></i> Edit
-          </button>
+          <div class="flex items-center gap-1.5 shrink-0">
+            <label title="Upload .vtt or .lrc file" class="text-[11px] bg-zinc-800 hover:bg-zinc-700 px-2.5 py-1 rounded-full text-emerald-400 font-semibold cursor-pointer transition flex items-center gap-1">
+              <i class="fa-solid fa-file-arrow-up"></i> .VTT
+              <input type="file" id="vtt-upload-input" accept=".vtt,.lrc,text/vtt,text/plain" class="hidden" onchange="handleVttUpload(event)" />
+            </label>
+            <button onclick="toggleLyricsEditMode()" id="lyrics-edit-btn" class="text-[11px] bg-zinc-800 hover:bg-zinc-700 px-2.5 py-1 rounded-full text-zinc-300 font-semibold transition">
+              <i class="fa-solid fa-keyboard"></i> Type
+            </button>
+          </div>
         </div>
+
         <div id="lyrics-display-box" class="flex-1 overflow-y-auto text-sm text-zinc-200 whitespace-pre-line leading-relaxed bg-zinc-900/50 rounded-xl p-4 border border-zinc-800/60">
-          No lyrics saved for this track yet. Click Edit to add lyrics or timestamped lines like [00:15] Verse 1.
+          No lyrics saved for this track yet. Click .VTT to upload a WebVTT lyric file or click Type to write your own.
         </div>
+
         <div id="lyrics-editor-box" class="hidden flex-1 flex flex-col gap-2">
-          <textarea id="lyrics-textarea" placeholder="Paste lyrics here... Tip: Prefix lines with [mm:ss] for live highlight sync!" class="flex-1 w-full bg-zinc-900 border border-zinc-700 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-[#1db954] resize-none"></textarea>
-          <button onclick="saveTrackLyrics()" class="w-full bg-[#1db954] hover:bg-emerald-400 text-black text-xs font-bold py-2 rounded-full">
-            Save Lyrics
-          </button>
+          <div class="flex items-center justify-between text-[11px] text-zinc-400">
+            <span>Type lyrics or upload a <code>.vtt</code> file:</span>
+            <label class="text-[#1db954] hover:underline cursor-pointer font-semibold">
+              <i class="fa-solid fa-upload"></i> Import .VTT File
+              <input type="file" accept=".vtt,.lrc,text/vtt,text/plain" class="hidden" onchange="handleVttUpload(event)" />
+            </label>
+          </div>
+          <textarea id="lyrics-textarea" placeholder="Type lyrics here, or prefix lines with [mm:ss] for live sync...&#10;[00:12] First line of lyrics&#10;[00:18] Second line of lyrics" class="flex-1 w-full bg-zinc-900 border border-zinc-700 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-[#1db954] resize-none"></textarea>
+          <div class="flex gap-2">
+            <button onclick="toggleLyricsEditMode()" class="w-1/3 bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-bold py-2 rounded-full">
+              Cancel
+            </button>
+            <button onclick="saveTrackLyrics()" class="w-2/3 bg-[#1db954] hover:bg-emerald-400 text-black text-xs font-bold py-2 rounded-full">
+              Save Lyrics
+            </button>
+          </div>
         </div>
       </div>
 
@@ -438,6 +541,13 @@
     <!-- Now Playing Info -->
     <div class="w-1/4 flex items-center gap-3.5 min-w-[200px]">
       <svg class="w-9 h-9 shrink-0 hidden sm:block drop-shadow" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="mp3vCircleGradBtm" x1="25" y1="95" x2="95" y2="25" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#2563eb"/>
+            <stop offset="50%" stop-color="#06b6d4"/>
+            <stop offset="100%" stop-color="#1db954"/>
+          </linearGradient>
+        </defs>
         <circle cx="60" cy="60" r="56" fill="#1e2229" stroke="url(#mp3vCircleGradBtm)" stroke-width="4"/>
         <path d="M51 39L83 30C85.5 29.3 88 31.2 88 33.8V71C88 79.3 80.5 85.5 72 84C65.2 82.8 60.5 76.5 61.5 69.8C62.5 63.3 68.5 59 75 59.5C76.5 59.6 78 60 79 60.5V43.5L55 50.2V77C55 85.3 47.5 91.5 39 90C32.2 88.8 27.5 82.5 28.5 75.8C29.5 69.3 35.5 65 42 65.5C43.5 65.6 45 66 46 66.5V44.5C46 41.9 48.2 39.7 51 39Z" fill="url(#mp3vCircleGradBtm)"/>
         <path d="M62 53.5C62 52.3 63.3 51.6 64.3 52.2L73.5 57.7C74.5 58.3 74.5 59.7 73.5 60.3L64.3 65.8C63.3 66.4 62 65.7 62 64.5V53.5Z" fill="#ffffff"/>
@@ -1100,7 +1210,7 @@
     }
 
     // =========================================================================
-    // 6. UNIQUE STUDIO FEATURES: LYRICS, SPEED/PITCH & SLEEP TIMER
+    // 6. STUDIO FEATURES: LYRICS (MANUAL TYPE OR .VTT UPLOAD), SPEED & SLEEP
     // =========================================================================
     window.toggleStudioDrawer = () => {
       const drawer = document.getElementById('side-studio-drawer');
@@ -1117,6 +1227,67 @@
       });
     };
 
+    function parseVttToBracketedLyrics(rawText) {
+      const lines = rawText.replace(/\r\n/g, '\n').split('\n');
+      const output = [];
+      let currentTimestamp = null;
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i].trim();
+        if (!line || line === 'WEBVTT' || line.startsWith('NOTE') || /^\d+$/.test(line)) {
+          continue;
+        }
+        // Match WebVTT cue timing: 00:01:15.000 --> 00:01:20.000 or 01:15.000 --> 01:20.000
+        const vttMatch = line.match(/^(?:(\d{1,2}):)?(\d{2}):(\d{2})[.,]\d{1,3}\s*-->/);
+        if (vttMatch) {
+          const hrs = parseInt(vttMatch[1] || '0', 10);
+          const mins = parseInt(vttMatch[2], 10) + hrs * 60;
+          const secs = vttMatch[3];
+          currentTimestamp = `[${String(mins).padStart(2, '0')}:${secs}]`;
+          continue;
+        }
+
+        const cleanLine = line.replace(/<[^>]+>/g, '').trim();
+        if (cleanLine) {
+          if (currentTimestamp) {
+            output.push(`${currentTimestamp} ${cleanLine}`);
+            currentTimestamp = null;
+          } else {
+            output.push(cleanLine);
+          }
+        }
+      }
+      return output.join('\n');
+    }
+
+    window.handleVttUpload = (event) => {
+      const file = event.target.files[0];
+      event.target.value = '';
+      if (!file) return;
+
+      const track = state.tracks.find(t => t.id === state.currentTrackId);
+      if (!track) {
+        alert('Please select or play a song first before uploading lyrics.');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const content = e.target.result || '';
+        const isVtt = file.name.toLowerCase().endsWith('.vtt') || content.trim().startsWith('WEBVTT') || content.includes('-->');
+        const parsedLyrics = isVtt ? parseVttToBracketedLyrics(content) : content.trim();
+
+        track.lyrics = parsedLyrics;
+        document.getElementById('lyrics-textarea').value = parsedLyrics;
+        state.lyricsEditMode = false;
+        document.getElementById('lyrics-display-box').classList.remove('hidden');
+        document.getElementById('lyrics-editor-box').classList.add('hidden');
+        renderLyricsPanel();
+        syncStateToCloud();
+      };
+      reader.readAsText(file);
+    };
+
     function renderLyricsPanel() {
       const track = state.tracks.find(t => t.id === state.currentTrackId);
       const label = document.getElementById('lyrics-song-label');
@@ -1125,7 +1296,7 @@
 
       if (!track) {
         label.textContent = 'No song selected';
-        display.textContent = 'Play a song to view or add synced lyrics.';
+        display.textContent = 'Play a song to upload a .VTT file or type synced lyrics.';
         return;
       }
 
@@ -1133,13 +1304,13 @@
       textarea.value = track.lyrics || '';
 
       if (!track.lyrics || !track.lyrics.trim()) {
-        display.innerHTML = `<span class="text-zinc-500">No lyrics saved yet. Click Edit to paste lyrics or [mm:ss] synced lines.</span>`;
+        display.innerHTML = `<span class="text-zinc-500">No lyrics saved yet. Click <b>.VTT</b> to upload a WebVTT lyric file, or click <b>Type</b> to write your own.</span>`;
         return;
       }
 
       const lines = track.lyrics.split('\n');
       display.innerHTML = lines.map((line) => {
-        const match = line.match(/^\[(\d{1,2}):(\d{2})\]\s*(.*)$/);
+        const match = line.match(/^\[(\d{1,3}):(\d{2})(?:\.\d+)?\]\s*(.*)$/);
         if (match) {
           const sec = parseInt(match[1], 10) * 60 + parseInt(match[2], 10);
           return `<div data-lyric-sec="${sec}" onclick="jumpToLyricTime(${sec})" class="lyric-line py-1 px-2 rounded cursor-pointer hover:bg-zinc-800/60 text-zinc-400 transition">${match[3]}</div>`;
@@ -1170,7 +1341,10 @@
     };
 
     window.toggleLyricsEditMode = () => {
-      if (!state.currentTrackId) return;
+      if (!state.currentTrackId) {
+        alert('Please select or play a song first.');
+        return;
+      }
       state.lyricsEditMode = !state.lyricsEditMode;
       document.getElementById('lyrics-display-box').classList.toggle('hidden', state.lyricsEditMode);
       document.getElementById('lyrics-editor-box').classList.toggle('hidden', !state.lyricsEditMode);
@@ -1179,7 +1353,8 @@
     window.saveTrackLyrics = () => {
       const track = state.tracks.find(t => t.id === state.currentTrackId);
       if (!track) return;
-      track.lyrics = document.getElementById('lyrics-textarea').value;
+      const rawInput = document.getElementById('lyrics-textarea').value;
+      track.lyrics = rawInput.includes('-->') ? parseVttToBracketedLyrics(rawInput) : rawInput;
       state.lyricsEditMode = false;
       document.getElementById('lyrics-display-box').classList.remove('hidden');
       document.getElementById('lyrics-editor-box').classList.add('hidden');
@@ -2191,7 +2366,7 @@
 
     window.switchView = (viewId) => {
       state.currentView = viewId;
-      ['all', 'analytics', 'liked', 'help'].forEach(nav => {
+      ['all', 'analytics', 'liked', 'tutorial'].forEach(nav => {
         const el = document.getElementById('nav-' + nav);
         if (el) {
           el.className = viewId === nav
@@ -2372,12 +2547,12 @@
       const typeEl = document.getElementById('view-type');
       const subtitleEl = document.getElementById('view-subtitle');
       const coverEl = document.getElementById('view-cover');
-      const helpBox = document.getElementById('help-container');
+      const tutorialBox = document.getElementById('tutorial-container');
       const analyticsBox = document.getElementById('analytics-container');
       const songSection = document.getElementById('song-table-section');
       const plHeaderActions = document.getElementById('playlist-header-actions');
 
-      helpBox.classList.add('hidden');
+      tutorialBox.classList.add('hidden');
       analyticsBox.classList.add('hidden');
       songSection.classList.remove('hidden');
       plHeaderActions.classList.add('hidden');
@@ -2393,12 +2568,13 @@
       if (state.currentView === 'all') {
         typeEl.textContent = 'MP3 VISION LIBRARY';
         titleEl.textContent = 'All Songs';
-      } else if (state.currentView === 'help') {
-        typeEl.textContent = 'GUIDE & SUPPORT';
-        titleEl.textContent = 'Help';
+      } else if (state.currentView === 'tutorial') {
+        typeEl.textContent = 'COMPLETE FEATURE GUIDE';
+        titleEl.textContent = 'Tutorial';
+        subtitleEl.textContent = 'Everything you can do in MP3 Vision';
         coverEl.className = 'w-32 h-32 rounded-lg bg-gradient-to-br from-sky-500 to-zinc-900 shadow-2xl flex items-center justify-center text-4xl shrink-0';
-        coverEl.innerHTML = `<i class="fa-solid fa-circle-question"></i>`;
-        helpBox.classList.remove('hidden');
+        coverEl.innerHTML = `<i class="fa-solid fa-graduation-cap"></i>`;
+        tutorialBox.classList.remove('hidden');
         songSection.classList.add('hidden');
         return;
       } else if (state.currentView === 'liked') {

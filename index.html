@@ -9,6 +9,7 @@
   <style>
     :root {
       --accent-green: #1db954;
+      --accent-cyan: #06b6d4;
     }
     body {
       background-color: #000;
@@ -20,7 +21,7 @@
     input[type="range"] {
       -webkit-appearance: none;
       appearance: none;
-      background: #4d4d4d;
+      background: #3f3f46;
       height: 4px;
       border-radius: 2px;
       cursor: pointer;
@@ -33,20 +34,20 @@
       border-radius: 50%;
       background: #fff;
       cursor: pointer;
-      transition: transform 0.1s ease, background-color 0.1s ease;
+      transition: transform 0.15s ease, background-color 0.15s ease;
     }
     input[type="range"]:hover::-webkit-slider-thumb {
       background: var(--accent-green);
-      transform: scale(1.2);
+      transform: scale(1.3);
     }
     .drag-over {
       border-top: 2px solid #1db954 !important;
       background-color: rgba(29, 185, 84, 0.12) !important;
     }
-    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 4px; }
-    ::-webkit-scrollbar-thumb:hover { background: #52525b; }
+    ::-webkit-scrollbar-thumb { background: #27272a; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
   </style>
 </head>
 <body class="h-screen flex flex-col">
@@ -71,15 +72,31 @@
   <div class="flex-1 flex gap-2 p-2 overflow-hidden">
     
     <!-- LEFT SIDEBAR -->
-    <aside class="w-64 bg-[#121212] rounded-lg flex flex-col overflow-hidden shrink-0">
+    <aside class="w-64 bg-[#121212] rounded-lg flex flex-col overflow-hidden shrink-0 border border-zinc-900">
       <div class="p-5 space-y-4">
-        <div class="flex items-center gap-2.5 text-xl font-bold tracking-tight text-white">
-          <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-[#1db954] to-emerald-700 text-black flex items-center justify-center text-lg shadow">
-            <i class="fa-solid fa-wave-square"></i>
+        <div class="flex items-center gap-3 text-xl font-bold tracking-tight text-white">
+          <svg class="w-10 h-10 shrink-0 drop-shadow" viewBox="0 0 120 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="mp3vGrad" x1="0" y1="40" x2="120" y2="40" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#1db954"/>
+                <stop offset="55%" stop-color="#06b6d4"/>
+                <stop offset="100%" stop-color="#2563eb"/>
+              </linearGradient>
+            </defs>
+            <path d="M26 62H18C10.268 62 4 55.732 4 48C4 40.916 9.261 35.063 16.091 34.132C18.675 21.503 29.852 12 43.25 12C54.996 12 65.039 19.286 69.115 29.591C71.351 28.57 73.836 28 76.45 28C86.253 28 94.2 35.947 94.2 45.75C94.2 46.185 94.184 46.616 94.153 47.043C100.885 48.395 106 54.349 106 61.5C106 61.668 105.997 61.834 105.991 62H88" stroke="url(#mp3vGrad)" stroke-width="7" stroke-linecap="round"/>
+            <rect x="20" y="38" width="5" height="24" rx="2.5" fill="url(#mp3vGrad)"/>
+            <rect x="30" y="28" width="5" height="34" rx="2.5" fill="url(#mp3vGrad)"/>
+            <rect x="40" y="22" width="5" height="40" rx="2.5" fill="url(#mp3vGrad)"/>
+            <rect x="74" y="36" width="5" height="26" rx="2.5" fill="url(#mp3vGrad)"/>
+            <rect x="84" y="42" width="5" height="20" rx="2.5" fill="url(#mp3vGrad)"/>
+            <path d="M48 34L61 63L82 22" stroke="url(#mp3vGrad)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <div>
+            <span class="text-white">MP3</span> <span class="text-[#1db954]">Vision</span>
           </div>
-          <span>MP3 Vision</span>
         </div>
-        <nav class="space-y-1.5 pt-2">
+
+        <nav class="space-y-1.5 pt-1">
           <button onclick="switchView('all')" id="nav-all" class="w-full flex items-center gap-3.5 text-sm font-semibold text-white bg-zinc-800/80 px-3 py-2 rounded-lg transition">
             <i class="fa-solid fa-house text-base w-5"></i> Home / All Songs
           </button>
@@ -108,7 +125,7 @@
       <!-- Playlist Sidebar List -->
       <div id="playlist-sidebar" class="flex-1 overflow-y-auto px-3 space-y-1"></div>
 
-      <!-- Add Music & Buy Me a Coffee Support -->
+      <!-- Add Music & Support -->
       <div class="p-4 border-t border-zinc-800 space-y-2">
         <button onclick="openUrlTrackModal()" class="w-full flex items-center justify-center gap-2 bg-[#1db954] hover:bg-emerald-400 text-black text-xs font-bold py-2.5 px-4 rounded-full transition">
           <i class="fa-solid fa-cloud"></i>
@@ -120,7 +137,6 @@
           <input type="file" id="mp3-upload" accept=".mp3,.mp4,audio/mpeg,video/mp4,audio/*" multiple class="hidden" onchange="handleFileUpload(event)" />
         </label>
 
-        <!-- Buy Me a Coffee Support Card -->
         <div class="pt-2">
           <a
             href="https://buymeacoffee.com/mp3vision"
@@ -139,7 +155,7 @@
     </aside>
 
     <!-- CENTER CONTENT AREA -->
-    <main class="flex-1 bg-gradient-to-b from-zinc-900 via-[#121212] to-[#121212] rounded-lg flex flex-col overflow-hidden">
+    <main class="flex-1 bg-gradient-to-b from-cyan-950/60 via-[#121212] to-[#121212] rounded-lg flex flex-col overflow-hidden border border-zinc-900">
       
       <!-- Top Bar -->
       <header class="h-16 px-6 flex items-center justify-between bg-black/30 backdrop-blur-md shrink-0">
@@ -150,7 +166,7 @@
             id="search-input"
             oninput="renderMainContent()"
             placeholder="Search songs or artists..."
-            class="w-full bg-zinc-800/90 hover:bg-zinc-800 focus:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-white text-sm rounded-full pl-10 pr-4 py-2 text-white placeholder-zinc-400"
+            class="w-full bg-zinc-800/90 hover:bg-zinc-800 focus:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-[#1db954] text-sm rounded-full pl-10 pr-4 py-2 text-white placeholder-zinc-400 transition"
           />
         </div>
 
@@ -203,7 +219,6 @@
             </div>
           </div>
 
-          <!-- Support / Buy Me a Coffee Card on Help Page -->
           <div class="bg-gradient-to-r from-zinc-900 to-[#181818] border border-yellow-500/30 rounded-2xl p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xl">
             <div class="space-y-1">
               <h3 class="text-lg font-bold text-white flex items-center gap-2">
@@ -253,7 +268,7 @@
                 <i class="fa-solid fa-bolt text-amber-400"></i>
               </div>
               <div id="stat-daily-avg" class="text-2xl sm:text-3xl font-extrabold text-white mt-2">0 mins</div>
-              <div id="stat-daily-avg-sub" class="text-xs text-zinc-500 mt-1">Per active listening day</div>
+              <div class="text-xs text-zinc-500 mt-1">Per active listening day</div>
             </div>
 
             <div class="bg-[#181818] p-4 rounded-xl border border-zinc-800/80">
@@ -300,7 +315,7 @@
         </div>
 
         <!-- SONG TABLE -->
-        <div id="song-table-section">
+        <div id="song-table-section" class="bg-[#181818] border border-zinc-800/80 rounded-xl p-4 shadow-xl">
           <div class="grid grid-cols-12 text-xs font-semibold uppercase tracking-wider text-zinc-400 border-b border-zinc-800 pb-2 px-3">
             <div class="col-span-1">#</div>
             <div class="col-span-4">Title</div>
@@ -313,12 +328,117 @@
 
       </div>
     </main>
+
+    <!-- RIGHT DRAWER: LYRICS / EQ / AMBIENT MIXER -->
+    <aside id="side-studio-drawer" class="hidden w-80 bg-[#121212] rounded-lg border border-zinc-900 flex flex-col overflow-hidden shrink-0">
+      <div class="h-16 px-4 border-b border-zinc-800 flex items-center justify-between shrink-0">
+        <div class="flex gap-1 bg-zinc-900 p-1 rounded-lg text-xs font-bold">
+          <button onclick="switchStudioTab('lyrics')" id="studio-tab-lyrics" class="px-2.5 py-1 rounded bg-zinc-800 text-white">Lyrics</button>
+          <button onclick="switchStudioTab('eq')" id="studio-tab-eq" class="px-2.5 py-1 rounded text-zinc-400 hover:text-white">5-Band EQ</button>
+          <button onclick="switchStudioTab('ambient')" id="studio-tab-ambient" class="px-2.5 py-1 rounded text-zinc-400 hover:text-white">Ambient</button>
+        </div>
+        <button onclick="toggleStudioDrawer()" class="text-zinc-400 hover:text-white">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- TAB 1: SYNCED LYRICS & NOTES -->
+      <div id="studio-panel-lyrics" class="flex-1 flex flex-col p-4 overflow-hidden space-y-3">
+        <div class="flex items-center justify-between">
+          <span id="lyrics-song-label" class="text-xs font-bold text-[#1db954] truncate">Select a song</span>
+          <button onclick="toggleLyricsEditMode()" id="lyrics-edit-btn" class="text-xs bg-zinc-800 hover:bg-zinc-700 px-2.5 py-1 rounded-full text-zinc-300">
+            <i class="fa-solid fa-pen"></i> Edit
+          </button>
+        </div>
+        <div id="lyrics-display-box" class="flex-1 overflow-y-auto text-sm text-zinc-200 whitespace-pre-line leading-relaxed bg-zinc-900/50 rounded-xl p-4 border border-zinc-800/60">
+          No lyrics saved for this track yet. Click Edit to add lyrics or timestamped lines like [00:15] Verse 1.
+        </div>
+        <div id="lyrics-editor-box" class="hidden flex-1 flex flex-col gap-2">
+          <textarea id="lyrics-textarea" placeholder="Paste lyrics here... Tip: Prefix lines with [mm:ss] for live highlight sync!" class="flex-1 w-full bg-zinc-900 border border-zinc-700 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-[#1db954] resize-none"></textarea>
+          <button onclick="saveTrackLyrics()" class="w-full bg-[#1db954] hover:bg-emerald-400 text-black text-xs font-bold py-2 rounded-full">
+            Save Lyrics
+          </button>
+        </div>
+      </div>
+
+      <!-- TAB 2: 5-BAND WEB AUDIO EQUALIZER -->
+      <div id="studio-panel-eq" class="hidden flex-1 p-4 space-y-5 overflow-y-auto">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold uppercase text-zinc-400">Sound Presets</span>
+          <select id="eq-preset-select" onchange="applyEqPreset(this.value)" class="bg-zinc-900 border border-zinc-700 rounded-lg px-2.5 py-1 text-xs text-white focus:outline-none">
+            <option value="flat">Flat / Default</option>
+            <option value="bass">Deep Bass Boost</option>
+            <option value="vocal">Crystal Vocals</option>
+            <option value="electronic">Electronic / Club</option>
+            <option value="acoustic">Warm Acoustic</option>
+          </select>
+        </div>
+
+        <div class="space-y-4 bg-zinc-900/50 p-4 rounded-xl border border-zinc-800/60">
+          <div>
+            <div class="flex justify-between text-xs mb-1"><span>60 Hz (Sub Bass)</span><span id="eq-val-0" class="font-mono text-[#1db954]">0 dB</span></div>
+            <input type="range" min="-12" max="12" step="1" value="0" oninput="setEqBand(0, this.value)" class="w-full" />
+          </div>
+          <div>
+            <div class="flex justify-between text-xs mb-1"><span>230 Hz (Warmth)</span><span id="eq-val-1" class="font-mono text-[#1db954]">0 dB</span></div>
+            <input type="range" min="-12" max="12" step="1" value="0" oninput="setEqBand(1, this.value)" class="w-full" />
+          </div>
+          <div>
+            <div class="flex justify-between text-xs mb-1"><span>910 Hz (Midrange)</span><span id="eq-val-2" class="font-mono text-[#1db954]">0 dB</span></div>
+            <input type="range" min="-12" max="12" step="1" value="0" oninput="setEqBand(2, this.value)" class="w-full" />
+          </div>
+          <div>
+            <div class="flex justify-between text-xs mb-1"><span>3.6 kHz (Presence)</span><span id="eq-val-3" class="font-mono text-[#1db954]">0 dB</span></div>
+            <input type="range" min="-12" max="12" step="1" value="0" oninput="setEqBand(3, this.value)" class="w-full" />
+          </div>
+          <div>
+            <div class="flex justify-between text-xs mb-1"><span>14 kHz (Air / Treble)</span><span id="eq-val-4" class="font-mono text-[#1db954]">0 dB</span></div>
+            <input type="range" min="-12" max="12" step="1" value="0" oninput="setEqBand(4, this.value)" class="w-full" />
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 3: AMBIENT SOUND LAYER MIXER -->
+      <div id="studio-panel-ambient" class="hidden flex-1 p-4 space-y-4 overflow-y-auto">
+        <p class="text-xs text-zinc-400">Layer relaxing background atmospheres underneath your music.</p>
+        <div class="space-y-3">
+          <div class="bg-zinc-900/60 p-3.5 rounded-xl border border-zinc-800 space-y-2">
+            <div class="flex items-center justify-between text-xs font-semibold">
+              <span><i class="fa-solid fa-cloud-rain text-sky-400 mr-1.5"></i> Soft Rainfall</span>
+              <span id="amb-val-rain" class="font-mono text-zinc-400">0%</span>
+            </div>
+            <input type="range" min="0" max="100" value="0" oninput="setAmbientLevel('rain', this.value)" class="w-full" />
+          </div>
+
+          <div class="bg-zinc-900/60 p-3.5 rounded-xl border border-zinc-800 space-y-2">
+            <div class="flex items-center justify-between text-xs font-semibold">
+              <span><i class="fa-solid fa-record-vinyl text-amber-400 mr-1.5"></i> Lo-Fi Vinyl Crackle</span>
+              <span id="amb-val-vinyl" class="font-mono text-zinc-400">0%</span>
+            </div>
+            <input type="range" min="0" max="100" value="0" oninput="setAmbientLevel('vinyl', this.value)" class="w-full" />
+          </div>
+
+          <div class="bg-zinc-900/60 p-3.5 rounded-xl border border-zinc-800 space-y-2">
+            <div class="flex items-center justify-between text-xs font-semibold">
+              <span><i class="fa-solid fa-wind text-emerald-400 mr-1.5"></i> Deep Space Brown Noise</span>
+              <span id="amb-val-brown" class="font-mono text-zinc-400">0%</span>
+            </div>
+            <input type="range" min="0" max="100" value="0" oninput="setAmbientLevel('brown', this.value)" class="w-full" />
+          </div>
+        </div>
+      </div>
+    </aside>
   </div>
 
   <!-- BOTTOM PLAYER BAR -->
-  <footer class="h-24 bg-black border-t border-zinc-900 px-4 flex items-center justify-between shrink-0">
-    <div class="w-1/4 flex items-center gap-4 min-w-[180px]">
-      <div id="player-art" class="w-14 h-14 rounded bg-zinc-800 flex items-center justify-center text-xl shrink-0">
+  <footer class="h-24 bg-black border-t border-zinc-900 px-4 flex items-center justify-between shrink-0 relative">
+    <!-- Live Frequency Visualizer Canvas -->
+    <canvas id="audio-visualizer" class="absolute top-0 left-0 w-full h-1 pointer-events-none opacity-80"></canvas>
+
+    <!-- Now Playing Info -->
+    <div class="w-1/4 flex items-center gap-3.5 min-w-[200px]">
+      <img id="bottom-brand-logo" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 80'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='40' x2='120' y2='40' gradientUnits='userSpaceOnUse'%3E%3Cstop offset='0%25' stop-color='%231db954'/%3E%3Cstop offset='55%25' stop-color='%2306b6d4'/%3E%3Cstop offset='100%25' stop-color='%232563eb'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M26 62H18C10.268 62 4 55.732 4 48C4 40.916 9.261 35.063 16.091 34.132C18.675 21.503 29.852 12 43.25 12C54.996 12 65.039 19.286 69.115 29.591C71.351 28.57 73.836 28 76.45 28C86.253 28 94.2 35.947 94.2 45.75C94.2 46.185 94.184 46.616 94.153 47.043C100.885 48.395 106 54.349 106 61.5C106 61.668 105.997 61.834 105.991 62H88' stroke='url(%23g)' stroke-width='7' stroke-linecap='round' fill='none'/%3E%3Crect x='20' y='38' width='5' height='24' rx='2.5' fill='url(%23g)'/%3E%3Crect x='30' y='28' width='5' height='34' rx='2.5' fill='url(%23g)'/%3E%3Crect x='40' y='22' width='5' height='40' rx='2.5' fill='url(%23g)'/%3E%3Crect x='74' y='36' width='5' height='26' rx='2.5' fill='url(%23g)'/%3E%3Crect x='84' y='42' width='5' height='20' rx='2.5' fill='url(%23g)'/%3E%3Cpath d='M48 34L61 63L82 22' stroke='url(%23g)' stroke-width='8' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E" alt="MP3 Vision" class="w-9 h-7 object-contain opacity-85 hidden sm:block shrink-0" />
+      <div id="player-art" class="w-14 h-14 rounded-lg bg-zinc-800 ring-1 ring-white/20 flex items-center justify-center text-xl shrink-0">
         <i class="fa-solid fa-compact-disc text-zinc-500"></i>
       </div>
       <div class="overflow-hidden">
@@ -330,6 +450,7 @@
       </button>
     </div>
 
+    <!-- Transport Controls + Seek Bar -->
     <div class="w-2/4 max-w-xl flex flex-col items-center gap-2">
       <div class="flex items-center gap-6">
         <button onclick="toggleShuffle()" id="btn-shuffle" title="Shuffle" class="text-zinc-400 hover:text-white text-sm transition relative">
@@ -357,14 +478,29 @@
       </div>
     </div>
 
-    <div class="w-1/4 flex items-center justify-end gap-3 min-w-[180px]">
-      <span id="device-indicator" class="text-[11px] text-[#1db954] hidden md:flex items-center gap-1 bg-emerald-950/60 px-2.5 py-1 rounded-full">
-        <i class="fa-solid fa-laptop"></i> <span id="device-label">Web Player</span>
-      </span>
+    <!-- Unique Studio Controls: Speed, Sleep Timer, Lyrics/EQ/Ambient Drawer, Volume -->
+    <div class="w-1/4 flex items-center justify-end gap-2.5 min-w-[240px]">
+      <!-- Playback Speed / Pitch Mode -->
+      <button onclick="cyclePlaybackSpeed()" id="btn-speed" title="Playback Speed (Normal / Nightcore / Slowed)" class="text-[11px] font-mono font-bold bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 px-2 py-1 rounded-md transition">
+        1.0x
+      </button>
+
+      <!-- Sleep Timer -->
+      <button onclick="cycleSleepTimer()" id="btn-sleep" title="Sleep Timer" class="text-zinc-400 hover:text-white text-xs bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 px-2 py-1 rounded-md transition flex items-center gap-1">
+        <i class="fa-solid fa-moon"></i>
+        <span id="sleep-timer-label" class="hidden font-mono text-[10px] text-[#1db954]"></span>
+      </button>
+
+      <!-- Lyrics / 5-Band EQ / Ambient Drawer Toggle -->
+      <button onclick="toggleStudioDrawer()" id="btn-studio" title="Lyrics, Equalizer & Ambient Mixer" class="text-zinc-400 hover:text-white text-xs bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 px-2.5 py-1 rounded-md transition flex items-center gap-1">
+        <i class="fa-solid fa-sliders text-[#1db954]"></i>
+        <span class="hidden xl:inline">Studio</span>
+      </button>
+
       <button onclick="toggleMute()" id="btn-mute" class="text-zinc-400 hover:text-white w-5">
         <i class="fa-solid fa-volume-high"></i>
       </button>
-      <input type="range" id="volume-bar" value="80" min="0" max="100" oninput="changeVolume(this.value)" class="w-24" />
+      <input type="range" id="volume-bar" value="80" min="0" max="100" oninput="changeVolume(this.value)" class="w-20" />
     </div>
   </footer>
 
@@ -373,7 +509,7 @@
   <!-- ======================================================================= -->
 
   <!-- 1. PLAYLIST COVER CUSTOMIZER MODAL -->
-  <div id="cover-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+  <div id="cover-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-4">
     <div class="bg-[#181818] border border-zinc-800 rounded-2xl w-full max-w-md p-6 shadow-2xl space-y-5">
       <div class="flex items-center justify-between">
         <h3 class="text-lg font-bold flex items-center gap-2">
@@ -410,7 +546,7 @@
   </div>
 
   <!-- 2. REAL FIREBASE AUTH MODAL -->
-  <div id="auth-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+  <div id="auth-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-4">
     <div class="bg-[#181818] border border-zinc-800 rounded-2xl w-full max-w-md p-6 shadow-2xl">
       <div class="flex items-center justify-between mb-4">
         <h3 class="text-xl font-bold flex items-center gap-2">
@@ -467,7 +603,7 @@
   </div>
 
   <!-- 3. EDIT SONG & ARTIST MODAL -->
-  <div id="edit-song-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+  <div id="edit-song-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-4">
     <div class="bg-[#181818] border border-zinc-800 rounded-2xl w-full max-w-sm p-6 shadow-2xl space-y-4">
       <div class="flex items-center justify-between">
         <h3 class="text-lg font-bold">Edit Song Info</h3>
@@ -495,7 +631,7 @@
   </div>
 
   <!-- 4. CREATE / RENAME PLAYLIST MODAL -->
-  <div id="playlist-name-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+  <div id="playlist-name-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-4">
     <div class="bg-[#181818] border border-zinc-800 rounded-2xl w-full max-w-sm p-6 shadow-2xl space-y-4">
       <div class="flex items-center justify-between">
         <h3 id="playlist-modal-heading" class="text-lg font-bold">Create Playlist</h3>
@@ -515,8 +651,8 @@
   </div>
 
   <!-- 5. ASSIGN SONG TO PLAYLISTS MODAL -->
-  <div id="assign-playlist-modal" class="hidden fixed inset-0 bg-black/75 flex items-center justify-center z-50 p-4">
-    <div class="bg-[#181818] border border-zinc-800 rounded-xl w-80 p-5">
+  <div id="assign-playlist-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-4">
+    <div class="bg-[#181818] border border-zinc-800 rounded-xl w-80 p-5 shadow-2xl">
       <div class="flex items-center justify-between mb-3">
         <h4 class="font-bold text-sm">Add / Remove from Playlists</h4>
         <button onclick="closeAssignPlaylistModal()" class="text-zinc-400 hover:text-white">
@@ -528,7 +664,7 @@
   </div>
 
   <!-- 6. ADD MP3/MP4 BY URL / GITHUB MODAL -->
-  <div id="url-track-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+  <div id="url-track-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-4">
     <div class="bg-[#181818] border border-zinc-800 rounded-2xl w-full max-w-md p-6 shadow-2xl space-y-4">
       <div class="flex items-center justify-between">
         <h3 class="text-lg font-bold">Add Cloud MP3 or MP4 (Audio Only)</h3>
@@ -556,7 +692,7 @@
   </div>
 
   <!-- ======================================================================= -->
-  <!-- FIREBASE, INDEXEDDB PERSISTENT AUDIO VAULT & APP LOGIC -->
+  <!-- FIREBASE, INDEXEDDB PERSISTENT AUDIO VAULT, WEB AUDIO STUDIO & LOGIC -->
   <!-- ======================================================================= -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/13.3.0/firebase-app.js";
@@ -593,7 +729,7 @@
     const rtdb = getDatabase(app);
 
     // =========================================================================
-    // 1. PERSISTENT INDEXEDDB MEDIA VAULT (SURVIVES PAGE REFRESHES!)
+    // 1. PERSISTENT INDEXEDDB MEDIA VAULT
     // =========================================================================
     const VaultDB = {
       dbName: 'MP3VisionMediaVault',
@@ -620,9 +756,7 @@
             tx.oncomplete = () => resolve();
             tx.onerror = () => reject(tx.error);
           });
-        } catch (e) {
-          console.warn('IndexedDB save failed:', e);
-        }
+        } catch (e) {}
       },
       async getFileUrl(trackId) {
         try {
@@ -630,13 +764,7 @@
           return new Promise((resolve) => {
             const tx = db.transaction(this.storeName, 'readonly');
             const req = tx.objectStore(this.storeName).get(trackId);
-            req.onsuccess = () => {
-              if (req.result) {
-                resolve(URL.createObjectURL(req.result));
-              } else {
-                resolve(null);
-              }
-            };
+            req.onsuccess = () => resolve(req.result ? URL.createObjectURL(req.result) : null);
             req.onerror = () => resolve(null);
           });
         } catch (e) {
@@ -653,7 +781,158 @@
     };
 
     // =========================================================================
-    // 2. PLAYLIST COVER PALETTE DEFINITIONS
+    // 2. WEB AUDIO ENGINE: VISUALIZER, 5-BAND EQ & AMBIENT SOUND GENERATOR
+    // =========================================================================
+    const audio = new Audio();
+    audio.crossOrigin = 'anonymous';
+
+    let audioCtx = null;
+    let analyser = null;
+    let eqFilters = [];
+    const ambientNodes = { rain: null, vinyl: null, brown: null };
+
+    function initWebAudioStudio() {
+      if (audioCtx) {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        return;
+      }
+      try {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        audioCtx = new AudioContextClass();
+        const source = audioCtx.createMediaElementSource(audio);
+
+        const freqs = [60, 230, 910, 3600, 14000];
+        eqFilters = freqs.map((f, idx) => {
+          const filter = audioCtx.createBiquadFilter();
+          filter.type = idx === 0 ? 'lowshelf' : (idx === freqs.length - 1 ? 'highshelf' : 'peaking');
+          filter.frequency.value = f;
+          filter.gain.value = 0;
+          return filter;
+        });
+
+        analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 128;
+
+        source.connect(eqFilters[0]);
+        for (let i = 0; i < eqFilters.length - 1; i++) {
+          eqFilters[i].connect(eqFilters[i + 1]);
+        }
+        eqFilters[eqFilters.length - 1].connect(analyser);
+        analyser.connect(audioCtx.destination);
+
+        startVisualizerLoop();
+      } catch (e) {
+        console.warn('Web Audio init skipped:', e);
+      }
+    }
+
+    function startVisualizerLoop() {
+      const canvas = document.getElementById('audio-visualizer');
+      const ctx = canvas.getContext('2d');
+      const bufferLength = analyser.frequencyBinCount;
+      const dataArray = new Uint8Array(bufferLength);
+
+      function draw() {
+        requestAnimationFrame(draw);
+        canvas.width = canvas.offsetWidth;
+        canvas.height = canvas.offsetHeight;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        if (audio.paused) return;
+        analyser.getByteFrequencyData(dataArray);
+
+        const barWidth = (canvas.width / bufferLength) * 1.5;
+        let x = 0;
+        for (let i = 0; i < bufferLength; i++) {
+          const v = dataArray[i] / 255;
+          const grad = ctx.createLinearGradient(0, 0, canvas.width, 0);
+          grad.addColorStop(0, '#1db954');
+          grad.addColorStop(0.5, '#06b6d4');
+          grad.addColorStop(1, '#2563eb');
+          ctx.fillStyle = grad;
+          ctx.globalAlpha = Math.max(0.2, v);
+          ctx.fillRect(x, 0, barWidth - 1, canvas.height);
+          x += barWidth;
+        }
+      }
+      draw();
+    }
+
+    window.setEqBand = (bandIdx, dbVal) => {
+      initWebAudioStudio();
+      document.getElementById(`eq-val-${bandIdx}`).textContent = `${dbVal > 0 ? '+' : ''}${dbVal} dB`;
+      if (eqFilters[bandIdx]) eqFilters[bandIdx].gain.value = parseFloat(dbVal);
+    };
+
+    window.applyEqPreset = (preset) => {
+      const presets = {
+        flat: [0, 0, 0, 0, 0],
+        bass: [8, 4, -1, 1, 2],
+        vocal: [-2, 1, 5, 4, 2],
+        electronic: [6, 2, -2, 4, 6],
+        acoustic: [3, 2, 1, 3, 4]
+      };
+      const values = presets[preset] || presets.flat;
+      const sliders = document.querySelectorAll('#studio-panel-eq input[type="range"]');
+      values.forEach((val, i) => {
+        if (sliders[i]) sliders[i].value = val;
+        window.setEqBand(i, val);
+      });
+    };
+
+    window.setAmbientLevel = (type, percent) => {
+      initWebAudioStudio();
+      document.getElementById(`amb-val-${type}`).textContent = `${percent}%`;
+      const level = (percent / 100) * 0.18;
+
+      if (level <= 0) {
+        if (ambientNodes[type]) {
+          ambientNodes[type].gain.gain.value = 0;
+        }
+        return;
+      }
+
+      if (!ambientNodes[type] && audioCtx) {
+        const bufferSize = audioCtx.sampleRate * 3;
+        const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+        const data = buffer.getChannelData(0);
+        let lastOut = 0;
+
+        for (let i = 0; i < bufferSize; i++) {
+          const white = Math.random() * 2 - 1;
+          if (type === 'rain') {
+            data[i] = white * 0.6;
+          } else if (type === 'vinyl') {
+            data[i] = Math.random() > 0.997 ? (Math.random() * 2 - 1) : white * 0.04;
+          } else {
+            lastOut = (lastOut + (0.02 * white)) / 1.02;
+            data[i] = lastOut * 3.5;
+          }
+        }
+
+        const noise = audioCtx.createBufferSource();
+        noise.buffer = buffer;
+        noise.loop = true;
+
+        const filter = audioCtx.createBiquadFilter();
+        filter.type = type === 'rain' ? 'bandpass' : 'lowpass';
+        filter.frequency.value = type === 'rain' ? 900 : (type === 'vinyl' ? 2400 : 320);
+
+        const gain = audioCtx.createGain();
+        gain.gain.value = level;
+
+        noise.connect(filter);
+        filter.connect(gain);
+        gain.connect(audioCtx.destination);
+        noise.start();
+        ambientNodes[type] = { noise, gain };
+      } else if (ambientNodes[type]) {
+        ambientNodes[type].gain.gain.value = level;
+      }
+    };
+
+    // =========================================================================
+    // 3. PLAYLIST COVER PALETTE DEFINITIONS
     // =========================================================================
     const DEFAULT_COVER_GRADIENT = 'from-emerald-500 to-zinc-900';
     const COVER_THEMES = [
@@ -668,13 +947,14 @@
     ];
 
     // =========================================================================
-    // 3. STATE & STATS STRUCTURE
+    // 4. STATE & STATS STRUCTURE
     // =========================================================================
-    const audio = new Audio();
     let unsubscribeRtdb = null;
     let isApplyingCloudUpdate = false;
     let lastTickTimestamp = null;
     let unsavedSecondsBuffer = 0;
+    let sleepTimerInterval = null;
+    let sleepRemainingSec = 0;
 
     const state = {
       user: null,
@@ -686,9 +966,11 @@
       isPlaying: false,
       isShuffle: false,
       loopMode: 'off',
+      playbackSpeed: 1.0,
       volume: 0.8,
       isMuted: false,
       editingTrackId: null,
+      lyricsEditMode: false,
       playlistModalMode: 'create',
       songToAssign: null,
       draggedIndex: null,
@@ -728,7 +1010,7 @@
     }
 
     // =========================================================================
-    // 4. INITIALIZATION & RESTORING LOCAL FILES FROM INDEXEDDB
+    // 5. INITIALIZATION & KEYBOARD SHORTCUTS
     // =========================================================================
     window.addEventListener('DOMContentLoaded', async () => {
       loadLocalBackup();
@@ -739,6 +1021,19 @@
       document.getElementById('auth-device').value = state.deviceName;
 
       renderAll();
+
+      // Keyboard Shortcuts (Space = Play/Pause, Arrows = Seek/Volume)
+      window.addEventListener('keydown', (e) => {
+        if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) return;
+        if (e.code === 'Space') {
+          e.preventDefault();
+          togglePlayPause();
+        } else if (e.code === 'ArrowRight') {
+          if (!isNaN(audio.duration)) audio.currentTime = Math.min(audio.duration, audio.currentTime + 5);
+        } else if (e.code === 'ArrowLeft') {
+          audio.currentTime = Math.max(0, audio.currentTime - 5);
+        }
+      });
 
       setInterval(() => {
         if (!audio.paused && state.currentTrackId) {
@@ -761,6 +1056,7 @@
           document.getElementById('seek-bar').value = progress;
           document.getElementById('time-current').textContent = formatTime(audio.currentTime);
           document.getElementById('time-total').textContent = formatTime(audio.duration);
+          updateSyncedLyricsHighlight(audio.currentTime);
         }
       });
 
@@ -808,7 +1104,139 @@
     }
 
     // =========================================================================
-    // 5. PLAYLIST COVER CUSTOMIZER (COLOR, IMAGE UPLOAD, REVERT TO DEFAULT)
+    // 6. UNIQUE STUDIO FEATURES: LYRICS, SPEED/PITCH & SLEEP TIMER
+    // =========================================================================
+    window.toggleStudioDrawer = () => {
+      const drawer = document.getElementById('side-studio-drawer');
+      drawer.classList.toggle('hidden');
+      renderLyricsPanel();
+    };
+
+    window.switchStudioTab = (tab) => {
+      ['lyrics', 'eq', 'ambient'].forEach(t => {
+        document.getElementById(`studio-panel-${t}`).classList.toggle('hidden', t !== tab);
+        document.getElementById(`studio-tab-${t}`).className = t === tab
+          ? 'px-2.5 py-1 rounded bg-zinc-800 text-white'
+          : 'px-2.5 py-1 rounded text-zinc-400 hover:text-white';
+      });
+    };
+
+    function renderLyricsPanel() {
+      const track = state.tracks.find(t => t.id === state.currentTrackId);
+      const label = document.getElementById('lyrics-song-label');
+      const display = document.getElementById('lyrics-display-box');
+      const textarea = document.getElementById('lyrics-textarea');
+
+      if (!track) {
+        label.textContent = 'No song selected';
+        display.textContent = 'Play a song to view or add synced lyrics.';
+        return;
+      }
+
+      label.textContent = `${track.title} — ${track.artist}`;
+      textarea.value = track.lyrics || '';
+
+      if (!track.lyrics || !track.lyrics.trim()) {
+        display.innerHTML = `<span class="text-zinc-500">No lyrics saved yet. Click Edit to paste lyrics or [mm:ss] synced lines.</span>`;
+        return;
+      }
+
+      const lines = track.lyrics.split('\n');
+      display.innerHTML = lines.map((line, i) => {
+        const match = line.match(/^\[(\d{1,2}):(\d{2})\]\s*(.*)$/);
+        if (match) {
+          const sec = parseInt(match[1], 10) * 60 + parseInt(match[2], 10);
+          return `<div data-lyric-sec="${sec}" onclick="jumpToLyricTime(${sec})" class="lyric-line py-1 px-2 rounded cursor-pointer hover:bg-zinc-800/60 text-zinc-400 transition">${match[3]}</div>`;
+        }
+        return `<div class="py-1 px-2 text-zinc-200">${line}</div>`;
+      }).join('');
+    }
+
+    function updateSyncedLyricsHighlight(currentSec) {
+      const lines = Array.from(document.querySelectorAll('.lyric-line'));
+      if (!lines.length) return;
+      let activeIdx = -1;
+      lines.forEach((el, idx) => {
+        const t = parseFloat(el.getAttribute('data-lyric-sec'));
+        if (currentSec >= t) activeIdx = idx;
+      });
+      lines.forEach((el, idx) => {
+        if (idx === activeIdx) {
+          el.className = 'lyric-line py-1 px-2 rounded cursor-pointer bg-emerald-950/60 text-[#1db954] font-bold transition';
+        } else {
+          el.className = 'lyric-line py-1 px-2 rounded cursor-pointer hover:bg-zinc-800/60 text-zinc-400 transition';
+        }
+      });
+    }
+
+    window.jumpToLyricTime = (sec) => {
+      if (!isNaN(audio.duration)) audio.currentTime = sec;
+    };
+
+    window.toggleLyricsEditMode = () => {
+      if (!state.currentTrackId) return;
+      state.lyricsEditMode = !state.lyricsEditMode;
+      document.getElementById('lyrics-display-box').classList.toggle('hidden', state.lyricsEditMode);
+      document.getElementById('lyrics-editor-box').classList.toggle('hidden', !state.lyricsEditMode);
+    };
+
+    window.saveTrackLyrics = () => {
+      const track = state.tracks.find(t => t.id === state.currentTrackId);
+      if (!track) return;
+      track.lyrics = document.getElementById('lyrics-textarea').value;
+      state.lyricsEditMode = false;
+      document.getElementById('lyrics-display-box').classList.remove('hidden');
+      document.getElementById('lyrics-editor-box').classList.add('hidden');
+      renderLyricsPanel();
+      syncStateToCloud();
+    };
+
+    window.cyclePlaybackSpeed = () => {
+      const speeds = [1.0, 1.25, 1.5, 0.85];
+      state.playbackSpeed = speeds[(speeds.indexOf(state.playbackSpeed) + 1) % speeds.length];
+      audio.playbackRate = state.playbackSpeed;
+      audio.preservesPitch = state.playbackSpeed === 1.0;
+      const btn = document.getElementById('btn-speed');
+      btn.textContent = `${state.playbackSpeed.toFixed(2).replace(/\.00$/, '.0')}x`;
+      btn.className = state.playbackSpeed !== 1.0
+        ? 'text-[11px] font-mono font-bold bg-emerald-950 border border-[#1db954] text-[#1db954] px-2 py-1 rounded-md transition'
+        : 'text-[11px] font-mono font-bold bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 px-2 py-1 rounded-md transition';
+    };
+
+    window.cycleSleepTimer = () => {
+      const presetsMin = [0, 15, 30, 60];
+      const currentMin = Math.ceil(sleepRemainingSec / 60);
+      const nextMin = presetsMin.find(m => m > currentMin) ?? 0;
+
+      if (sleepTimerInterval) clearInterval(sleepTimerInterval);
+      const label = document.getElementById('sleep-timer-label');
+
+      if (nextMin === 0) {
+        sleepRemainingSec = 0;
+        label.classList.add('hidden');
+        return;
+      }
+
+      sleepRemainingSec = nextMin * 60;
+      label.textContent = `${nextMin}m`;
+      label.classList.remove('hidden');
+
+      sleepTimerInterval = setInterval(() => {
+        sleepRemainingSec -= 1;
+        if (sleepRemainingSec <= 0) {
+          clearInterval(sleepTimerInterval);
+          audio.pause();
+          state.isPlaying = false;
+          updatePlayButtonUI();
+          label.classList.add('hidden');
+        } else {
+          label.textContent = `${Math.ceil(sleepRemainingSec / 60)}m`;
+        }
+      }, 1000);
+    };
+
+    // =========================================================================
+    // 7. PLAYLIST COVER CUSTOMIZER
     // =========================================================================
     window.openCoverModal = () => {
       const pl = state.playlists.find(p => p.id === state.currentView);
@@ -910,7 +1338,7 @@
     }
 
     // =========================================================================
-    // 6. FIREBASE AUTHENTICATION
+    // 8. FIREBASE AUTHENTICATION
     // =========================================================================
     window.openAuthModal = () => {
       document.getElementById('auth-error').classList.add('hidden');
@@ -1011,7 +1439,7 @@
     }
 
     // =========================================================================
-    // 7. REALTIME DATABASE SYNC
+    // 9. REALTIME DATABASE SYNC
     // =========================================================================
     async function subscribeToRealtimeDatabase(uid) {
       if (unsubscribeRtdb) unsubscribeRtdb();
@@ -1040,6 +1468,7 @@
           ...t,
           plays: t.plays || 0,
           secondsListened: t.secondsListened || 0,
+          lyrics: t.lyrics || '',
           src: localBlobMap[t.id] || t.src || ''
         }));
 
@@ -1094,6 +1523,7 @@
         mediaType: t.mediaType || 'mp3',
         plays: t.plays || 0,
         secondsListened: Math.round(t.secondsListened || 0),
+        lyrics: t.lyrics || '',
         liked: !!t.liked,
         color: t.color || 'from-emerald-500 to-teal-900',
         src: t.isLocalBlob ? '' : (t.src || ''),
@@ -1149,9 +1579,7 @@
 
       try {
         await set(dbRef(rtdb, 'user_sessions/' + state.user.uid), payload);
-      } catch (err) {
-        console.warn('Realtime DB write error:', err);
-      }
+      } catch (err) {}
     }
 
     window.applyRemoteSession = () => {
@@ -1187,14 +1615,14 @@
     }
 
     // =========================================================================
-    // 8. IMPORT MP3 / MP4 FILES (PERSISTENT INDEXEDDB + AUDIO-ONLY PLAYBACK)
+    // 10. IMPORT MP3 / MP4 FILES & ADD VIA URL
     // =========================================================================
     window.handleFileUpload = async (event) => {
       const files = Array.from(event.target.files);
       if (!files.length) return;
 
       const labelEl = document.getElementById('upload-btn-label');
-      labelEl.textContent = 'Saving to Vault...';
+      labelEl.textContent = 'Saving...';
 
       const gradients = [
         'from-emerald-500 to-teal-900',
@@ -1226,6 +1654,7 @@
           mediaType: isMp4 ? 'mp4' : 'mp3',
           plays: 0,
           secondsListened: 0,
+          lyrics: '',
           liked: false,
           color: gradients[(state.tracks.length + i) % gradients.length],
           src: persistentBlobUrl,
@@ -1277,6 +1706,7 @@
         mediaType: isMp4 ? 'mp4' : 'mp3',
         plays: 0,
         secondsListened: 0,
+        lyrics: '',
         liked: false,
         color: 'from-emerald-500 to-teal-900',
         src,
@@ -1295,7 +1725,7 @@
     };
 
     // =========================================================================
-    // 9. RENAME SONG, ARTIST, OR AUDIO URL / DELETE SONG
+    // 11. RENAME SONG, ARTIST, OR AUDIO URL / DELETE SONG
     // =========================================================================
     window.openEditSongModal = (trackId, event) => {
       if (event) event.stopPropagation();
@@ -1372,7 +1802,7 @@
     };
 
     // =========================================================================
-    // 10. REORDER SEQUENCE (UP/DOWN BUTTONS & DRAG-AND-DROP)
+    // 12. REORDER SEQUENCE & PLAYLIST MANAGEMENT
     // =========================================================================
     window.moveSongInSequence = (index, direction, event) => {
       if (event) event.stopPropagation();
@@ -1424,9 +1854,6 @@
       syncStateToCloud();
     };
 
-    // =========================================================================
-    // 11. ADD, RENAME & DELETE PLAYLISTS
-    // =========================================================================
     window.openCreatePlaylistModal = () => {
       state.playlistModalMode = 'create';
       document.getElementById('playlist-modal-heading').textContent = 'Create New Playlist';
@@ -1523,7 +1950,7 @@
     };
 
     // =========================================================================
-    // 12. PLAYBACK & TRANSPORT CONTROLS
+    // 13. PLAYBACK & TRANSPORT CONTROLS
     // =========================================================================
     function getActiveQueue() {
       const visible = getFilteredTracks();
@@ -1533,6 +1960,8 @@
     async function loadTrackById(trackId, autoPlay = true) {
       const track = state.tracks.find(t => t.id === trackId);
       if (!track) return;
+
+      initWebAudioStudio();
 
       if (!track.src) {
         const vaultUrl = await VaultDB.getFileUrl(track.id);
@@ -1544,19 +1973,20 @@
 
       if (!track.src) {
         openEditSongModal(track.id);
-        alert(`"${track.title}" has no audio URL on this device yet.`);
         return;
       }
 
       state.currentTrackId = track.id;
       audio.src = track.src;
+      audio.playbackRate = state.playbackSpeed;
       audio.load();
 
       document.getElementById('player-title').textContent = track.title;
       document.getElementById('player-artist').textContent = track.artist;
-      document.getElementById('player-art').className = `w-14 h-14 rounded bg-gradient-to-br ${track.color || 'from-emerald-500 to-teal-900'} flex items-center justify-center text-xl shrink-0 shadow`;
+      document.getElementById('player-art').className = `w-14 h-14 rounded-lg bg-gradient-to-br ${track.color || 'from-emerald-500 to-teal-900'} ring-1 ring-white/25 flex items-center justify-center text-xl shrink-0 shadow`;
       document.getElementById('player-art').innerHTML = `<i class="fa-solid fa-music text-white"></i>`;
       updateLikeButtonUI();
+      renderLyricsPanel();
 
       if (autoPlay) {
         incrementPlayCount(track.id);
@@ -1575,6 +2005,7 @@
     };
 
     window.togglePlayPause = () => {
+      initWebAudioStudio();
       if (!state.currentTrackId) {
         const queue = getActiveQueue();
         if (queue.length > 0) loadTrackById(queue[0].id, true);
@@ -1700,7 +2131,7 @@
     }
 
     // =========================================================================
-    // 13. ANALYTICS & RENDERING
+    // 14. ANALYTICS & RENDERING
     // =========================================================================
     function incrementPlayCount(trackId) {
       const track = state.tracks.find(t => t.id === trackId);
@@ -2030,7 +2461,6 @@
 
       songListEl.innerHTML = filtered.map((track, idx) => {
         const isCurrent = state.currentTrackId === track.id;
-        const isCloudReady = !track.isLocalBlob && !!track.src;
         const isMp4 = track.mediaType === 'mp4' || (track.src && track.src.toLowerCase().includes('.mp4'));
         return `
           <div
@@ -2058,9 +2488,6 @@
                 <div class="flex items-center gap-1.5">
                   <span class="text-sm font-semibold truncate ${isCurrent ? 'text-[#1db954]' : 'text-white'}">${track.title}</span>
                   ${isMp4 ? '<span class="text-[9px] font-bold uppercase bg-zinc-700 text-zinc-200 px-1.5 py-0.5 rounded">MP4 Audio</span>' : ''}
-                </div>
-                <div class="text-[10px] ${isCloudReady ? 'text-emerald-400' : 'text-zinc-400'}">
-                  ${isCloudReady ? '<i class="fa-solid fa-cloud"></i> Cloud Synced' : '<i class="fa-solid fa-database"></i> Saved in Browser Vault'}
                 </div>
               </div>
             </div>

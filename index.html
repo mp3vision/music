@@ -37,9 +37,12 @@
     .overflow-hidden { overflow: hidden; }
     .overflow-y-auto { overflow-y: auto; }
     .truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .relative { position: relative; }
+    .absolute { position: absolute; }
     .h-screen { height: 100vh; }
     .w-full { width: 100%; }
     .w-64 { width: 16rem; }
+    .w-72 { width: 18rem; }
     .w-80 { width: 20rem; }
     .h-16 { height: 4rem; }
     .h-24 { height: 6rem; }
@@ -76,6 +79,55 @@
       border: 1px solid #3f3f46;
       border-radius: 0.5rem;
       padding: 0.45rem 0.75rem;
+    }
+    /* Search Box & Icon Positioning (Works both Online and 100% Offline) */
+    .search-wrapper {
+      position: relative;
+      width: 18rem;
+      display: flex;
+      align-items: center;
+    }
+    .search-wrapper .search-icon {
+      position: absolute;
+      left: 0.875rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #a1a1aa;
+      font-size: 0.875rem;
+      pointer-events: none;
+      z-index: 2;
+    }
+    #search-input {
+      width: 100%;
+      padding-left: 2.5rem !important;
+      padding-right: 2.25rem !important;
+      padding-top: 0.5rem;
+      padding-bottom: 0.5rem;
+      border-radius: 9999px;
+      background-color: rgba(39, 39, 42, 0.9);
+      border: 1px solid transparent;
+      color: #ffffff;
+      font-size: 0.875rem;
+    }
+    #search-input:focus {
+      outline: none;
+      border-color: #1db954;
+      background-color: #27272a;
+    }
+    #clear-search-btn {
+      position: absolute;
+      right: 0.75rem;
+      top: 50%;
+      transform: translateY(-50%);
+      background: transparent;
+      border: none;
+      color: #a1a1aa;
+      font-size: 0.75rem;
+      padding: 0.2rem;
+      z-index: 2;
+    }
+    #clear-search-btn:hover {
+      color: #ffffff;
     }
     .grid-cols-12 {
       display: grid;
@@ -233,8 +285,8 @@
       
       <!-- Top Bar -->
       <header class="h-16 px-6 flex items-center justify-between bg-black/30 backdrop-blur-md shrink-0">
-        <div class="relative w-72">
-          <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-zinc-400 text-sm"></i>
+        <div class="search-wrapper w-72">
+          <i class="fa-solid fa-magnifying-glass search-icon"></i>
           <input
             type="text"
             id="search-input"
@@ -247,7 +299,7 @@
             id="clear-search-btn"
             onclick="clearSearchInput()"
             title="Clear search"
-            class="hidden absolute right-3 top-2.5 text-zinc-400 hover:text-white text-xs"
+            class="hidden text-zinc-400 hover:text-white text-xs"
           >
             <i class="fa-solid fa-xmark"></i>
           </button>

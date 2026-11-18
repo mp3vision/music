@@ -12,7 +12,6 @@
       --accent-green: #1db954;
       --accent-cyan: #06b6d4;
     }
-    /* Offline Core Layout & Theme Fallbacks (ensures dark UI & layout work even if Tailwind CDN is offline) */
     *, *::before, *::after {
       box-sizing: border-box;
     }
@@ -42,7 +41,6 @@
     .h-screen { height: 100vh; }
     .w-full { width: 100%; }
     .w-64 { width: 16rem; }
-    .w-72 { width: 18rem; }
     .w-80 { width: 20rem; }
     .h-16 { height: 4rem; }
     .h-24 { height: 6rem; }
@@ -80,55 +78,67 @@
       border-radius: 0.5rem;
       padding: 0.45rem 0.75rem;
     }
-    /* Search Box & Icon Positioning (Works both Online and 100% Offline) */
-    .search-wrapper {
-      position: relative;
-      width: 18rem;
-      display: flex;
-      align-items: center;
+
+    /* Search Pill Container: Icon sits in its own flex column, never overlapping text */
+    .search-pill-box {
+      display: flex !important;
+      flex-direction: row !important;
+      align-items: center !important;
+      width: 18rem !important;
+      max-width: 55vw !important;
+      height: 2.4rem !important;
+      background-color: #27272a !important;
+      border: 1px solid #3f3f46 !important;
+      border-radius: 9999px !important;
+      padding: 0 0.9rem !important;
+      gap: 0.6rem !important;
     }
-    .search-wrapper .search-icon {
-      position: absolute;
-      left: 0.875rem;
-      top: 50%;
-      transform: translateY(-50%);
-      color: #a1a1aa;
-      font-size: 0.875rem;
-      pointer-events: none;
-      z-index: 2;
+    .search-pill-box:focus-within {
+      border-color: #1db954 !important;
+      box-shadow: 0 0 0 2px rgba(29, 185, 84, 0.35) !important;
+    }
+    .search-pill-icon {
+      position: static !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      color: #a1a1aa !important;
+      font-size: 0.875rem !important;
+      flex: 0 0 auto !important;
+      pointer-events: none !important;
     }
     #search-input {
-      width: 100%;
-      padding-left: 2.5rem !important;
-      padding-right: 2.25rem !important;
-      padding-top: 0.5rem;
-      padding-bottom: 0.5rem;
-      border-radius: 9999px;
-      background-color: rgba(39, 39, 42, 0.9);
-      border: 1px solid transparent;
-      color: #ffffff;
-      font-size: 0.875rem;
+      position: static !important;
+      flex: 1 1 auto !important;
+      min-width: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+      background: transparent !important;
+      border: none !important;
+      outline: none !important;
+      box-shadow: none !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      color: #ffffff !important;
+      font-size: 0.875rem !important;
     }
-    #search-input:focus {
-      outline: none;
-      border-color: #1db954;
-      background-color: #27272a;
+    #search-input::placeholder {
+      color: #a1a1aa !important;
+      opacity: 1 !important;
     }
     #clear-search-btn {
-      position: absolute;
-      right: 0.75rem;
-      top: 50%;
-      transform: translateY(-50%);
-      background: transparent;
-      border: none;
-      color: #a1a1aa;
-      font-size: 0.75rem;
-      padding: 0.2rem;
-      z-index: 2;
+      position: static !important;
+      flex: 0 0 auto !important;
+      background: transparent !important;
+      border: none !important;
+      color: #a1a1aa !important;
+      font-size: 0.8rem !important;
+      padding: 0.15rem !important;
     }
     #clear-search-btn:hover {
-      color: #ffffff;
+      color: #ffffff !important;
     }
+
     .grid-cols-12 {
       display: grid;
       grid-template-columns: repeat(12, minmax(0, 1fr));
@@ -284,28 +294,27 @@
     <main class="flex-1 bg-gradient-to-b from-cyan-950/60 via-[#121212] to-[#121212] rounded-lg flex flex-col overflow-hidden border border-zinc-900">
       
       <!-- Top Bar -->
-      <header class="h-16 px-6 flex items-center justify-between bg-black/30 backdrop-blur-md shrink-0">
-        <div class="search-wrapper w-72">
-          <i class="fa-solid fa-magnifying-glass search-icon"></i>
+      <header class="h-16 px-6 flex items-center justify-between bg-black/30 backdrop-blur-md shrink-0 gap-3">
+        <div class="search-pill-box">
+          <i class="fa-solid fa-magnifying-glass search-pill-icon"></i>
           <input
             type="text"
             id="search-input"
             oninput="handleSearchInput()"
             onkeyup="handleSearchInput()"
             placeholder="Search songs or artists..."
-            class="w-full bg-zinc-800/90 hover:bg-zinc-800 focus:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-[#1db954] text-sm rounded-full pl-10 pr-8 py-2 text-white placeholder-zinc-400 transition"
           />
           <button
             id="clear-search-btn"
             onclick="clearSearchInput()"
             title="Clear search"
-            class="hidden text-zinc-400 hover:text-white text-xs"
+            class="hidden"
           >
             <i class="fa-solid fa-xmark"></i>
           </button>
         </div>
 
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-3 shrink-0">
           <span id="offline-status-pill" class="hidden text-[11px] font-semibold bg-amber-950/80 border border-amber-700/60 text-amber-200 px-3 py-1 rounded-full items-center gap-1.5">
             <i class="fa-solid fa-plane"></i>
             <span>Offline Mode — Local Vault Ready</span>
@@ -964,7 +973,6 @@
       measurementId: "G-HRM65R5HEL"
     };
 
-    // Non-blocking dynamic Firebase SDK loader so offline boots never stall
     let fbServices = null;
     let firebaseInitPromise = null;
 
@@ -1064,19 +1072,6 @@
           return null;
         }
       },
-      async hasFile(trackId) {
-        try {
-          const db = await this.open();
-          return new Promise((resolve) => {
-            const tx = db.transaction(this.storeName, 'readonly');
-            const req = tx.objectStore(this.storeName).getKey(trackId);
-            req.onsuccess = () => resolve(!!req.result);
-            req.onerror = () => resolve(false);
-          });
-        } catch (e) {
-          return false;
-        }
-      },
       async deleteFile(trackId) {
         try {
           const db = await this.open();
@@ -1086,7 +1081,6 @@
       }
     };
 
-    // Background cache for URL tracks so they also become playable offline
     async function cacheRemoteUrlInVault(track) {
       if (!track || !track.src || track.src.startsWith('blob:') || !navigator.onLine) return;
       try {
@@ -1096,29 +1090,34 @@
         if (blob && blob.size > 0) {
           const saved = await VaultDB.saveFile(track.id, blob);
           if (saved) {
+            track.blobUrl = URL.createObjectURL(blob);
             track.cachedOffline = true;
             saveLocalBackup();
             renderMainContent();
           }
         }
-      } catch (e) {
-        // Remote server blocks CORS download; direct streaming still works when online
-      }
+      } catch (e) {}
     }
 
     // =========================================================================
-    // 2. WEB AUDIO ENGINE: VISUALIZER, 5-BAND EQ & AMBIENT SOUND GENERATOR
+    // 2. WEB AUDIO ENGINE + ANDROID LOCK-SCREEN BACKGROUND KEEP-ALIVE
     // =========================================================================
     const audio = new Audio();
+    audio.preload = 'auto';
+    audio.setAttribute('playsinline', '');
+    audio.setAttribute('webkit-playsinline', '');
 
     let audioCtx = null;
     let analyser = null;
     let eqFilters = [];
+    let keepAliveOsc = null;
     const ambientNodes = { rain: null, vinyl: null, brown: null };
 
     function initWebAudioStudio() {
       if (audioCtx) {
-        if (audioCtx.state === 'suspended') audioCtx.resume();
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume().catch(() => {});
+        }
         return;
       }
       try {
@@ -1145,7 +1144,32 @@
         eqFilters[eqFilters.length - 1].connect(analyser);
         analyser.connect(audioCtx.destination);
 
+        // Near-zero-gain oscillator prevents Android WebView from suspending AudioContext during track switches when screen is locked
+        const silentGain = audioCtx.createGain();
+        silentGain.gain.value = 0.00001;
+        keepAliveOsc = audioCtx.createOscillator();
+        keepAliveOsc.frequency.value = 20;
+        keepAliveOsc.connect(silentGain);
+        silentGain.connect(audioCtx.destination);
+        keepAliveOsc.start();
+
         startVisualizerLoop();
+      } catch (e) {}
+    }
+
+    // Register Android MediaSession API so lock screen & background track changes keep audio focus
+    function updateMediaSessionMetadata(track) {
+      if (!('mediaSession' in navigator) || !track) return;
+      try {
+        navigator.mediaSession.metadata = new MediaMetadata({
+          title: track.title || 'MP3 Vision Track',
+          artist: track.artist || 'Unknown Artist',
+          album: 'MP3 Vision'
+        });
+        navigator.mediaSession.setActionHandler('play', () => togglePlayPause());
+        navigator.mediaSession.setActionHandler('pause', () => togglePlayPause());
+        navigator.mediaSession.setActionHandler('previoustrack', () => prevSong());
+        navigator.mediaSession.setActionHandler('nexttrack', () => nextSong(true));
       } catch (e) {}
     }
 
@@ -1157,11 +1181,11 @@
 
       function draw() {
         requestAnimationFrame(draw);
+        if (document.hidden || audio.paused) return;
         canvas.width = canvas.offsetWidth;
         canvas.height = canvas.offsetHeight;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        if (audio.paused) return;
         analyser.getByteFrequencyData(dataArray);
 
         const barWidth = (canvas.width / bufferLength) * 1.5;
@@ -1278,6 +1302,7 @@
     let sleepRemainingSec = 0;
     let activePlayRequestId = 0;
     let lastLocalSyncTimestamp = 0;
+    let isTransitioningTrack = false;
 
     const state = {
       user: null,
@@ -1363,7 +1388,7 @@
     };
 
     // =========================================================================
-    // 6. INITIALIZATION, ONLINE/OFFLINE LISTENERS & KEYBOARD SHORTCUTS
+    // 6. INITIALIZATION, LOCK-SCREEN RECOVERY & KEYBOARD SHORTCUTS
     // =========================================================================
     function updateConnectivityUI() {
       const pill = document.getElementById('offline-status-pill');
@@ -1385,6 +1410,13 @@
     window.addEventListener('online', updateConnectivityUI);
     window.addEventListener('offline', updateConnectivityUI);
 
+    // Resume AudioContext immediately if Android WebView suspends it on screen lock/unlock
+    document.addEventListener('visibilitychange', () => {
+      if (audioCtx && audioCtx.state === 'suspended' && state.isPlaying) {
+        audioCtx.resume().catch(() => {});
+      }
+    });
+
     window.addEventListener('DOMContentLoaded', async () => {
       loadLocalBackup();
       await restoreVaultUrlsForAllTracks();
@@ -1394,8 +1426,6 @@
 
       renderAll();
       updateConnectivityUI();
-
-      // Initialize Firebase in background without blocking local offline playback
       initFirebaseCloud();
 
       window.addEventListener('keydown', (e) => {
@@ -1431,12 +1461,40 @@
           document.getElementById('seek-bar').value = progress;
           document.getElementById('time-current').textContent = formatTime(audio.currentTime);
           document.getElementById('time-total').textContent = formatTime(audio.duration);
-          updateSyncedLyricsHighlight(audio.currentTime);
+          if (!document.hidden) {
+            updateSyncedLyricsHighlight(audio.currentTime);
+          }
         }
       });
 
+      audio.addEventListener('play', () => {
+        if (audioCtx && audioCtx.state === 'suspended') {
+          audioCtx.resume().catch(() => {});
+        }
+        if ('mediaSession' in navigator) {
+          navigator.mediaSession.playbackState = 'playing';
+        }
+      });
+
+      // Guard against Android WebView abruptly pausing the newly loaded song 1-3s after background track switch
       audio.addEventListener('pause', () => {
         lastTickTimestamp = null;
+        if (isTransitioningTrack) return;
+
+        // If state.isPlaying is still true right after a background track change, Android WebView auto-paused it—resume immediately
+        if (state.isPlaying && !audio.ended && audio.currentTime < 4 && document.hidden) {
+          setTimeout(() => {
+            if (state.isPlaying && audio.paused && !audio.ended) {
+              if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume().catch(() => {});
+              audio.play().catch(() => {});
+            }
+          }, 120);
+          return;
+        }
+
+        if ('mediaSession' in navigator) {
+          navigator.mediaSession.playbackState = 'paused';
+        }
         if (unsavedSecondsBuffer > 0) {
           unsavedSecondsBuffer = 0;
           syncStateToCloud();
@@ -1457,8 +1515,11 @@
 
     async function restoreVaultUrlsForAllTracks() {
       for (const track of state.tracks) {
-        if (track.src && track.src.startsWith('blob:')) {
+        if (track.blobUrl && track.blobUrl.startsWith('blob:')) {
           track.cachedOffline = true;
+          if (track.isLocalBlob || !track.src || !navigator.onLine) {
+            track.src = track.blobUrl;
+          }
           continue;
         }
         const restoredUrl = await VaultDB.getFileUrl(track.id);
@@ -1473,7 +1534,7 @@
     }
 
     // =========================================================================
-    // 7. STUDIO FEATURES: LYRICS (MANUAL TYPE OR .VTT UPLOAD), SPEED & SLEEP
+    // 7. STUDIO FEATURES: LYRICS, SPEED & SLEEP
     // =========================================================================
     window.toggleStudioDrawer = () => {
       const drawer = document.getElementById('side-studio-drawer');
@@ -1658,8 +1719,8 @@
         sleepRemainingSec -= 1;
         if (sleepRemainingSec <= 0) {
           clearInterval(sleepTimerInterval);
-          audio.pause();
           state.isPlaying = false;
+          audio.pause();
           updatePlayButtonUI();
           label.classList.add('hidden');
         } else {
@@ -1762,7 +1823,7 @@
       state.stats.artistStats[track.artist].seconds += seconds;
 
       unsavedSecondsBuffer += seconds;
-      renderAnalytics();
+      if (!document.hidden) renderAnalytics();
 
       if (unsavedSecondsBuffer >= 10) {
         unsavedSecondsBuffer = 0;
@@ -1771,7 +1832,7 @@
     }
 
     // =========================================================================
-    // 9. FIREBASE AUTHENTICATION (SAFE WHEN OFFLINE)
+    // 9. FIREBASE AUTHENTICATION
     // =========================================================================
     window.openAuthModal = () => {
       document.getElementById('auth-error').classList.add('hidden');
@@ -1903,7 +1964,6 @@
         if (!snapshot.exists()) return;
         const data = snapshot.val();
 
-        // Ignore self-triggered echo updates from this same device to prevent audio/UI interruption
         if (data.deviceId === state.deviceId && (Date.now() - lastLocalSyncTimestamp < 8000)) {
           return;
         }
@@ -1916,7 +1976,6 @@
           localTrackMap[t.id] = t;
         });
 
-        // Merge incoming listening durations, play counts, and metadata while keeping local song titles private
         const mergedTracks = incomingTracks.map(t => {
           const localMatch = localTrackMap[t.id];
           delete localTrackMap[t.id];
@@ -1932,7 +1991,6 @@
           };
         });
 
-        // Preserve any local-only tracks that haven't synced yet
         Object.values(localTrackMap).forEach(unmatchedLocal => {
           mergedTracks.push(unmatchedLocal);
         });
@@ -1989,7 +2047,6 @@
       const fb = await initFirebaseCloud();
       if (!fb) return;
 
-      // Exclude song titles ('title') from cloud payload—only sync durations, play counts, and metadata
       const sanitizedTracks = state.tracks.map(t => ({
         id: t.id,
         artist: t.artist,
@@ -2272,8 +2329,8 @@
       });
 
       if (state.currentTrackId === trackId) {
-        audio.pause();
         state.isPlaying = false;
+        audio.pause();
         state.currentTrackId = null;
         document.getElementById('player-title').textContent = 'No song playing';
         document.getElementById('player-artist').textContent = 'Select a track';
@@ -2433,7 +2490,7 @@
     };
 
     // =========================================================================
-    // 14. PLAYBACK & TRANSPORT CONTROLS (FIXED SMOOTH PLAYLIST TRANSITIONS)
+    // 14. PLAYBACK & TRANSPORT CONTROLS (ANDROID LOCK-SCREEN SAFE TRANSITIONS)
     // =========================================================================
     function getActiveQueue() {
       const visible = getFilteredTracks();
@@ -2454,13 +2511,17 @@
       if (!track) return;
 
       const requestId = ++activePlayRequestId;
+      isTransitioningTrack = true;
       initWebAudioStudio();
 
-      // Prefer cached offline blob URL whenever offline or for local files
+      // Use already-loaded blobUrl synchronously so Android WebView doesn't lose background playback context
       let resolvedSrc = track.blobUrl || track.src;
       if (!resolvedSrc || (!navigator.onLine && !resolvedSrc.startsWith('blob:'))) {
         const vaultUrl = await VaultDB.getFileUrl(track.id);
-        if (requestId !== activePlayRequestId) return;
+        if (requestId !== activePlayRequestId) {
+          isTransitioningTrack = false;
+          return;
+        }
         if (vaultUrl) {
           track.blobUrl = vaultUrl;
           track.cachedOffline = true;
@@ -2469,25 +2530,23 @@
       }
 
       if (!resolvedSrc) {
+        isTransitioningTrack = false;
         openEditSongModal(track.id);
         return;
       }
 
-      // Reset previous track cleanly before switching source to avoid WebAudio buffer glitch
-      audio.pause();
       lastTickTimestamp = null;
       unsavedSecondsBuffer = 0;
 
-      // Only set crossOrigin for external http(s) URLs; local blob URLs should never use crossOrigin
       if (resolvedSrc.startsWith('blob:')) {
         audio.removeAttribute('crossOrigin');
       } else {
         audio.crossOrigin = 'anonymous';
       }
 
+      // Swap src directly without calling audio.pause() so Android keeps continuous media audio focus
       state.currentTrackId = track.id;
       audio.src = resolvedSrc;
-      audio.currentTime = 0;
       audio.playbackRate = state.playbackSpeed;
 
       document.getElementById('seek-bar').value = 0;
@@ -2499,26 +2558,38 @@
       document.getElementById('player-art').className = `w-14 h-14 rounded-lg bg-gradient-to-br ${track.color || 'from-emerald-500 to-teal-900'} ring-1 ring-white/25 flex items-center justify-center text-xl shrink-0 shadow`;
       document.getElementById('player-art').innerHTML = `<i class="fa-solid fa-music text-white"></i>`;
       updateLikeButtonUI();
+      updateMediaSessionMetadata(track);
       renderLyricsPanel();
 
       if (autoPlay) {
+        state.isPlaying = true;
         try {
           if (audioCtx && audioCtx.state === 'suspended') {
             await audioCtx.resume();
           }
           await audio.play();
-          if (requestId !== activePlayRequestId) return;
+          if (requestId !== activePlayRequestId) {
+            isTransitioningTrack = false;
+            return;
+          }
           incrementPlayCount(track.id);
-          state.isPlaying = true;
           lastTickTimestamp = Date.now();
         } catch (err) {
-          if (requestId !== activePlayRequestId) return;
-          state.isPlaying = false;
+          // Retry once after short delay in case Android WebView needed buffer readiness
+          setTimeout(() => {
+            if (requestId === activePlayRequestId && state.isPlaying && audio.paused) {
+              audio.play().catch(() => {
+                state.isPlaying = false;
+                updatePlayButtonUI();
+              });
+            }
+          }, 150);
         }
       } else {
         state.isPlaying = false;
       }
 
+      isTransitioningTrack = false;
       updatePlayButtonUI();
       renderMainContent();
       syncStateToCloud();
@@ -2537,20 +2608,20 @@
         return;
       }
       if (audio.paused) {
+        state.isPlaying = true;
         try {
           if (audioCtx && audioCtx.state === 'suspended') {
             await audioCtx.resume();
           }
           if (audio.currentTime < 1) incrementPlayCount(state.currentTrackId);
           await audio.play();
-          state.isPlaying = true;
           lastTickTimestamp = Date.now();
         } catch (err) {
           state.isPlaying = false;
         }
       } else {
-        audio.pause();
         state.isPlaying = false;
+        audio.pause();
         lastTickTimestamp = null;
       }
       updatePlayButtonUI();

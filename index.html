@@ -959,7 +959,7 @@
   </div>
 
   <!-- ======================================================================= -->
-  <!-- OFFLINE-SAFE FIREBASE LOADER, INDEXEDDB VAULT, WEB AUDIO STUDIO & LOGIC -->
+  <!-- OFFLINE-SAFE FIREBASE LOADER, INDEXEDDB VAULT, NATIVE/STUDIO AUDIO      -->
   <!-- ======================================================================= -->
   <script type="module">
     const firebaseConfig = {
@@ -1093,14 +1093,14 @@
             track.blobUrl = URL.createObjectURL(blob);
             track.cachedOffline = true;
             saveLocalBackup();
-            renderMainContent();
+            if (!document.hidden) renderMainContent();
           }
         }
       } catch (e) {}
     }
 
     // =========================================================================
-    // 2. WEB AUDIO ENGINE + ANDROID LOCK-SCREEN BACKGROUND KEEP-ALIVE
+    // 2. NATIVE HARDWARE AUDIO ENGINE (ZERO BACKGROUND SOFTWARE RESAMPLING LAG)
     // =========================================================================
     const audio = new Audio();
     audio.preload = 'auto';
@@ -1110,16 +1110,19 @@
     let audioCtx = null;
     let analyser = null;
     let eqFilters = [];
-    let keepAliveOsc = null;
     const ambientNodes = { rain: null, vinyl: null, brown: null };
 
-    function initWebAudioStudio() {
+    // Only connect Web Audio graph when user actively adjusts 5-Band EQ or Ambient Mixer.
+    // Keeping native <audio> unrouted by default prevents Android WebView software resampling lag when screen locks.
+    function initWebAudioStudio(forceConnect = false) {
       if (audioCtx) {
-        if (audioCtx.state === 'suspended') {
+        if (audioCtx.state === 'suspended' && !document.hidden) {
           audioCtx.resume().catch(() => {});
         }
         return;
       }
+      if (!forceConnect) return;
+
       try {
         const AudioContextClass = window.AudioContext || window.webkitAudioContext;
         audioCtx = new AudioContextClass();
@@ -1144,20 +1147,10 @@
         eqFilters[eqFilters.length - 1].connect(analyser);
         analyser.connect(audioCtx.destination);
 
-        // Near-zero-gain oscillator prevents Android WebView from suspending AudioContext during track switches when screen is locked
-        const silentGain = audioCtx.createGain();
-        silentGain.gain.value = 0.00001;
-        keepAliveOsc = audioCtx.createOscillator();
-        keepAliveOsc.frequency.value = 20;
-        keepAliveOsc.connect(silentGain);
-        silentGain.connect(audioCtx.destination);
-        keepAliveOsc.start();
-
         startVisualizerLoop();
       } catch (e) {}
     }
 
-    // Register Android MediaSession API so lock screen & background track changes keep audio focus
     function updateMediaSessionMetadata(track) {
       if (!('mediaSession' in navigator) || !track) return;
       try {
@@ -1206,7 +1199,7 @@
     }
 
     window.setEqBand = (bandIdx, dbVal) => {
-      initWebAudioStudio();
+      initWebAudioStudio(true);
       document.getElementById(`eq-val-${bandIdx}`).textContent = `${dbVal > 0 ? '+' : ''}${dbVal} dB`;
       if (eqFilters[bandIdx]) eqFilters[bandIdx].gain.value = parseFloat(dbVal);
     };
@@ -1228,7 +1221,7 @@
     };
 
     window.setAmbientLevel = (type, percent) => {
-      initWebAudioStudio();
+      initWebAudioStudio(true);
       document.getElementById(`amb-val-${type}`).textContent = `${percent}%`;
       const level = (percent / 100) * 0.18;
 
@@ -1303,6 +1296,7 @@
     let activePlayRequestId = 0;
     let lastLocalSyncTimestamp = 0;
     let isTransitioningTrack = false;
+    let stallRetryTimer = null;
 
     const state = {
       user: null,
@@ -1388,7 +1382,7 @@
     };
 
     // =========================================================================
-    // 6. INITIALIZATION, LOCK-SCREEN RECOVERY & KEYBOARD SHORTCUTS
+    // 6. INITIALIZATION, ANTI-LAG BACKGROUND HANDLERS & SHORTCUTS
     // =========================================================================
     function updateConnectivityUI() {
       const pill = document.getElementById('offline-status-pill');
@@ -1402,7 +1396,7 @@
         pill.classList.remove('flex');
         if (offlineNotice) offlineNotice.classList.add('hidden');
         initFirebaseCloud().then(() => {
-          if (state.user) syncStateToCloud();
+          if (state.user && !document.hidden) syncStateToCloud();
         });
       }
     }
@@ -1410,10 +1404,17 @@
     window.addEventListener('online', updateConnectivityUI);
     window.addEventListener('offline', updateConnectivityUI);
 
-    // Resume AudioContext immediately if Android WebView suspends it on screen lock/unlock
+    // Flush deferred analytics & UI updates cleanly when user unlocks screen
     document.addEventListener('visibilitychange', () => {
-      if (audioCtx && audioCtx.state === 'suspended' && state.isPlaying) {
-        audioCtx.resume().catch(() => {});
+      if (!document.hidden) {
+        if (audioCtx && audioCtx.state === 'suspended' && state.isPlaying) {
+          audioCtx.resume().catch(() => {});
+        }
+        renderAll();
+        if (unsavedSecondsBuffer > 0) {
+          unsavedSecondsBuffer = 0;
+          syncStateToCloud();
+        }
       }
     });
 
@@ -1440,13 +1441,25 @@
         }
       });
 
+      // Zero-DOM, zero-network listening timer while screen is off so audio thread never lags
       setInterval(() => {
         if (!audio.paused && state.currentTrackId) {
           const now = Date.now();
           if (lastTickTimestamp) {
             const deltaSec = (now - lastTickTimestamp) / 1000;
-            if (deltaSec > 0 && deltaSec < 5) {
-              recordListeningTime(state.currentTrackId, deltaSec);
+            if (deltaSec > 0 && deltaSec < 10) {
+              if (document.hidden) {
+                const track = state.tracks.find(t => t.id === state.currentTrackId);
+                if (track) track.secondsListened = (track.secondsListened || 0) + deltaSec;
+                const today = getTodayKey();
+                const week = getWeekKey();
+                state.stats.totalSecondsListened = (state.stats.totalSecondsListened || 0) + deltaSec;
+                state.stats.dailySeconds[today] = (state.stats.dailySeconds[today] || 0) + deltaSec;
+                state.stats.weeklySeconds[week] = (state.stats.weeklySeconds[week] || 0) + deltaSec;
+                unsavedSecondsBuffer += deltaSec;
+              } else {
+                recordListeningTime(state.currentTrackId, deltaSec);
+              }
             }
           }
           lastTickTimestamp = now;
@@ -1456,19 +1469,23 @@
       }, 1000);
 
       audio.addEventListener('timeupdate', () => {
+        // Skip DOM updates while screen is locked so Android WebView audio decoder has 100% priority
+        if (document.hidden) return;
         if (!isNaN(audio.duration) && audio.duration > 0) {
           const progress = (audio.currentTime / audio.duration) * 100;
           document.getElementById('seek-bar').value = progress;
           document.getElementById('time-current').textContent = formatTime(audio.currentTime);
           document.getElementById('time-total').textContent = formatTime(audio.duration);
-          if (!document.hidden) {
-            updateSyncedLyricsHighlight(audio.currentTime);
-          }
+          updateSyncedLyricsHighlight(audio.currentTime);
         }
       });
 
       audio.addEventListener('play', () => {
-        if (audioCtx && audioCtx.state === 'suspended') {
+        if (stallRetryTimer) {
+          clearTimeout(stallRetryTimer);
+          stallRetryTimer = null;
+        }
+        if (audioCtx && audioCtx.state === 'suspended' && !document.hidden) {
           audioCtx.resume().catch(() => {});
         }
         if ('mediaSession' in navigator) {
@@ -1476,26 +1493,36 @@
         }
       });
 
-      // Guard against Android WebView abruptly pausing the newly loaded song 1-3s after background track switch
+      // Single debounced stall recovery (800ms) so Android decoder finishes buffering cleanly without stuttering
+      audio.addEventListener('waiting', () => {
+        if (!state.isPlaying || audio.ended || stallRetryTimer) return;
+        stallRetryTimer = setTimeout(() => {
+          stallRetryTimer = null;
+          if (state.isPlaying && audio.paused && !audio.ended) {
+            audio.play().catch(() => {});
+          }
+        }, 800);
+      });
+
       audio.addEventListener('pause', () => {
         lastTickTimestamp = null;
         if (isTransitioningTrack) return;
 
-        // If state.isPlaying is still true right after a background track change, Android WebView auto-paused it—resume immediately
-        if (state.isPlaying && !audio.ended && audio.currentTime < 4 && document.hidden) {
-          setTimeout(() => {
+        // If Android WebView pauses right after a background track change, resume once cleanly
+        if (state.isPlaying && !audio.ended && audio.currentTime < 4 && document.hidden && !stallRetryTimer) {
+          stallRetryTimer = setTimeout(() => {
+            stallRetryTimer = null;
             if (state.isPlaying && audio.paused && !audio.ended) {
-              if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume().catch(() => {});
               audio.play().catch(() => {});
             }
-          }, 120);
+          }, 350);
           return;
         }
 
         if ('mediaSession' in navigator) {
           navigator.mediaSession.playbackState = 'paused';
         }
-        if (unsavedSecondsBuffer > 0) {
+        if (unsavedSecondsBuffer > 0 && !document.hidden) {
           unsavedSecondsBuffer = 0;
           syncStateToCloud();
         }
@@ -1503,9 +1530,13 @@
 
       audio.addEventListener('ended', () => {
         lastTickTimestamp = null;
+        if (stallRetryTimer) {
+          clearTimeout(stallRetryTimer);
+          stallRetryTimer = null;
+        }
         if (state.loopMode === 'one') {
           audio.currentTime = 0;
-          if (state.currentTrackId) incrementPlayCount(state.currentTrackId);
+          if (state.currentTrackId) incrementPlayCount(state.currentTrackId, true);
           audio.play().catch(() => {});
         } else {
           nextSong(false);
@@ -1823,7 +1854,7 @@
       state.stats.artistStats[track.artist].seconds += seconds;
 
       unsavedSecondsBuffer += seconds;
-      if (!document.hidden) renderAnalytics();
+      renderAnalytics();
 
       if (unsavedSecondsBuffer >= 10) {
         unsavedSecondsBuffer = 0;
@@ -2020,7 +2051,7 @@
         state.loopMode = data.loopMode || 'off';
         updateTransportBadgesUI();
         saveLocalBackup();
-        renderAll();
+        if (!document.hidden) renderAll();
 
         if (data.deviceId && data.deviceId !== state.deviceId && data.currentTrackId) {
           const remoteTrack = state.tracks.find(t => t.id === data.currentTrackId);
@@ -2490,7 +2521,7 @@
     };
 
     // =========================================================================
-    // 14. PLAYBACK & TRANSPORT CONTROLS (ANDROID LOCK-SCREEN SAFE TRANSITIONS)
+    // 14. PLAYBACK & TRANSPORT CONTROLS (ANTI-LAG CANPLAY & LOCK-SCREEN SAFE)
     // =========================================================================
     function getActiveQueue() {
       const visible = getFilteredTracks();
@@ -2512,9 +2543,11 @@
 
       const requestId = ++activePlayRequestId;
       isTransitioningTrack = true;
-      initWebAudioStudio();
+      if (stallRetryTimer) {
+        clearTimeout(stallRetryTimer);
+        stallRetryTimer = null;
+      }
 
-      // Use already-loaded blobUrl synchronously so Android WebView doesn't lose background playback context
       let resolvedSrc = track.blobUrl || track.src;
       if (!resolvedSrc || (!navigator.onLine && !resolvedSrc.startsWith('blob:'))) {
         const vaultUrl = await VaultDB.getFileUrl(track.id);
@@ -2536,7 +2569,6 @@
       }
 
       lastTickTimestamp = null;
-      unsavedSecondsBuffer = 0;
 
       if (resolvedSrc.startsWith('blob:')) {
         audio.removeAttribute('crossOrigin');
@@ -2544,55 +2576,61 @@
         audio.crossOrigin = 'anonymous';
       }
 
-      // Swap src directly without calling audio.pause() so Android keeps continuous media audio focus
       state.currentTrackId = track.id;
       audio.src = resolvedSrc;
       audio.playbackRate = state.playbackSpeed;
-
-      document.getElementById('seek-bar').value = 0;
-      document.getElementById('time-current').textContent = '0:00';
-      document.getElementById('time-total').textContent = '0:00';
-
-      document.getElementById('player-title').textContent = track.title;
-      document.getElementById('player-artist').textContent = track.artist;
-      document.getElementById('player-art').className = `w-14 h-14 rounded-lg bg-gradient-to-br ${track.color || 'from-emerald-500 to-teal-900'} ring-1 ring-white/25 flex items-center justify-center text-xl shrink-0 shadow`;
-      document.getElementById('player-art').innerHTML = `<i class="fa-solid fa-music text-white"></i>`;
-      updateLikeButtonUI();
       updateMediaSessionMetadata(track);
-      renderLyricsPanel();
+
+      if (!document.hidden) {
+        document.getElementById('seek-bar').value = 0;
+        document.getElementById('time-current').textContent = '0:00';
+        document.getElementById('time-total').textContent = '0:00';
+        document.getElementById('player-title').textContent = track.title;
+        document.getElementById('player-artist').textContent = track.artist;
+        document.getElementById('player-art').className = `w-14 h-14 rounded-lg bg-gradient-to-br ${track.color || 'from-emerald-500 to-teal-900'} ring-1 ring-white/25 flex items-center justify-center text-xl shrink-0 shadow`;
+        document.getElementById('player-art').innerHTML = `<i class="fa-solid fa-music text-white"></i>`;
+        updateLikeButtonUI();
+        renderLyricsPanel();
+      }
 
       if (autoPlay) {
         state.isPlaying = true;
-        try {
-          if (audioCtx && audioCtx.state === 'suspended') {
-            await audioCtx.resume();
-          }
-          await audio.play();
+        const startPlayback = async () => {
           if (requestId !== activePlayRequestId) {
             isTransitioningTrack = false;
             return;
           }
-          incrementPlayCount(track.id);
-          lastTickTimestamp = Date.now();
-        } catch (err) {
-          // Retry once after short delay in case Android WebView needed buffer readiness
-          setTimeout(() => {
-            if (requestId === activePlayRequestId && state.isPlaying && audio.paused) {
-              audio.play().catch(() => {
-                state.isPlaying = false;
-                updatePlayButtonUI();
-              });
+          try {
+            if (audioCtx && !document.hidden && audioCtx.state === 'suspended') {
+              await audioCtx.resume();
             }
-          }, 150);
+            await audio.play();
+            incrementPlayCount(track.id, document.hidden);
+            lastTickTimestamp = Date.now();
+          } catch (err) {
+            state.isPlaying = false;
+            if (!document.hidden) updatePlayButtonUI();
+          } finally {
+            isTransitioningTrack = false;
+          }
+        };
+
+        // Wait until the first audio frame is decoded (canplay) before calling play() to prevent stuttering
+        if (audio.readyState >= 2) {
+          startPlayback();
+        } else {
+          audio.addEventListener('canplay', startPlayback, { once: true });
         }
       } else {
         state.isPlaying = false;
+        isTransitioningTrack = false;
       }
 
-      isTransitioningTrack = false;
-      updatePlayButtonUI();
-      renderMainContent();
-      syncStateToCloud();
+      if (!document.hidden) {
+        updatePlayButtonUI();
+        renderMainContent();
+        syncStateToCloud();
+      }
     }
 
     window.playById = (trackId) => {
@@ -2601,7 +2639,6 @@
     };
 
     window.togglePlayPause = async () => {
-      initWebAudioStudio();
       if (!state.currentTrackId) {
         const queue = getActiveQueue();
         if (queue.length > 0) loadTrackById(queue[0].id, true);
@@ -2610,10 +2647,10 @@
       if (audio.paused) {
         state.isPlaying = true;
         try {
-          if (audioCtx && audioCtx.state === 'suspended') {
+          if (audioCtx && !document.hidden && audioCtx.state === 'suspended') {
             await audioCtx.resume();
           }
-          if (audio.currentTime < 1) incrementPlayCount(state.currentTrackId);
+          if (audio.currentTime < 1) incrementPlayCount(state.currentTrackId, document.hidden);
           await audio.play();
           lastTickTimestamp = Date.now();
         } catch (err) {
@@ -2624,9 +2661,11 @@
         audio.pause();
         lastTickTimestamp = null;
       }
-      updatePlayButtonUI();
-      renderMainContent();
-      syncStateToCloud();
+      if (!document.hidden) {
+        updatePlayButtonUI();
+        renderMainContent();
+        syncStateToCloud();
+      }
     };
 
     window.nextSong = (manualClick = true) => {
@@ -2651,7 +2690,7 @@
         loadTrackById(queue[0].id, true);
       } else {
         state.isPlaying = false;
-        updatePlayButtonUI();
+        if (!document.hidden) updatePlayButtonUI();
       }
     };
 
@@ -2670,14 +2709,14 @@
     window.toggleShuffle = () => {
       state.isShuffle = !state.isShuffle;
       updateTransportBadgesUI();
-      syncStateToCloud();
+      if (!document.hidden) syncStateToCloud();
     };
 
     window.cycleLoopMode = () => {
       const modes = ['off', 'all', 'one'];
       state.loopMode = modes[(modes.indexOf(state.loopMode) + 1) % modes.length];
       updateTransportBadgesUI();
-      syncStateToCloud();
+      if (!document.hidden) syncStateToCloud();
     };
 
     function updateTransportBadgesUI() {
@@ -2704,7 +2743,7 @@
     window.seekAudio = (percent) => {
       if (!isNaN(audio.duration)) {
         audio.currentTime = (percent / 100) * audio.duration;
-        syncStateToCloud();
+        if (!document.hidden) syncStateToCloud();
       }
     };
 
@@ -2736,7 +2775,7 @@
     // =========================================================================
     // 15. ANALYTICS & RENDERING
     // =========================================================================
-    function incrementPlayCount(trackId) {
+    function incrementPlayCount(trackId, deferSync = false) {
       const track = state.tracks.find(t => t.id === trackId);
       if (track) {
         track.plays = (track.plays || 0) + 1;
@@ -2744,8 +2783,10 @@
           state.stats.artistStats[track.artist] = { plays: 0, seconds: 0 };
         }
         state.stats.artistStats[track.artist].plays += 1;
-        renderAnalytics();
-        syncStateToCloud();
+        if (!deferSync && !document.hidden) {
+          renderAnalytics();
+          syncStateToCloud();
+        }
       }
     }
 
@@ -2843,6 +2884,15 @@
       renderPlaylistsSidebar();
       renderAnalytics();
       renderMainContent();
+      const current = state.tracks.find(t => t.id === state.currentTrackId);
+      if (current) {
+        document.getElementById('player-title').textContent = current.title;
+        document.getElementById('player-artist').textContent = current.artist;
+        document.getElementById('player-art').className = `w-14 h-14 rounded-lg bg-gradient-to-br ${current.color || 'from-emerald-500 to-teal-900'} ring-1 ring-white/25 flex items-center justify-center text-xl shrink-0 shadow`;
+        document.getElementById('player-art').innerHTML = `<i class="fa-solid fa-music text-white"></i>`;
+        updateLikeButtonUI();
+      }
+      updatePlayButtonUI();
     }
 
     function renderPlaylistsSidebar() {

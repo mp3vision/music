@@ -5,19 +5,92 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MP3 Vision — Cloud Music Player & Listening Stats</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <!-- Local Offline Font Awesome (place css/all.min.css and webfonts/ next to index.html) -->
+  <link rel="stylesheet" href="./css/all.min.css" />
   <style>
     :root {
       --accent-green: #1db954;
       --accent-cyan: #06b6d4;
     }
-    body {
-      background-color: #000;
-      color: #fff;
+    /* Offline Core Layout & Theme Fallbacks (ensures dark UI & layout work even if Tailwind CDN is offline) */
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background-color: #000000;
+      color: #ffffff;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       overflow: hidden;
       user-select: none;
     }
+    .hidden { display: none !important; }
+    .flex { display: flex; }
+    .flex-1 { flex: 1 1 0%; }
+    .flex-col { flex-direction: column; }
+    .items-center { align-items: center; }
+    .justify-between { justify-content: space-between; }
+    .justify-center { justify-content: center; }
+    .shrink-0 { flex-shrink: 0; }
+    .overflow-hidden { overflow: hidden; }
+    .overflow-y-auto { overflow-y: auto; }
+    .truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .h-screen { height: 100vh; }
+    .w-full { width: 100%; }
+    .w-64 { width: 16rem; }
+    .w-80 { width: 20rem; }
+    .h-16 { height: 4rem; }
+    .h-24 { height: 6rem; }
+    .gap-2 { gap: 0.5rem; }
+    .gap-3 { gap: 0.75rem; }
+    .gap-4 { gap: 1rem; }
+    .p-2 { padding: 0.5rem; }
+    .p-4 { padding: 1rem; }
+    .p-6 { padding: 1.5rem; }
+    .px-3 { padding-left: 0.75rem; padding-right: 0.75rem; }
+    .px-4 { padding-left: 1rem; padding-right: 1rem; }
+    .py-1\.5 { padding-top: 0.375rem; padding-bottom: 0.375rem; }
+    .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+    .rounded-lg { border-radius: 0.5rem; }
+    .rounded-xl { border-radius: 0.75rem; }
+    .rounded-2xl { border-radius: 1rem; }
+    .rounded-full { border-radius: 9999px; }
+    .bg-\[\#121212\] { background-color: #121212; }
+    .bg-\[\#181818\] { background-color: #181818; }
+    .bg-\[\#1db954\] { background-color: #1db954; }
+    .bg-zinc-800 { background-color: #27272a; }
+    .bg-zinc-900 { background-color: #18181b; }
+    .text-white { color: #ffffff; }
+    .text-black { color: #000000; }
+    .text-zinc-400 { color: #a1a1aa; }
+    .text-\[\#1db954\] { color: #1db954; }
+    .border { border-width: 1px; }
+    .border-zinc-800 { border-color: #27272a; }
+    .border-zinc-900 { border-color: #18181b; }
+    button, label { cursor: pointer; }
+    input[type="text"], input[type="email"], input[type="password"], textarea, select {
+      background-color: #18181b;
+      color: #ffffff;
+      border: 1px solid #3f3f46;
+      border-radius: 0.5rem;
+      padding: 0.45rem 0.75rem;
+    }
+    .grid-cols-12 {
+      display: grid;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+    }
+    .col-span-1 { grid-column: span 1 / span 1; }
+    .col-span-3 { grid-column: span 3 / span 3; }
+    .col-span-4 { grid-column: span 4 / span 4; }
+    .fixed.inset-0 {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      background: rgba(0, 0, 0, 0.82);
+    }
+
     input[type="range"] {
       -webkit-appearance: none;
       appearance: none;
@@ -181,6 +254,10 @@
         </div>
 
         <div class="flex items-center gap-3">
+          <span id="offline-status-pill" class="hidden text-[11px] font-semibold bg-amber-950/80 border border-amber-700/60 text-amber-200 px-3 py-1 rounded-full items-center gap-1.5">
+            <i class="fa-solid fa-plane"></i>
+            <span>Offline Mode — Local Vault Ready</span>
+          </span>
           <button id="auth-btn" onclick="openAuthModal()" class="bg-white text-black font-bold text-sm px-4 py-1.5 rounded-full hover:scale-105 transition flex items-center gap-2">
             <i class="fa-regular fa-user"></i>
             <span id="auth-label">Log In / Sign Up</span>
@@ -226,10 +303,10 @@
             <div class="bg-[#181818] border border-zinc-800/80 rounded-2xl p-5 space-y-2 shadow-xl">
               <div class="flex items-center gap-2.5 text-[#1db954] font-bold text-base">
                 <i class="fa-solid fa-file-audio text-lg"></i>
-                <h3>1. Adding Songs & Videos</h3>
+                <h3>1. Adding Songs & Offline Playback</h3>
               </div>
               <p class="text-xs text-zinc-300 leading-relaxed">
-                Click <b>Import Files</b> in the bottom-left menu to pick <code>.mp3</code> or <code>.mp4</code> files from your device (videos play as audio-only). Your songs stay saved even after you close or refresh the page. You can also click <b>Add MP3/MP4 via URL</b> to stream a song using a direct web link.
+                Click <b>Import Files</b> in the bottom-left menu to pick <code>.mp3</code> or <code>.mp4</code> files from your device (videos play as audio-only). All imported files are saved in your device's offline vault so they play anytime with zero internet. You can also click <b>Add MP3/MP4 via URL</b> to stream or cache a web link.
               </p>
             </div>
 
@@ -299,14 +376,14 @@
               </p>
             </div>
 
-            <!-- 8. Listening Stats & Account Sync -->
+            <!-- 8. Listening Stats & Privacy-First Sync -->
             <div class="bg-[#181818] border border-zinc-800/80 rounded-2xl p-5 space-y-2 shadow-xl">
               <div class="flex items-center gap-2.5 text-orange-400 font-bold text-base">
                 <i class="fa-solid fa-chart-line text-lg"></i>
-                <h3>8. Listening Stats & Multi-Device Sync</h3>
+                <h3>8. Listening Stats & Private Cloud Sync</h3>
               </div>
               <p class="text-xs text-zinc-300 leading-relaxed">
-                Click <b>Detailed Stats</b> in the sidebar to see your weekly listening hours, total hours played, daily average, 7-day activity chart, top songs, and top artists. Click <b>Log In / Sign Up</b> at the top right to save your playlists, lyrics, and stats to your account and resume playback across devices.
+                Click <b>Detailed Stats</b> in the sidebar to see your weekly listening hours, total hours played, daily average, 7-day activity chart, top songs, and top artists. Click <b>Log In / Sign Up</b> to sync your listening durations, play counts, and playlists across devices—while keeping your song titles private on your own device.
               </p>
             </div>
 
@@ -678,6 +755,10 @@
         </button>
       </div>
 
+      <div id="auth-offline-notice" class="hidden bg-amber-950/80 border border-amber-700 text-amber-200 text-xs p-3 rounded-lg mb-4">
+        You are currently offline. Local playback, playlists, and stats work normally and will sync once your connection returns.
+      </div>
+
       <div id="auth-logged-out-view" class="space-y-4">
         <div class="grid grid-cols-2 bg-zinc-900 p-1 rounded-lg text-xs font-bold text-center">
           <button id="tab-login" onclick="switchAuthTab('login')" class="py-2 rounded-md bg-zinc-800 text-white transition">Log In</button>
@@ -698,6 +779,10 @@
           <label class="text-xs font-bold text-zinc-300 uppercase">This Device's Name</label>
           <input id="auth-device" type="text" value="Desktop Browser" class="w-full mt-1 bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#1db954]" />
         </div>
+
+        <p class="text-[11px] text-zinc-400">
+          Privacy sync: Only your listening durations, play counts, stats, and playlists sync to your account—song names stay private on this device.
+        </p>
 
         <button id="auth-submit-btn" onclick="handleAuthSubmit()" class="w-full bg-[#1db954] hover:bg-emerald-400 text-black font-bold py-2.5 rounded-full transition">
           Log In
@@ -807,32 +892,15 @@
       </div>
       <div class="flex gap-2 pt-2">
         <button onclick="closeUrlTrackModal()" class="flex-1 bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-bold py-2.5 rounded-full">Cancel</button>
-        <button onclick="addTrackFromUrl()" class="flex-1 bg-[#1db954] hover:bg-emerald-400 text-black text-xs font-bold py-2.5 rounded-full">Add & Sync Song</button>
+        <button onclick="addTrackFromUrl()" class="flex-1 bg-[#1db954] hover:bg-emerald-400 text-black text-xs font-bold py-2.5 rounded-full">Add & Cache Offline</button>
       </div>
     </div>
   </div>
 
   <!-- ======================================================================= -->
-  <!-- FIREBASE, INDEXEDDB PERSISTENT AUDIO VAULT, WEB AUDIO STUDIO & LOGIC -->
+  <!-- OFFLINE-SAFE FIREBASE LOADER, INDEXEDDB VAULT, WEB AUDIO STUDIO & LOGIC -->
   <!-- ======================================================================= -->
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/13.3.0/firebase-app.js";
-    import { getAnalytics } from "https://www.gstatic.com/firebasejs/13.3.0/firebase-analytics.js";
-    import {
-      getAuth,
-      createUserWithEmailAndPassword,
-      signInWithEmailAndPassword,
-      signOut,
-      onAuthStateChanged
-    } from "https://www.gstatic.com/firebasejs/13.3.0/firebase-auth.js";
-    import {
-      getDatabase,
-      ref as dbRef,
-      set,
-      get,
-      onValue
-    } from "https://www.gstatic.com/firebasejs/13.3.0/firebase-database.js";
-
     const firebaseConfig = {
       apiKey: "AIzaSyDFW_xA5QInCCHG0vupzOLoBxcjZHA9_8E",
       authDomain: "pulsestreammp3.firebaseapp.com",
@@ -844,13 +912,63 @@
       measurementId: "G-HRM65R5HEL"
     };
 
-    const app = initializeApp(firebaseConfig);
-    try { getAnalytics(app); } catch (e) {}
-    const auth = getAuth(app);
-    const rtdb = getDatabase(app);
+    // Non-blocking dynamic Firebase SDK loader so offline boots never stall
+    let fbServices = null;
+    let firebaseInitPromise = null;
+
+    async function initFirebaseCloud() {
+      if (fbServices) return fbServices;
+      if (!navigator.onLine) return null;
+      if (firebaseInitPromise) return firebaseInitPromise;
+
+      firebaseInitPromise = (async () => {
+        try {
+          const [appMod, authMod, dbMod] = await Promise.all([
+            import("https://www.gstatic.com/firebasejs/13.3.0/firebase-app.js"),
+            import("https://www.gstatic.com/firebasejs/13.3.0/firebase-auth.js"),
+            import("https://www.gstatic.com/firebasejs/13.3.0/firebase-database.js")
+          ]);
+
+          const app = appMod.initializeApp(firebaseConfig);
+          const auth = authMod.getAuth(app);
+          const rtdb = dbMod.getDatabase(app);
+
+          fbServices = {
+            auth,
+            rtdb,
+            createUserWithEmailAndPassword: authMod.createUserWithEmailAndPassword,
+            signInWithEmailAndPassword: authMod.signInWithEmailAndPassword,
+            signOut: authMod.signOut,
+            onAuthStateChanged: authMod.onAuthStateChanged,
+            dbRef: dbMod.ref,
+            set: dbMod.set,
+            get: dbMod.get,
+            onValue: dbMod.onValue
+          };
+
+          fbServices.onAuthStateChanged(auth, async (user) => {
+            state.user = user;
+            updateAuthHeaderUI();
+            if (user) {
+              await subscribeToRealtimeDatabase(user.uid);
+            } else if (unsubscribeRtdb) {
+              unsubscribeRtdb();
+              unsubscribeRtdb = null;
+            }
+          });
+
+          return fbServices;
+        } catch (err) {
+          firebaseInitPromise = null;
+          return null;
+        }
+      })();
+
+      return firebaseInitPromise;
+    }
 
     // =========================================================================
-    // 1. PERSISTENT INDEXEDDB MEDIA VAULT
+    // 1. PERSISTENT INDEXEDDB MEDIA VAULT (100% OFFLINE STORAGE)
     // =========================================================================
     const VaultDB = {
       dbName: 'MP3VisionMediaVault',
@@ -874,10 +992,12 @@
           return new Promise((resolve, reject) => {
             const tx = db.transaction(this.storeName, 'readwrite');
             tx.objectStore(this.storeName).put(blob, trackId);
-            tx.oncomplete = () => resolve();
+            tx.oncomplete = () => resolve(true);
             tx.onerror = () => reject(tx.error);
           });
-        } catch (e) {}
+        } catch (e) {
+          return false;
+        }
       },
       async getFileUrl(trackId) {
         try {
@@ -892,6 +1012,19 @@
           return null;
         }
       },
+      async hasFile(trackId) {
+        try {
+          const db = await this.open();
+          return new Promise((resolve) => {
+            const tx = db.transaction(this.storeName, 'readonly');
+            const req = tx.objectStore(this.storeName).getKey(trackId);
+            req.onsuccess = () => resolve(!!req.result);
+            req.onerror = () => resolve(false);
+          });
+        } catch (e) {
+          return false;
+        }
+      },
       async deleteFile(trackId) {
         try {
           const db = await this.open();
@@ -901,11 +1034,30 @@
       }
     };
 
+    // Background cache for URL tracks so they also become playable offline
+    async function cacheRemoteUrlInVault(track) {
+      if (!track || !track.src || track.src.startsWith('blob:') || !navigator.onLine) return;
+      try {
+        const res = await fetch(track.src);
+        if (!res.ok) return;
+        const blob = await res.blob();
+        if (blob && blob.size > 0) {
+          const saved = await VaultDB.saveFile(track.id, blob);
+          if (saved) {
+            track.cachedOffline = true;
+            saveLocalBackup();
+            renderMainContent();
+          }
+        }
+      } catch (e) {
+        // Remote server blocks CORS download; direct streaming still works when online
+      }
+    }
+
     // =========================================================================
     // 2. WEB AUDIO ENGINE: VISUALIZER, 5-BAND EQ & AMBIENT SOUND GENERATOR
     // =========================================================================
     const audio = new Audio();
-    audio.crossOrigin = 'anonymous';
 
     let audioCtx = null;
     let analyser = null;
@@ -1072,6 +1224,8 @@
     let unsavedSecondsBuffer = 0;
     let sleepTimerInterval = null;
     let sleepRemainingSec = 0;
+    let activePlayRequestId = 0;
+    let lastLocalSyncTimestamp = 0;
 
     const state = {
       user: null,
@@ -1128,7 +1282,7 @@
     }
 
     // =========================================================================
-    // 5. SEARCH INPUT HANDLERS (FIXED: WORKS FROM ANY VIEW & IN REAL TIME)
+    // 5. SEARCH INPUT HANDLERS
     // =========================================================================
     window.handleSearchInput = () => {
       const inputEl = document.getElementById('search-input');
@@ -1137,7 +1291,6 @@
 
       if (state.searchQuery.trim().length > 0) {
         clearBtn.classList.remove('hidden');
-        // Automatically switch from Tutorial or Stats to song results when searching
         if (state.currentView === 'tutorial' || state.currentView === 'analytics') {
           window.switchView('all');
           return;
@@ -1158,8 +1311,28 @@
     };
 
     // =========================================================================
-    // 6. INITIALIZATION & KEYBOARD SHORTCUTS
+    // 6. INITIALIZATION, ONLINE/OFFLINE LISTENERS & KEYBOARD SHORTCUTS
     // =========================================================================
+    function updateConnectivityUI() {
+      const pill = document.getElementById('offline-status-pill');
+      const offlineNotice = document.getElementById('auth-offline-notice');
+      if (!navigator.onLine) {
+        pill.classList.remove('hidden');
+        pill.classList.add('flex');
+        if (offlineNotice) offlineNotice.classList.remove('hidden');
+      } else {
+        pill.classList.add('hidden');
+        pill.classList.remove('flex');
+        if (offlineNotice) offlineNotice.classList.add('hidden');
+        initFirebaseCloud().then(() => {
+          if (state.user) syncStateToCloud();
+        });
+      }
+    }
+
+    window.addEventListener('online', updateConnectivityUI);
+    window.addEventListener('offline', updateConnectivityUI);
+
     window.addEventListener('DOMContentLoaded', async () => {
       loadLocalBackup();
       await restoreVaultUrlsForAllTracks();
@@ -1168,6 +1341,10 @@
       document.getElementById('auth-device').value = state.deviceName;
 
       renderAll();
+      updateConnectivityUI();
+
+      // Initialize Firebase in background without blocking local offline playback
+      initFirebaseCloud();
 
       window.addEventListener('keydown', (e) => {
         if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) return;
@@ -1219,31 +1396,25 @@
         if (state.loopMode === 'one') {
           audio.currentTime = 0;
           if (state.currentTrackId) incrementPlayCount(state.currentTrackId);
-          audio.play();
+          audio.play().catch(() => {});
         } else {
           nextSong(false);
-        }
-      });
-
-      onAuthStateChanged(auth, async (user) => {
-        state.user = user;
-        updateAuthHeaderUI();
-        if (user) {
-          await subscribeToRealtimeDatabase(user.uid);
-        } else if (unsubscribeRtdb) {
-          unsubscribeRtdb();
-          unsubscribeRtdb = null;
         }
       });
     });
 
     async function restoreVaultUrlsForAllTracks() {
       for (const track of state.tracks) {
-        if (track.isLocalBlob || !track.src) {
-          const restoredUrl = await VaultDB.getFileUrl(track.id);
-          if (restoredUrl) {
+        if (track.src && track.src.startsWith('blob:')) {
+          track.cachedOffline = true;
+          continue;
+        }
+        const restoredUrl = await VaultDB.getFileUrl(track.id);
+        if (restoredUrl) {
+          track.blobUrl = restoredUrl;
+          track.cachedOffline = true;
+          if (track.isLocalBlob || !track.src || !navigator.onLine) {
             track.src = restoredUrl;
-            track.isLocalBlob = true;
           }
         }
       }
@@ -1548,10 +1719,13 @@
     }
 
     // =========================================================================
-    // 9. FIREBASE AUTHENTICATION
+    // 9. FIREBASE AUTHENTICATION (SAFE WHEN OFFLINE)
     // =========================================================================
     window.openAuthModal = () => {
       document.getElementById('auth-error').classList.add('hidden');
+      const offlineNotice = document.getElementById('auth-offline-notice');
+      if (offlineNotice) offlineNotice.classList.toggle('hidden', navigator.onLine);
+
       if (state.user) {
         document.getElementById('auth-logged-out-view').classList.add('hidden');
         document.getElementById('auth-logged-in-view').classList.remove('hidden');
@@ -1593,6 +1767,12 @@
       const errorBox = document.getElementById('auth-error');
       const submitBtn = document.getElementById('auth-submit-btn');
 
+      if (!navigator.onLine) {
+        errorBox.textContent = 'You are offline. Connect to the internet to log in or create an account.';
+        errorBox.classList.remove('hidden');
+        return;
+      }
+
       if (!email || !password) {
         errorBox.textContent = 'Please enter both your email address and password.';
         errorBox.classList.remove('hidden');
@@ -1607,10 +1787,13 @@
       errorBox.classList.add('hidden');
 
       try {
+        const fb = await initFirebaseCloud();
+        if (!fb) throw new Error('Cloud service unreachable right now. Local offline mode remains active.');
+
         if (state.authMode === 'signup') {
-          await createUserWithEmailAndPassword(auth, email, password);
+          await fb.createUserWithEmailAndPassword(fb.auth, email, password);
         } else {
-          await signInWithEmailAndPassword(auth, email, password);
+          await fb.signInWithEmailAndPassword(fb.auth, email, password);
         }
         closeAuthModal();
       } catch (err) {
@@ -1633,7 +1816,8 @@
     };
 
     window.handleSignOut = async () => {
-      await signOut(auth);
+      const fb = await initFirebaseCloud();
+      if (fb) await fb.signOut(fb.auth);
       closeAuthModal();
     };
 
@@ -1647,39 +1831,61 @@
     }
 
     // =========================================================================
-    // 10. REALTIME DATABASE SYNC
+    // 10. REALTIME DATABASE SYNC (PRIVACY-PRESERVING: NO SONG TITLES SYNCED)
     // =========================================================================
     async function subscribeToRealtimeDatabase(uid) {
+      const fb = await initFirebaseCloud();
+      if (!fb) return;
+
       if (unsubscribeRtdb) unsubscribeRtdb();
-      const userRef = dbRef(rtdb, 'user_sessions/' + uid);
+      const userRef = fb.dbRef(fb.rtdb, 'user_sessions/' + uid);
 
       try {
-        const initialSnap = await get(userRef);
+        const initialSnap = await fb.get(userRef);
         if (!initialSnap.exists() && (state.tracks.length > 0 || state.stats.totalSecondsListened > 0)) {
           await syncStateToCloud();
         }
       } catch (e) {}
 
-      unsubscribeRtdb = onValue(userRef, async (snapshot) => {
+      unsubscribeRtdb = fb.onValue(userRef, async (snapshot) => {
         if (!snapshot.exists()) return;
         const data = snapshot.val();
+
+        // Ignore self-triggered echo updates from this same device to prevent audio/UI interruption
+        if (data.deviceId === state.deviceId && (Date.now() - lastLocalSyncTimestamp < 8000)) {
+          return;
+        }
 
         isApplyingCloudUpdate = true;
 
         const incomingTracks = Array.isArray(data.tracks) ? data.tracks : [];
-        const localBlobMap = {};
+        const localTrackMap = {};
         state.tracks.forEach(t => {
-          if (t.isLocalBlob && t.src) localBlobMap[t.id] = t.src;
+          localTrackMap[t.id] = t;
         });
 
-        state.tracks = incomingTracks.map(t => ({
-          ...t,
-          plays: t.plays || 0,
-          secondsListened: t.secondsListened || 0,
-          lyrics: t.lyrics || '',
-          src: localBlobMap[t.id] || t.src || ''
-        }));
+        // Merge incoming listening durations, play counts, and metadata while keeping local song titles private
+        const mergedTracks = incomingTracks.map(t => {
+          const localMatch = localTrackMap[t.id];
+          delete localTrackMap[t.id];
+          return {
+            ...t,
+            title: (localMatch && localMatch.title) ? localMatch.title : (t.title || `Track ${t.id.slice(-4)}`),
+            plays: Math.max(t.plays || 0, localMatch ? (localMatch.plays || 0) : 0),
+            secondsListened: Math.max(t.secondsListened || 0, localMatch ? (localMatch.secondsListened || 0) : 0),
+            lyrics: t.lyrics || (localMatch ? localMatch.lyrics : '') || '',
+            src: (localMatch && localMatch.isLocalBlob && localMatch.src) ? localMatch.src : (t.src || (localMatch ? localMatch.src : '') || ''),
+            blobUrl: localMatch ? localMatch.blobUrl : null,
+            cachedOffline: localMatch ? !!localMatch.cachedOffline : false
+          };
+        });
 
+        // Preserve any local-only tracks that haven't synced yet
+        Object.values(localTrackMap).forEach(unmatchedLocal => {
+          mergedTracks.push(unmatchedLocal);
+        });
+
+        state.tracks = mergedTracks;
         await restoreVaultUrlsForAllTracks();
 
         state.playlists = Array.isArray(data.playlists)
@@ -1689,20 +1895,21 @@
               coverImage: pl.coverImage || null,
               trackIds: Array.isArray(pl.trackIds) ? pl.trackIds : []
             }))
-          : [];
+          : state.playlists;
 
         if (data.stats) {
           state.stats = {
-            totalSecondsListened: data.stats.totalSecondsListened || 0,
-            dailySeconds: data.stats.dailySeconds || {},
-            weeklySeconds: data.stats.weeklySeconds || {},
-            artistStats: data.stats.artistStats || {}
+            totalSecondsListened: Math.max(data.stats.totalSecondsListened || 0, state.stats.totalSecondsListened || 0),
+            dailySeconds: { ...(state.stats.dailySeconds || {}), ...(data.stats.dailySeconds || {}) },
+            weeklySeconds: { ...(state.stats.weeklySeconds || {}), ...(data.stats.weeklySeconds || {}) },
+            artistStats: { ...(state.stats.artistStats || {}), ...(data.stats.artistStats || {}) }
           };
         }
 
         state.isShuffle = !!data.isShuffle;
         state.loopMode = data.loopMode || 'off';
         updateTransportBadgesUI();
+        saveLocalBackup();
         renderAll();
 
         if (data.deviceId && data.deviceId !== state.deviceId && data.currentTrackId) {
@@ -1711,7 +1918,10 @@
             pendingRemoteSession = data;
             const banner = document.getElementById('remote-sync-banner');
             const bannerText = document.getElementById('remote-sync-text');
-            bannerText.textContent = `${data.deviceName || 'Another device'} is on "${remoteTrack.title}" (${formatTime(data.currentTime || 0)})`;
+            const displayLabel = remoteTrack.title && !remoteTrack.title.startsWith('Track ')
+              ? `"${remoteTrack.title}"`
+              : 'an active track';
+            bannerText.textContent = `${data.deviceName || 'Another device'} is on ${displayLabel} (${formatTime(data.currentTime || 0)})`;
             banner.classList.remove('hidden');
           }
         }
@@ -1722,11 +1932,14 @@
 
     async function syncStateToCloud() {
       saveLocalBackup();
-      if (!state.user || isApplyingCloudUpdate) return;
+      if (!state.user || isApplyingCloudUpdate || !navigator.onLine) return;
 
+      const fb = await initFirebaseCloud();
+      if (!fb) return;
+
+      // Exclude song titles ('title') from cloud payload—only sync durations, play counts, and metadata
       const sanitizedTracks = state.tracks.map(t => ({
         id: t.id,
-        title: t.title,
         artist: t.artist,
         mediaType: t.mediaType || 'mp3',
         plays: t.plays || 0,
@@ -1743,7 +1956,6 @@
         .slice(0, 10)
         .map(t => ({
           id: t.id,
-          title: t.title,
           artist: t.artist,
           plays: t.plays,
           hours: +(t.secondsListened / 3600).toFixed(2)
@@ -1786,7 +1998,8 @@
       };
 
       try {
-        await set(dbRef(rtdb, 'user_sessions/' + state.user.uid), payload);
+        lastLocalSyncTimestamp = Date.now();
+        await fb.set(fb.dbRef(fb.rtdb, 'user_sessions/' + state.user.uid), payload);
       } catch (err) {}
     }
 
@@ -1800,7 +2013,11 @@
     function saveLocalBackup() {
       const backup = {
         playlists: state.playlists,
-        tracks: state.tracks.map(t => ({ ...t, src: t.isLocalBlob ? '' : t.src })),
+        tracks: state.tracks.map(t => ({
+          ...t,
+          blobUrl: null,
+          src: t.isLocalBlob ? '' : t.src
+        })),
         stats: state.stats,
         isShuffle: state.isShuffle,
         loopMode: state.loopMode
@@ -1866,7 +2083,9 @@
           liked: false,
           color: gradients[(state.tracks.length + i) % gradients.length],
           src: persistentBlobUrl,
-          isLocalBlob: true
+          blobUrl: persistentBlobUrl,
+          isLocalBlob: true,
+          cachedOffline: true
         };
 
         state.tracks.push(newTrack);
@@ -1918,7 +2137,8 @@
         liked: false,
         color: 'from-emerald-500 to-teal-900',
         src,
-        isLocalBlob: false
+        isLocalBlob: false,
+        cachedOffline: false
       };
 
       state.tracks.push(newTrack);
@@ -1930,6 +2150,7 @@
       closeUrlTrackModal();
       renderAll();
       syncStateToCloud();
+      cacheRemoteUrlInVault(newTrack);
     };
 
     // =========================================================================
@@ -1942,7 +2163,7 @@
       state.editingTrackId = trackId;
       document.getElementById('edit-song-title').value = track.title;
       document.getElementById('edit-song-artist').value = track.artist;
-      document.getElementById('edit-song-src').value = track.isLocalBlob ? '' : (track.src || '');
+      document.getElementById('edit-song-src').value = track.isLocalBlob ? '' : (track.src && !track.src.startsWith('blob:') ? track.src : '');
       document.getElementById('edit-song-modal').classList.remove('hidden');
     };
 
@@ -1964,7 +2185,9 @@
       if (newSrc) {
         track.src = newSrc;
         track.isLocalBlob = false;
+        track.cachedOffline = false;
         track.mediaType = newSrc.toLowerCase().split('?')[0].endsWith('.mp4') ? 'mp4' : 'mp3';
+        cacheRemoteUrlInVault(track);
       }
 
       if (state.currentTrackId === track.id) {
@@ -2158,36 +2381,66 @@
     };
 
     // =========================================================================
-    // 14. PLAYBACK & TRANSPORT CONTROLS
+    // 14. PLAYBACK & TRANSPORT CONTROLS (FIXED SMOOTH PLAYLIST TRANSITIONS)
     // =========================================================================
     function getActiveQueue() {
       const visible = getFilteredTracks();
-      return visible.length > 0 ? visible : state.tracks;
+      if (visible.length > 0) return visible;
+      if (state.currentView.startsWith('pl_')) {
+        const pl = state.playlists.find(p => p.id === state.currentView);
+        if (pl) {
+          return pl.trackIds
+            .map(id => state.tracks.find(t => t.id === id))
+            .filter(Boolean);
+        }
+      }
+      return state.tracks;
     }
 
     async function loadTrackById(trackId, autoPlay = true) {
       const track = state.tracks.find(t => t.id === trackId);
       if (!track) return;
 
+      const requestId = ++activePlayRequestId;
       initWebAudioStudio();
 
-      if (!track.src) {
+      // Prefer cached offline blob URL whenever offline or for local files
+      let resolvedSrc = track.blobUrl || track.src;
+      if (!resolvedSrc || (!navigator.onLine && !resolvedSrc.startsWith('blob:'))) {
         const vaultUrl = await VaultDB.getFileUrl(track.id);
+        if (requestId !== activePlayRequestId) return;
         if (vaultUrl) {
-          track.src = vaultUrl;
-          track.isLocalBlob = true;
+          track.blobUrl = vaultUrl;
+          track.cachedOffline = true;
+          resolvedSrc = vaultUrl;
         }
       }
 
-      if (!track.src) {
+      if (!resolvedSrc) {
         openEditSongModal(track.id);
         return;
       }
 
+      // Reset previous track cleanly before switching source to avoid WebAudio buffer glitch
+      audio.pause();
+      lastTickTimestamp = null;
+      unsavedSecondsBuffer = 0;
+
+      // Only set crossOrigin for external http(s) URLs; local blob URLs should never use crossOrigin
+      if (resolvedSrc.startsWith('blob:')) {
+        audio.removeAttribute('crossOrigin');
+      } else {
+        audio.crossOrigin = 'anonymous';
+      }
+
       state.currentTrackId = track.id;
-      audio.src = track.src;
+      audio.src = resolvedSrc;
+      audio.currentTime = 0;
       audio.playbackRate = state.playbackSpeed;
-      audio.load();
+
+      document.getElementById('seek-bar').value = 0;
+      document.getElementById('time-current').textContent = '0:00';
+      document.getElementById('time-total').textContent = '0:00';
 
       document.getElementById('player-title').textContent = track.title;
       document.getElementById('player-artist').textContent = track.artist;
@@ -2197,11 +2450,23 @@
       renderLyricsPanel();
 
       if (autoPlay) {
-        incrementPlayCount(track.id);
-        audio.play().catch(() => {});
-        state.isPlaying = true;
-        lastTickTimestamp = Date.now();
+        try {
+          if (audioCtx && audioCtx.state === 'suspended') {
+            await audioCtx.resume();
+          }
+          await audio.play();
+          if (requestId !== activePlayRequestId) return;
+          incrementPlayCount(track.id);
+          state.isPlaying = true;
+          lastTickTimestamp = Date.now();
+        } catch (err) {
+          if (requestId !== activePlayRequestId) return;
+          state.isPlaying = false;
+        }
+      } else {
+        state.isPlaying = false;
       }
+
       updatePlayButtonUI();
       renderMainContent();
       syncStateToCloud();
@@ -2212,7 +2477,7 @@
       else loadTrackById(trackId, true);
     };
 
-    window.togglePlayPause = () => {
+    window.togglePlayPause = async () => {
       initWebAudioStudio();
       if (!state.currentTrackId) {
         const queue = getActiveQueue();
@@ -2220,10 +2485,17 @@
         return;
       }
       if (audio.paused) {
-        if (audio.currentTime < 1) incrementPlayCount(state.currentTrackId);
-        audio.play().catch(() => {});
-        state.isPlaying = true;
-        lastTickTimestamp = Date.now();
+        try {
+          if (audioCtx && audioCtx.state === 'suspended') {
+            await audioCtx.resume();
+          }
+          if (audio.currentTime < 1) incrementPlayCount(state.currentTrackId);
+          await audio.play();
+          state.isPlaying = true;
+          lastTickTimestamp = Date.now();
+        } catch (err) {
+          state.isPlaying = false;
+        }
       } else {
         audio.pause();
         state.isPlaying = false;
@@ -2677,6 +2949,7 @@
       songListEl.innerHTML = filtered.map((track, idx) => {
         const isCurrent = state.currentTrackId === track.id;
         const isMp4 = track.mediaType === 'mp4' || (track.src && track.src.toLowerCase().includes('.mp4'));
+        const isOfflineReady = track.isLocalBlob || track.cachedOffline || (track.src && track.src.startsWith('blob:'));
         return `
           <div
             ${canReorder ? `draggable="true" ondragstart="handleDragStart(${idx})" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(${idx}, event)"` : ''}
@@ -2703,6 +2976,7 @@
                 <div class="flex items-center gap-1.5">
                   <span class="text-sm font-semibold truncate ${isCurrent ? 'text-[#1db954]' : 'text-white'}">${track.title}</span>
                   ${isMp4 ? '<span class="text-[9px] font-bold uppercase bg-zinc-700 text-zinc-200 px-1.5 py-0.5 rounded">MP4 Audio</span>' : ''}
+                  ${isOfflineReady ? '<span title="Saved in Offline Vault" class="text-[9px] font-bold uppercase bg-emerald-950/90 text-[#1db954] border border-emerald-800/60 px-1.5 py-0.5 rounded">Offline Ready</span>' : ''}
                 </div>
               </div>
             </div>

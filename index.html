@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>MP3 Vision — Cloud Music Player & Listening Stats</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Local Offline Font Awesome (place css/all.min.css and webfonts/ next to index.html) -->
@@ -18,65 +18,62 @@
     html, body {
       margin: 0;
       padding: 0;
+      width: 100%;
       height: 100%;
       background-color: #000000;
       color: #ffffff;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       overflow: hidden;
       user-select: none;
+      -webkit-text-size-adjust: 100%;
     }
+
+    /* Core Offline Utility Classes (Ensures 100% identical layout even without Tailwind CDN) */
     .hidden { display: none !important; }
     .flex { display: flex; }
+    .inline-flex { display: inline-flex; }
     .flex-1 { flex: 1 1 0%; }
     .flex-col { flex-direction: column; }
+    .flex-wrap { flex-wrap: wrap; }
     .items-center { align-items: center; }
+    .items-end { align-items: flex-end; }
+    .items-start { align-items: flex-start; }
     .justify-between { justify-content: space-between; }
     .justify-center { justify-content: center; }
+    .justify-end { justify-content: flex-end; }
     .shrink-0 { flex-shrink: 0; }
     .overflow-hidden { overflow: hidden; }
     .overflow-y-auto { overflow-y: auto; }
     .truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .relative { position: relative; }
     .absolute { position: absolute; }
-    .h-screen { height: 100vh; }
+    .h-screen { height: 100vh; height: 100dvh; }
     .w-full { width: 100%; }
-    .w-64 { width: 16rem; }
-    .w-80 { width: 20rem; }
-    .h-16 { height: 4rem; }
-    .h-24 { height: 6rem; }
-    .gap-2 { gap: 0.5rem; }
-    .gap-3 { gap: 0.75rem; }
-    .gap-4 { gap: 1rem; }
-    .p-2 { padding: 0.5rem; }
-    .p-4 { padding: 1rem; }
-    .p-6 { padding: 1.5rem; }
-    .px-3 { padding-left: 0.75rem; padding-right: 0.75rem; }
-    .px-4 { padding-left: 1rem; padding-right: 1rem; }
-    .py-1\.5 { padding-top: 0.375rem; padding-bottom: 0.375rem; }
-    .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
-    .rounded-lg { border-radius: 0.5rem; }
-    .rounded-xl { border-radius: 0.75rem; }
-    .rounded-2xl { border-radius: 1rem; }
-    .rounded-full { border-radius: 9999px; }
-    .bg-\[\#121212\] { background-color: #121212; }
-    .bg-\[\#181818\] { background-color: #181818; }
-    .bg-\[\#1db954\] { background-color: #1db954; }
-    .bg-zinc-800 { background-color: #27272a; }
-    .bg-zinc-900 { background-color: #18181b; }
-    .text-white { color: #ffffff; }
-    .text-black { color: #000000; }
-    .text-zinc-400 { color: #a1a1aa; }
-    .text-\[\#1db954\] { color: #1db954; }
-    .border { border-width: 1px; }
-    .border-zinc-800 { border-color: #27272a; }
-    .border-zinc-900 { border-color: #18181b; }
-    button, label { cursor: pointer; }
-    input[type="text"], input[type="email"], input[type="password"], textarea, select {
-      background-color: #18181b;
-      color: #ffffff;
-      border: 1px solid #3f3f46;
-      border-radius: 0.5rem;
-      padding: 0.45rem 0.75rem;
+    .h-full { height: 100%; }
+
+    /* Brand Header & Logo Positioning (Fixes top-left collision with Android status bar) */
+    .brand-header {
+      display: flex !important;
+      flex-direction: row !important;
+      align-items: center !important;
+      gap: 0.65rem !important;
+      padding-top: 0.35rem !important;
+      margin-bottom: 0.5rem !important;
+    }
+    .brand-logo-svg {
+      width: 2.25rem !important;
+      height: 2.25rem !important;
+      min-width: 2.25rem !important;
+      min-height: 2.25rem !important;
+      flex-shrink: 0 !important;
+      display: block !important;
+    }
+    .brand-title-text {
+      font-size: 1.15rem !important;
+      font-weight: 800 !important;
+      line-height: 1.2 !important;
+      letter-spacing: -0.02em !important;
+      white-space: nowrap !important;
     }
 
     /* Search Pill Container: Icon sits in its own flex column, never overlapping text */
@@ -84,14 +81,14 @@
       display: flex !important;
       flex-direction: row !important;
       align-items: center !important;
-      width: 18rem !important;
-      max-width: 55vw !important;
-      height: 2.4rem !important;
+      width: 16rem !important;
+      max-width: 52vw !important;
+      height: 2.25rem !important;
       background-color: #27272a !important;
       border: 1px solid #3f3f46 !important;
       border-radius: 9999px !important;
-      padding: 0 0.9rem !important;
-      gap: 0.6rem !important;
+      padding: 0 0.8rem !important;
+      gap: 0.55rem !important;
     }
     .search-pill-box:focus-within {
       border-color: #1db954 !important;
@@ -103,7 +100,7 @@
       align-items: center !important;
       justify-content: center !important;
       color: #a1a1aa !important;
-      font-size: 0.875rem !important;
+      font-size: 0.8rem !important;
       flex: 0 0 auto !important;
       pointer-events: none !important;
     }
@@ -120,7 +117,7 @@
       padding: 0 !important;
       margin: 0 !important;
       color: #ffffff !important;
-      font-size: 0.875rem !important;
+      font-size: 0.8rem !important;
     }
     #search-input::placeholder {
       color: #a1a1aa !important;
@@ -132,13 +129,99 @@
       background: transparent !important;
       border: none !important;
       color: #a1a1aa !important;
-      font-size: 0.8rem !important;
+      font-size: 0.75rem !important;
       padding: 0.15rem !important;
     }
     #clear-search-btn:hover {
       color: #ffffff !important;
     }
 
+    /* Responsive Phone & Tablet Sizing Adjustments */
+    .app-sidebar {
+      width: 14.5rem;
+    }
+    .hero-cover-box {
+      width: 6.5rem !important;
+      height: 6.5rem !important;
+      min-width: 6.5rem !important;
+      min-height: 6.5rem !important;
+      border-radius: 0.75rem !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      font-size: 2rem !important;
+      flex-shrink: 0 !important;
+      overflow: hidden !important;
+      position: relative !important;
+    }
+    #view-title {
+      font-size: 1.85rem !important;
+      line-height: 1.15 !important;
+      font-weight: 800 !important;
+      margin: 0.15rem 0 !important;
+    }
+    #view-type {
+      font-size: 0.68rem !important;
+      letter-spacing: 0.08em !important;
+    }
+
+    @media (max-width: 900px) {
+      .app-sidebar {
+        width: 12.25rem !important;
+      }
+      .brand-logo-svg {
+        width: 2rem !important;
+        height: 2rem !important;
+        min-width: 2rem !important;
+        min-height: 2rem !important;
+      }
+      .brand-title-text {
+        font-size: 1.02rem !important;
+      }
+      .hero-cover-box {
+        width: 5.25rem !important;
+        height: 5.25rem !important;
+        min-width: 5.25rem !important;
+        min-height: 5.25rem !important;
+        font-size: 1.6rem !important;
+      }
+      #view-title {
+        font-size: 1.45rem !important;
+      }
+      .search-pill-box {
+        width: 12.5rem !important;
+        max-width: 44vw !important;
+        height: 2.1rem !important;
+      }
+      #main-scroll {
+        padding: 0.9rem !important;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .app-sidebar {
+        width: 10.5rem !important;
+      }
+      .brand-title-text {
+        font-size: 0.95rem !important;
+      }
+      .hero-cover-box {
+        width: 4.25rem !important;
+        height: 4.25rem !important;
+        min-width: 4.25rem !important;
+        min-height: 4.25rem !important;
+        font-size: 1.35rem !important;
+      }
+      #view-title {
+        font-size: 1.25rem !important;
+      }
+      .search-pill-box {
+        width: 10rem !important;
+        max-width: 42vw !important;
+      }
+    }
+
+    /* Offline Fallback Layout Helpers */
     .grid-cols-12 {
       display: grid;
       grid-template-columns: repeat(12, minmax(0, 1fr));
@@ -151,6 +234,14 @@
       inset: 0;
       z-index: 50;
       background: rgba(0, 0, 0, 0.82);
+    }
+    button, label { cursor: pointer; }
+    input[type="text"], input[type="email"], input[type="password"], textarea, select {
+      background-color: #18181b;
+      color: #ffffff;
+      border: 1px solid #3f3f46;
+      border-radius: 0.5rem;
+      padding: 0.45rem 0.75rem;
     }
 
     input[type="range"] {
@@ -179,7 +270,7 @@
       border-top: 2px solid #1db954 !important;
       background-color: rgba(29, 185, 84, 0.12) !important;
     }
-    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar { width: 5px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: #27272a; border-radius: 4px; }
     ::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
@@ -188,7 +279,7 @@
 <body class="h-screen flex flex-col">
 
   <!-- CROSS-DEVICE SYNC BANNER -->
-  <div id="remote-sync-banner" class="hidden bg-[#1db954] text-black px-4 py-1.5 text-sm font-semibold flex items-center justify-between shrink-0">
+  <div id="remote-sync-banner" class="hidden bg-[#1db954] text-black px-4 py-1.5 text-xs font-semibold flex items-center justify-between shrink-0">
     <div class="flex items-center gap-2">
       <i class="fa-solid fa-tower-broadcast animate-pulse"></i>
       <span id="remote-sync-text">Active playback session detected on another device</span>
@@ -207,10 +298,11 @@
   <div class="flex-1 flex gap-2 p-2 overflow-hidden">
     
     <!-- LEFT SIDEBAR -->
-    <aside class="w-64 bg-[#121212] rounded-lg flex flex-col overflow-hidden shrink-0 border border-zinc-900">
-      <div class="p-4 space-y-3 shrink-0">
-        <div class="flex items-center gap-3 text-xl font-bold tracking-tight text-white">
-          <svg class="w-10 h-10 shrink-0 drop-shadow-md" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <aside class="app-sidebar bg-[#121212] rounded-lg flex flex-col overflow-hidden shrink-0 border border-zinc-900">
+      <div class="p-3.5 space-y-2.5 shrink-0">
+        <!-- Fixed Top-Left Brand Logo & Title Alignment -->
+        <div class="brand-header">
+          <svg class="brand-logo-svg drop-shadow-md" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
             <defs>
               <linearGradient id="mp3vCircleGrad" x1="25" y1="95" x2="95" y2="25" gradientUnits="userSpaceOnUse">
                 <stop offset="0%" stop-color="#2563eb"/>
@@ -227,63 +319,63 @@
             <path d="M51 39L83 30C85.5 29.3 88 31.2 88 33.8V71C88 79.3 80.5 85.5 72 84C65.2 82.8 60.5 76.5 61.5 69.8C62.5 63.3 68.5 59 75 59.5C76.5 59.6 78 60 79 60.5V43.5L55 50.2V77C55 85.3 47.5 91.5 39 90C32.2 88.8 27.5 82.5 28.5 75.8C29.5 69.3 35.5 65 42 65.5C43.5 65.6 45 66 46 66.5V44.5C46 41.9 48.2 39.7 51 39Z" fill="url(#mp3vHighlight)"/>
             <path d="M62 53.5C62 52.3 63.3 51.6 64.3 52.2L73.5 57.7C74.5 58.3 74.5 59.7 73.5 60.3L64.3 65.8C63.3 66.4 62 65.7 62 64.5V53.5Z" fill="#ffffff"/>
           </svg>
-          <div>
+          <div class="brand-title-text">
             <span class="text-white">MP3</span> <span class="text-[#1db954]">Vision</span>
           </div>
         </div>
 
         <nav class="space-y-1">
-          <button onclick="switchView('all')" id="nav-all" class="w-full flex items-center gap-3 text-sm font-semibold text-white bg-zinc-800/80 px-3 py-1.5 rounded-lg transition">
-            <i class="fa-solid fa-house text-base w-5"></i> Home / All Songs
+          <button onclick="switchView('all')" id="nav-all" class="w-full flex items-center gap-2.5 text-xs font-semibold text-white bg-zinc-800/80 px-2.5 py-1.5 rounded-lg transition">
+            <i class="fa-solid fa-house text-sm w-4"></i> <span class="truncate">Home / All Songs</span>
           </button>
-          <button onclick="switchView('analytics')" id="nav-analytics" class="w-full flex items-center gap-3 text-sm font-semibold text-zinc-400 hover:text-white px-3 py-1.5 rounded-lg transition">
-            <i class="fa-solid fa-chart-line text-base w-5 text-[#1db954]"></i> Detailed Stats
+          <button onclick="switchView('analytics')" id="nav-analytics" class="w-full flex items-center gap-2.5 text-xs font-semibold text-zinc-400 hover:text-white px-2.5 py-1.5 rounded-lg transition">
+            <i class="fa-solid fa-chart-line text-sm w-4 text-[#1db954]"></i> <span class="truncate">Detailed Stats</span>
           </button>
-          <button onclick="switchView('liked')" id="nav-liked" class="w-full flex items-center gap-3 text-sm font-semibold text-zinc-400 hover:text-white px-3 py-1.5 rounded-lg transition">
-            <i class="fa-solid fa-heart text-base w-5 text-emerald-400"></i> Liked Songs
+          <button onclick="switchView('liked')" id="nav-liked" class="w-full flex items-center gap-2.5 text-xs font-semibold text-zinc-400 hover:text-white px-2.5 py-1.5 rounded-lg transition">
+            <i class="fa-solid fa-heart text-sm w-4 text-emerald-400"></i> <span class="truncate">Liked Songs</span>
           </button>
-          <button onclick="switchView('tutorial')" id="nav-tutorial" class="w-full flex items-center gap-3 text-sm font-semibold text-zinc-400 hover:text-white px-3 py-1.5 rounded-lg transition">
-            <i class="fa-solid fa-graduation-cap text-base w-5 text-sky-400"></i> Tutorial
+          <button onclick="switchView('tutorial')" id="nav-tutorial" class="w-full flex items-center gap-2.5 text-xs font-semibold text-zinc-400 hover:text-white px-2.5 py-1.5 rounded-lg transition">
+            <i class="fa-solid fa-graduation-cap text-sm w-4 text-sky-400"></i> <span class="truncate">Tutorial</span>
           </button>
         </nav>
       </div>
 
-      <hr class="border-zinc-800 mx-4" />
+      <hr class="border-zinc-800 mx-3" />
 
       <!-- Playlists Header -->
-      <div class="px-5 pt-3 pb-1 flex items-center justify-between shrink-0">
-        <span class="text-xs font-bold uppercase tracking-wider text-zinc-400">Playlists</span>
+      <div class="px-4 pt-2.5 pb-1 flex items-center justify-between shrink-0">
+        <span class="text-[11px] font-bold uppercase tracking-wider text-zinc-400">Playlists</span>
         <button onclick="openCreatePlaylistModal()" title="Create New Playlist" class="text-zinc-400 hover:text-white transition px-1.5 py-0.5 rounded hover:bg-zinc-800">
-          <i class="fa-solid fa-plus"></i>
+          <i class="fa-solid fa-plus text-xs"></i>
         </button>
       </div>
 
       <!-- Playlist Sidebar List (Scrollable) -->
-      <div id="playlist-sidebar" class="flex-1 overflow-y-auto px-3 space-y-1 min-h-[40px]"></div>
+      <div id="playlist-sidebar" class="flex-1 overflow-y-auto px-2.5 space-y-1 min-h-[36px]"></div>
 
       <!-- Add Music & Support -->
-      <div class="p-3 border-t border-zinc-800 space-y-2 shrink-0 bg-[#121212]">
-        <button onclick="openUrlTrackModal()" class="w-full flex items-center justify-center gap-2 bg-[#1db954] hover:bg-emerald-400 text-black text-xs font-bold py-2 px-3 rounded-full transition">
+      <div class="p-2.5 border-t border-zinc-800 space-y-1.5 shrink-0 bg-[#121212]">
+        <button onclick="openUrlTrackModal()" class="w-full flex items-center justify-center gap-1.5 bg-[#1db954] hover:bg-emerald-400 text-black text-[11px] font-bold py-1.5 px-2.5 rounded-full transition">
           <i class="fa-solid fa-cloud"></i>
-          <span>Add MP3/MP4 via URL</span>
+          <span class="truncate">Add MP3/MP4 via URL</span>
         </button>
-        <label class="w-full flex items-center justify-center gap-2 bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-semibold py-1.5 px-3 rounded-full cursor-pointer transition">
+        <label class="w-full flex items-center justify-center gap-1.5 bg-zinc-800 hover:bg-zinc-700 text-white text-[11px] font-semibold py-1.5 px-2.5 rounded-full cursor-pointer transition">
           <i class="fa-solid fa-file-audio text-[#1db954]"></i>
-          <span id="upload-btn-label">Import Files</span>
+          <span id="upload-btn-label" class="truncate">Import Files</span>
           <input type="file" id="mp3-upload" accept=".mp3,.mp4,audio/mpeg,video/mp4,audio/*" multiple class="hidden" onchange="handleFileUpload(event)" />
         </label>
 
-        <div class="pt-1">
+        <div class="pt-0.5">
           <a
             href="https://buymeacoffee.com/mp3vision"
             target="_blank"
             rel="noopener noreferrer"
-            class="w-full flex items-center justify-center gap-2 bg-[#FFDD00] hover:bg-yellow-300 text-black text-xs font-extrabold py-2 px-3 rounded-full shadow transition hover:scale-[1.02]"
+            class="w-full flex items-center justify-center gap-1.5 bg-[#FFDD00] hover:bg-yellow-300 text-black text-[11px] font-extrabold py-1.5 px-2.5 rounded-full shadow transition hover:scale-[1.02]"
           >
-            <i class="fa-solid fa-mug-hot text-sm"></i>
-            <span>Buy Me a Coffee</span>
+            <i class="fa-solid fa-mug-hot text-xs"></i>
+            <span class="truncate">Buy Me a Coffee</span>
           </a>
-          <p class="text-[10px] text-zinc-400 text-center mt-1 leading-tight">
+          <p class="text-[9px] text-zinc-400 text-center mt-1 leading-tight">
             Support MP3 Vision: <span class="text-white font-semibold">no ads at all!</span>
           </p>
         </div>
@@ -294,7 +386,7 @@
     <main class="flex-1 bg-gradient-to-b from-cyan-950/60 via-[#121212] to-[#121212] rounded-lg flex flex-col overflow-hidden border border-zinc-900">
       
       <!-- Top Bar -->
-      <header class="h-16 px-6 flex items-center justify-between bg-black/30 backdrop-blur-md shrink-0 gap-3">
+      <header class="h-14 px-4 flex items-center justify-between bg-black/30 backdrop-blur-md shrink-0 gap-2">
         <div class="search-pill-box">
           <i class="fa-solid fa-magnifying-glass search-pill-icon"></i>
           <input
@@ -314,12 +406,13 @@
           </button>
         </div>
 
-        <div class="flex items-center gap-3 shrink-0">
-          <span id="offline-status-pill" class="hidden text-[11px] font-semibold bg-amber-950/80 border border-amber-700/60 text-amber-200 px-3 py-1 rounded-full items-center gap-1.5">
-            <i class="fa-solid fa-plane"></i>
-            <span>Offline Mode — Local Vault Ready</span>
+        <div class="flex items-center gap-2 shrink-0">
+          <!-- Updated Offline Pill Text: "You're Offline" -->
+          <span id="offline-status-pill" class="hidden text-[11px] font-semibold bg-amber-950/80 border border-amber-700/60 text-amber-200 px-2.5 py-1 rounded-full items-center gap-1.5">
+            <i class="fa-solid fa-plane text-[10px]"></i>
+            <span>You're Offline</span>
           </span>
-          <button id="auth-btn" onclick="openAuthModal()" class="bg-white text-black font-bold text-sm px-4 py-1.5 rounded-full hover:scale-105 transition flex items-center gap-2">
+          <button id="auth-btn" onclick="openAuthModal()" class="bg-white text-black font-bold text-xs px-3.5 py-1.5 rounded-full hover:scale-105 transition flex items-center gap-1.5">
             <i class="fa-regular fa-user"></i>
             <span id="auth-label">Log In / Sign Up</span>
           </button>
@@ -327,54 +420,54 @@
       </header>
 
       <!-- Scrollable View Container -->
-      <div class="flex-1 overflow-y-auto p-6 space-y-8" id="main-scroll">
+      <div class="flex-1 overflow-y-auto p-4 sm:p-5 space-y-5" id="main-scroll">
         
         <!-- View Header Banner -->
-        <div class="flex items-end justify-between gap-6 flex-wrap">
-          <div class="flex items-end gap-6">
-            <div id="view-cover" class="w-32 h-32 rounded-lg bg-gradient-to-br from-emerald-500 to-zinc-900 shadow-2xl flex items-center justify-center text-4xl shrink-0 overflow-hidden relative group">
+        <div class="flex items-end justify-between gap-4 flex-wrap">
+          <div class="flex items-end gap-4">
+            <div id="view-cover" class="hero-cover-box bg-gradient-to-br from-emerald-500 to-zinc-900 shadow-2xl group">
               <i class="fa-solid fa-headphones"></i>
             </div>
             <div>
-              <p class="text-xs font-bold uppercase tracking-widest text-zinc-400" id="view-type">MP3 VISION LIBRARY</p>
-              <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight mt-1 mb-1" id="view-title">All Songs</h1>
-              <p class="text-sm text-zinc-400" id="view-subtitle"></p>
+              <p class="font-bold uppercase tracking-widest text-zinc-400" id="view-type">MP3 VISION LIBRARY</p>
+              <h1 class="tracking-tight" id="view-title">All Songs</h1>
+              <p class="text-xs text-zinc-400" id="view-subtitle"></p>
             </div>
           </div>
 
           <!-- Custom Playlist Management Buttons -->
-          <div id="playlist-header-actions" class="hidden items-center gap-2 flex-wrap">
-            <button onclick="openCoverModal()" class="bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-semibold px-3.5 py-2 rounded-full flex items-center gap-1.5 transition">
+          <div id="playlist-header-actions" class="hidden items-center gap-1.5 flex-wrap">
+            <button onclick="openCoverModal()" class="bg-zinc-800 hover:bg-zinc-700 text-white text-[11px] font-semibold px-3 py-1.5 rounded-full flex items-center gap-1.5 transition">
               <i class="fa-solid fa-palette text-[#1db954]"></i> Customize Cover
             </button>
-            <button onclick="renameCurrentPlaylist()" class="bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-semibold px-3.5 py-2 rounded-full flex items-center gap-1.5 transition">
+            <button onclick="renameCurrentPlaylist()" class="bg-zinc-800 hover:bg-zinc-700 text-white text-[11px] font-semibold px-3 py-1.5 rounded-full flex items-center gap-1.5 transition">
               <i class="fa-solid fa-pen"></i> Rename
             </button>
-            <button onclick="deleteCurrentPlaylist()" class="bg-red-950/70 hover:bg-red-900 text-red-200 text-xs font-semibold px-3.5 py-2 rounded-full flex items-center gap-1.5 transition">
+            <button onclick="deleteCurrentPlaylist()" class="bg-red-950/70 hover:bg-red-900 text-red-200 text-[11px] font-semibold px-3 py-1.5 rounded-full flex items-center gap-1.5 transition">
               <i class="fa-solid fa-trash"></i> Delete
             </button>
           </div>
         </div>
 
         <!-- SIMPLE & COMPLETE USER TUTORIAL VIEW -->
-        <div id="tutorial-container" class="hidden space-y-6 max-w-5xl">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div id="tutorial-container" class="hidden space-y-4 max-w-5xl">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
             
             <!-- 1. Adding Music -->
-            <div class="bg-[#181818] border border-zinc-800/80 rounded-2xl p-5 space-y-2 shadow-xl">
-              <div class="flex items-center gap-2.5 text-[#1db954] font-bold text-base">
-                <i class="fa-solid fa-file-audio text-lg"></i>
-                <h3>1. Adding Songs & Offline Playback</h3>
+            <div class="bg-[#181818] border border-zinc-800/80 rounded-2xl p-4 space-y-1.5 shadow-xl">
+              <div class="flex items-center gap-2 text-[#1db954] font-bold text-sm">
+                <i class="fa-solid fa-file-audio"></i>
+                <h3>1. Adding Songs & Videos</h3>
               </div>
               <p class="text-xs text-zinc-300 leading-relaxed">
-                Click <b>Import Files</b> in the bottom-left menu to pick <code>.mp3</code> or <code>.mp4</code> files from your device (videos play as audio-only). All imported files are saved in your device's offline vault so they play anytime with zero internet. You can also click <b>Add MP3/MP4 via URL</b> to stream or cache a web link.
+                Click <b>Import Files</b> in the bottom-left menu to pick <code>.mp3</code> or <code>.mp4</code> files from your device (videos play as audio-only). You can also click <b>Add MP3/MP4 via URL</b> to stream a song using a direct web link.
               </p>
             </div>
 
             <!-- 2. Playing & Searching -->
-            <div class="bg-[#181818] border border-zinc-800/80 rounded-2xl p-5 space-y-2 shadow-xl">
-              <div class="flex items-center gap-2.5 text-sky-400 font-bold text-base">
-                <i class="fa-solid fa-magnifying-glass text-lg"></i>
+            <div class="bg-[#181818] border border-zinc-800/80 rounded-2xl p-4 space-y-1.5 shadow-xl">
+              <div class="flex items-center gap-2 text-sky-400 font-bold text-sm">
+                <i class="fa-solid fa-magnifying-glass"></i>
                 <h3>2. Playing, Searching & Shortcuts</h3>
               </div>
               <p class="text-xs text-zinc-300 leading-relaxed">
@@ -383,9 +476,9 @@
             </div>
 
             <!-- 3. Editing & Liking Songs -->
-            <div class="bg-[#181818] border border-zinc-800/80 rounded-2xl p-5 space-y-2 shadow-xl">
-              <div class="flex items-center gap-2.5 text-purple-400 font-bold text-base">
-                <i class="fa-solid fa-heart text-lg"></i>
+            <div class="bg-[#181818] border border-zinc-800/80 rounded-2xl p-4 space-y-1.5 shadow-xl">
+              <div class="flex items-center gap-2 text-purple-400 font-bold text-sm">
+                <i class="fa-solid fa-heart"></i>
                 <h3>3. Liking, Editing & Deleting Songs</h3>
               </div>
               <p class="text-xs text-zinc-300 leading-relaxed">
@@ -394,9 +487,9 @@
             </div>
 
             <!-- 4. Playlists & Custom Covers -->
-            <div class="bg-[#181818] border border-zinc-800/80 rounded-2xl p-5 space-y-2 shadow-xl">
-              <div class="flex items-center gap-2.5 text-amber-400 font-bold text-base">
-                <i class="fa-solid fa-folder-plus text-lg"></i>
+            <div class="bg-[#181818] border border-zinc-800/80 rounded-2xl p-4 space-y-1.5 shadow-xl">
+              <div class="flex items-center gap-2 text-amber-400 font-bold text-sm">
+                <i class="fa-solid fa-folder-plus"></i>
                 <h3>4. Playlists, Song Order & Covers</h3>
               </div>
               <p class="text-xs text-zinc-300 leading-relaxed">
@@ -404,21 +497,21 @@
               </p>
             </div>
 
-            <!-- 5. Lyrics (.VTT or Typing) -->
-            <div class="bg-[#181818] border border-zinc-800/80 rounded-2xl p-5 space-y-2 shadow-xl">
-              <div class="flex items-center gap-2.5 text-emerald-400 font-bold text-base">
-                <i class="fa-solid fa-closed-captioning text-lg"></i>
-                <h3>5. Synced Lyrics (.VTT Upload or Typing)</h3>
+            <!-- 5. Lyrics (.VTT, Typing & Colors) -->
+            <div class="bg-[#181818] border border-zinc-800/80 rounded-2xl p-4 space-y-1.5 shadow-xl">
+              <div class="flex items-center gap-2 text-emerald-400 font-bold text-sm">
+                <i class="fa-solid fa-closed-captioning"></i>
+                <h3>5. Synced Lyrics & Custom Colors</h3>
               </div>
               <p class="text-xs text-zinc-300 leading-relaxed">
-                Click <b>Studio</b> in the bottom-right corner and open the <b>Lyrics</b> tab. Click <b>.VTT</b> to upload a lyric/subtitle file—your lyrics will automatically highlight in time with the music! Or click <b>Type</b> to paste or write lyrics yourself (add timestamps like <code>[00:15]</code> before a line to make it clickable and synced).
+                Click <b>Studio</b> in the bottom-right corner and open the <b>Lyrics</b> tab. Click <b>.VTT</b> to upload a lyric file or <b>Type</b> to write lyrics yourself (prefix lines with <code>[00:15]</code> for live sync). Use the color bar at the top of the Lyrics panel to customize your highlight and text colors.
               </p>
             </div>
 
             <!-- 6. Equalizer & Ambient Mixer -->
-            <div class="bg-[#181818] border border-zinc-800/80 rounded-2xl p-5 space-y-2 shadow-xl">
-              <div class="flex items-center gap-2.5 text-pink-400 font-bold text-base">
-                <i class="fa-solid fa-sliders text-lg"></i>
+            <div class="bg-[#181818] border border-zinc-800/80 rounded-2xl p-4 space-y-1.5 shadow-xl">
+              <div class="flex items-center gap-2 text-pink-400 font-bold text-sm">
+                <i class="fa-solid fa-sliders"></i>
                 <h3>6. Sound Equalizer & Ambient Mixer</h3>
               </div>
               <p class="text-xs text-zinc-300 leading-relaxed">
@@ -427,9 +520,9 @@
             </div>
 
             <!-- 7. Speed & Sleep Timer -->
-            <div class="bg-[#181818] border border-zinc-800/80 rounded-2xl p-5 space-y-2 shadow-xl">
-              <div class="flex items-center gap-2.5 text-indigo-400 font-bold text-base">
-                <i class="fa-solid fa-moon text-lg"></i>
+            <div class="bg-[#181818] border border-zinc-800/80 rounded-2xl p-4 space-y-1.5 shadow-xl">
+              <div class="flex items-center gap-2 text-indigo-400 font-bold text-sm">
+                <i class="fa-solid fa-moon"></i>
                 <h3>7. Playback Speed & Sleep Timer</h3>
               </div>
               <p class="text-xs text-zinc-300 leading-relaxed">
@@ -438,9 +531,9 @@
             </div>
 
             <!-- 8. Listening Stats & Privacy-First Sync -->
-            <div class="bg-[#181818] border border-zinc-800/80 rounded-2xl p-5 space-y-2 shadow-xl">
-              <div class="flex items-center gap-2.5 text-orange-400 font-bold text-base">
-                <i class="fa-solid fa-chart-line text-lg"></i>
+            <div class="bg-[#181818] border border-zinc-800/80 rounded-2xl p-4 space-y-1.5 shadow-xl">
+              <div class="flex items-center gap-2 text-orange-400 font-bold text-sm">
+                <i class="fa-solid fa-chart-line"></i>
                 <h3>8. Listening Stats & Private Cloud Sync</h3>
               </div>
               <p class="text-xs text-zinc-300 leading-relaxed">
@@ -450,12 +543,12 @@
 
           </div>
 
-          <div class="bg-gradient-to-r from-zinc-900 to-[#181818] border border-yellow-500/30 rounded-2xl p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xl">
-            <div class="space-y-1">
-              <h3 class="text-lg font-bold text-white flex items-center gap-2">
+          <div class="bg-gradient-to-r from-zinc-900 to-[#181818] border border-yellow-500/30 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xl">
+            <div class="space-y-0.5">
+              <h3 class="text-sm font-bold text-white flex items-center gap-2">
                 <i class="fa-solid fa-mug-hot text-[#FFDD00]"></i> Support MP3 Vision
               </h3>
-              <p class="text-sm text-zinc-300">
+              <p class="text-xs text-zinc-300">
                 Enjoying uninterrupted music? Donate to keep MP3 Vision running with <strong class="text-white">no ads at all!</strong>
               </p>
             </div>
@@ -463,7 +556,7 @@
               href="https://buymeacoffee.com/mp3vision"
               target="_blank"
               rel="noopener noreferrer"
-              class="bg-[#FFDD00] hover:bg-yellow-300 text-black text-xs font-extrabold px-5 py-3 rounded-full flex items-center gap-2 shrink-0 shadow transition hover:scale-105"
+              class="bg-[#FFDD00] hover:bg-yellow-300 text-black text-xs font-extrabold px-4 py-2 rounded-full flex items-center gap-2 shrink-0 shadow transition hover:scale-105"
             >
               <i class="fa-solid fa-mug-hot"></i>
               <span>Buy Me a Coffee</span>
@@ -472,109 +565,109 @@
         </div>
 
         <!-- DETAILED LISTENING ANALYTICS DASHBOARD -->
-        <div id="analytics-container" class="hidden space-y-6">
+        <div id="analytics-container" class="hidden space-y-4">
           
-          <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            <div class="bg-[#181818] p-4 rounded-xl border border-zinc-800/80">
-              <div class="text-xs text-zinc-400 font-semibold uppercase tracking-wider flex items-center justify-between">
+          <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+            <div class="bg-[#181818] p-3.5 rounded-xl border border-zinc-800/80">
+              <div class="text-[11px] text-zinc-400 font-semibold uppercase tracking-wider flex items-center justify-between">
                 <span>Hours This Week</span>
                 <i class="fa-solid fa-calendar-week text-[#1db954]"></i>
               </div>
-              <div id="stat-weekly-hours" class="text-2xl sm:text-3xl font-extrabold text-white mt-2">0.00 hrs</div>
-              <div id="stat-weekly-mins" class="text-xs text-zinc-500 mt-1">0 mins logged this week</div>
+              <div id="stat-weekly-hours" class="text-xl sm:text-2xl font-extrabold text-white mt-1.5">0.00 hrs</div>
+              <div id="stat-weekly-mins" class="text-[11px] text-zinc-500 mt-0.5">0 mins logged this week</div>
             </div>
 
-            <div class="bg-[#181818] p-4 rounded-xl border border-zinc-800/80">
-              <div class="text-xs text-zinc-400 font-semibold uppercase tracking-wider flex items-center justify-between">
+            <div class="bg-[#181818] p-3.5 rounded-xl border border-zinc-800/80">
+              <div class="text-[11px] text-zinc-400 font-semibold uppercase tracking-wider flex items-center justify-between">
                 <span>Total Hours Played</span>
                 <i class="fa-solid fa-clock text-emerald-400"></i>
               </div>
-              <div id="stat-total-hours" class="text-2xl sm:text-3xl font-extrabold text-white mt-2">0.00 hrs</div>
-              <div id="stat-total-plays" class="text-xs text-zinc-500 mt-1">0 total song streams</div>
+              <div id="stat-total-hours" class="text-xl sm:text-2xl font-extrabold text-white mt-1.5">0.00 hrs</div>
+              <div id="stat-total-plays" class="text-[11px] text-zinc-500 mt-0.5">0 total song streams</div>
             </div>
 
-            <div class="bg-[#181818] p-4 rounded-xl border border-zinc-800/80">
-              <div class="text-xs text-zinc-400 font-semibold uppercase tracking-wider flex items-center justify-between">
+            <div class="bg-[#181818] p-3.5 rounded-xl border border-zinc-800/80">
+              <div class="text-[11px] text-zinc-400 font-semibold uppercase tracking-wider flex items-center justify-between">
                 <span>Daily Average</span>
                 <i class="fa-solid fa-bolt text-amber-400"></i>
               </div>
-              <div id="stat-daily-avg" class="text-2xl sm:text-3xl font-extrabold text-white mt-2">0 mins</div>
-              <div id="stat-daily-avg-sub" class="text-xs text-zinc-500 mt-1">Per active listening day</div>
+              <div id="stat-daily-avg" class="text-xl sm:text-2xl font-extrabold text-white mt-1.5">0 mins</div>
+              <div id="stat-daily-avg-sub" class="text-[11px] text-zinc-500 mt-0.5">Per active listening day</div>
             </div>
 
-            <div class="bg-[#181818] p-4 rounded-xl border border-zinc-800/80">
-              <div class="text-xs text-zinc-400 font-semibold uppercase tracking-wider flex items-center justify-between">
+            <div class="bg-[#181818] p-3.5 rounded-xl border border-zinc-800/80">
+              <div class="text-[11px] text-zinc-400 font-semibold uppercase tracking-wider flex items-center justify-between">
                 <span>#1 Top Artist</span>
                 <i class="fa-solid fa-crown text-yellow-400"></i>
               </div>
-              <div id="stat-top-artist-name" class="text-xl sm:text-2xl font-extrabold text-white mt-2 truncate">—</div>
-              <div id="stat-top-artist-time" class="text-xs text-[#1db954] mt-1">0 mins listened</div>
+              <div id="stat-top-artist-name" class="text-lg sm:text-xl font-extrabold text-white mt-1.5 truncate">—</div>
+              <div id="stat-top-artist-time" class="text-[11px] text-[#1db954] mt-0.5">0 mins listened</div>
             </div>
           </div>
 
-          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div class="bg-[#181818] p-5 rounded-xl border border-zinc-800/80 flex flex-col justify-between">
-              <div class="flex items-center justify-between mb-4">
-                <h2 class="text-base font-bold flex items-center gap-2">
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <div class="bg-[#181818] p-4 rounded-xl border border-zinc-800/80 flex flex-col justify-between">
+              <div class="flex items-center justify-between mb-3">
+                <h2 class="text-sm font-bold flex items-center gap-2">
                   <i class="fa-solid fa-chart-column text-[#1db954]"></i> Weekly Listening Activity
                 </h2>
-                <span class="text-xs text-zinc-400">Last 7 Days</span>
+                <span class="text-[11px] text-zinc-400">Last 7 Days</span>
               </div>
-              <div id="weekly-bar-chart" class="h-40 flex items-end justify-between gap-2 pt-4 px-1"></div>
+              <div id="weekly-bar-chart" class="h-36 flex items-end justify-between gap-2 pt-3 px-1"></div>
             </div>
 
-            <div class="bg-[#181818] p-5 rounded-xl border border-zinc-800/80">
-              <div class="flex items-center justify-between mb-4">
-                <h2 class="text-base font-bold flex items-center gap-2">
+            <div class="bg-[#181818] p-4 rounded-xl border border-zinc-800/80">
+              <div class="flex items-center justify-between mb-3">
+                <h2 class="text-sm font-bold flex items-center gap-2">
                   <i class="fa-solid fa-fire text-orange-500"></i> Top Listened Songs
                 </h2>
-                <span class="text-xs text-zinc-400">Time & Plays</span>
+                <span class="text-[11px] text-zinc-400">Time & Plays</span>
               </div>
-              <div id="top-songs-list" class="space-y-2"></div>
+              <div id="top-songs-list" class="space-y-1.5"></div>
             </div>
 
-            <div class="bg-[#181818] p-5 rounded-xl border border-zinc-800/80">
-              <div class="flex items-center justify-between mb-4">
-                <h2 class="text-base font-bold flex items-center gap-2">
+            <div class="bg-[#181818] p-4 rounded-xl border border-zinc-800/80">
+              <div class="flex items-center justify-between mb-3">
+                <h2 class="text-sm font-bold flex items-center gap-2">
                   <i class="fa-solid fa-star text-yellow-400"></i> Top Listened Artists
                 </h2>
-                <span class="text-xs text-zinc-400">Total Time</span>
+                <span class="text-[11px] text-zinc-400">Total Time</span>
               </div>
-              <div id="top-artists-list" class="space-y-2"></div>
+              <div id="top-artists-list" class="space-y-1.5"></div>
             </div>
           </div>
         </div>
 
         <!-- SONG TABLE -->
-        <div id="song-table-section" class="bg-[#181818] border border-zinc-800/80 rounded-xl p-4 shadow-xl">
-          <div class="grid grid-cols-12 text-xs font-semibold uppercase tracking-wider text-zinc-400 border-b border-zinc-800 pb-2 px-3">
+        <div id="song-table-section" class="bg-[#181818] border border-zinc-800/80 rounded-xl p-3 sm:p-4 shadow-xl">
+          <div class="grid grid-cols-12 text-[11px] font-semibold uppercase tracking-wider text-zinc-400 border-b border-zinc-800 pb-2 px-2">
             <div class="col-span-1">#</div>
             <div class="col-span-4">Title</div>
             <div class="col-span-3">Artist</div>
-            <div class="col-span-1 text-right">Time / Plays</div>
+            <div class="col-span-1 text-right">Time</div>
             <div class="col-span-3 text-right">Actions</div>
           </div>
-          <div id="song-list" class="divide-y divide-zinc-800/40 mt-2"></div>
+          <div id="song-list" class="divide-y divide-zinc-800/40 mt-1.5"></div>
         </div>
 
       </div>
     </main>
 
     <!-- RIGHT DRAWER: LYRICS / EQ / AMBIENT MIXER -->
-    <aside id="side-studio-drawer" class="hidden w-80 bg-[#121212] rounded-lg border border-zinc-900 flex flex-col overflow-hidden shrink-0">
-      <div class="h-16 px-4 border-b border-zinc-800 flex items-center justify-between shrink-0">
-        <div class="flex gap-1 bg-zinc-900 p-1 rounded-lg text-xs font-bold">
-          <button onclick="switchStudioTab('lyrics')" id="studio-tab-lyrics" class="px-2.5 py-1 rounded bg-zinc-800 text-white">Lyrics</button>
-          <button onclick="switchStudioTab('eq')" id="studio-tab-eq" class="px-2.5 py-1 rounded text-zinc-400 hover:text-white">5-Band EQ</button>
-          <button onclick="switchStudioTab('ambient')" id="studio-tab-ambient" class="px-2.5 py-1 rounded text-zinc-400 hover:text-white">Ambient</button>
+    <aside id="side-studio-drawer" class="hidden w-72 sm:w-80 bg-[#121212] rounded-lg border border-zinc-900 flex flex-col overflow-hidden shrink-0">
+      <div class="h-14 px-3.5 border-b border-zinc-800 flex items-center justify-between shrink-0">
+        <div class="flex gap-1 bg-zinc-900 p-1 rounded-lg text-[11px] font-bold">
+          <button onclick="switchStudioTab('lyrics')" id="studio-tab-lyrics" class="px-2 py-1 rounded bg-zinc-800 text-white">Lyrics</button>
+          <button onclick="switchStudioTab('eq')" id="studio-tab-eq" class="px-2 py-1 rounded text-zinc-400 hover:text-white">5-Band EQ</button>
+          <button onclick="switchStudioTab('ambient')" id="studio-tab-ambient" class="px-2 py-1 rounded text-zinc-400 hover:text-white">Ambient</button>
         </div>
         <button onclick="toggleStudioDrawer()" class="text-zinc-400 hover:text-white">
           <i class="fa-solid fa-xmark"></i>
         </button>
       </div>
 
-      <!-- TAB 1: SYNCED LYRICS (VTT UPLOAD OR MANUAL TYPE) -->
-      <div id="studio-panel-lyrics" class="flex-1 flex flex-col p-4 overflow-hidden space-y-3">
+      <!-- TAB 1: SYNCED LYRICS (VTT UPLOAD, MANUAL TYPE & CUSTOM COLORS) -->
+      <div id="studio-panel-lyrics" class="flex-1 flex flex-col p-3.5 overflow-hidden space-y-2.5">
         <div class="flex items-center justify-between gap-2">
           <span id="lyrics-song-label" class="text-xs font-bold text-[#1db954] truncate">Select a song</span>
           <div class="flex items-center gap-1.5 shrink-0">
@@ -588,7 +681,27 @@
           </div>
         </div>
 
-        <div id="lyrics-display-box" class="flex-1 overflow-y-auto text-sm text-zinc-200 whitespace-pre-line leading-relaxed bg-zinc-900/50 rounded-xl p-4 border border-zinc-800/60">
+        <!-- Lyric Color Customizer Bar -->
+        <div class="bg-zinc-900/80 border border-zinc-800 rounded-xl p-2 flex items-center justify-between gap-2 text-[11px]">
+          <div class="flex items-center gap-1.5">
+            <span class="text-zinc-400 font-semibold">Highlight:</span>
+            <button onclick="setLyricColors('#1db954', null)" title="Emerald" class="w-3.5 h-3.5 rounded-full bg-[#1db954] border border-white/30"></button>
+            <button onclick="setLyricColors('#06b6d4', null)" title="Cyan" class="w-3.5 h-3.5 rounded-full bg-[#06b6d4] border border-white/30"></button>
+            <button onclick="setLyricColors('#f43f5e', null)" title="Rose" class="w-3.5 h-3.5 rounded-full bg-[#f43f5e] border border-white/30"></button>
+            <button onclick="setLyricColors('#f59e0b', null)" title="Gold" class="w-3.5 h-3.5 rounded-full bg-[#f59e0b] border border-white/30"></button>
+            <button onclick="setLyricColors('#a855f7', null)" title="Violet" class="w-3.5 h-3.5 rounded-full bg-[#a855f7] border border-white/30"></button>
+            <input type="color" id="lyric-active-color-picker" value="#1db954" oninput="setLyricColors(this.value, null)" title="Custom Active Color" class="w-4 h-4 p-0 border-0 bg-transparent cursor-pointer" />
+          </div>
+          <div class="flex items-center gap-1">
+            <span class="text-zinc-400 font-semibold">Text:</span>
+            <input type="color" id="lyric-text-color-picker" value="#e4e4e7" oninput="setLyricColors(null, this.value)" title="Custom Lyric Text Color" class="w-4 h-4 p-0 border-0 bg-transparent cursor-pointer" />
+            <button onclick="resetLyricColors()" title="Reset Colors" class="text-zinc-400 hover:text-white px-1">
+              <i class="fa-solid fa-rotate-left"></i>
+            </button>
+          </div>
+        </div>
+
+        <div id="lyrics-display-box" class="flex-1 overflow-y-auto text-xs sm:text-sm text-zinc-200 whitespace-pre-line leading-relaxed bg-zinc-900/50 rounded-xl p-3.5 border border-zinc-800/60">
           No lyrics saved for this track yet. Click .VTT to upload a WebVTT lyric file or click Type to write your own.
         </div>
 
@@ -613,10 +726,10 @@
       </div>
 
       <!-- TAB 2: 5-BAND WEB AUDIO EQUALIZER -->
-      <div id="studio-panel-eq" class="hidden flex-1 p-4 space-y-5 overflow-y-auto">
+      <div id="studio-panel-eq" class="hidden flex-1 p-3.5 space-y-4 overflow-y-auto">
         <div class="flex items-center justify-between">
           <span class="text-xs font-bold uppercase text-zinc-400">Sound Presets</span>
-          <select id="eq-preset-select" onchange="applyEqPreset(this.value)" class="bg-zinc-900 border border-zinc-700 rounded-lg px-2.5 py-1 text-xs text-white focus:outline-none">
+          <select id="eq-preset-select" onchange="applyEqPreset(this.value)" class="bg-zinc-900 border border-zinc-700 rounded-lg px-2 py-1 text-xs text-white focus:outline-none">
             <option value="flat">Flat / Default</option>
             <option value="bass">Deep Bass Boost</option>
             <option value="vocal">Crystal Vocals</option>
@@ -625,7 +738,7 @@
           </select>
         </div>
 
-        <div class="space-y-4 bg-zinc-900/50 p-4 rounded-xl border border-zinc-800/60">
+        <div class="space-y-3.5 bg-zinc-900/50 p-3.5 rounded-xl border border-zinc-800/60">
           <div>
             <div class="flex justify-between text-xs mb-1"><span>60 Hz (Sub Bass)</span><span id="eq-val-0" class="font-mono text-[#1db954]">0 dB</span></div>
             <input type="range" min="-12" max="12" step="1" value="0" oninput="setEqBand(0, this.value)" class="w-full" />
@@ -650,10 +763,10 @@
       </div>
 
       <!-- TAB 3: AMBIENT SOUND LAYER MIXER -->
-      <div id="studio-panel-ambient" class="hidden flex-1 p-4 space-y-4 overflow-y-auto">
+      <div id="studio-panel-ambient" class="hidden flex-1 p-3.5 space-y-3.5 overflow-y-auto">
         <p class="text-xs text-zinc-400">Layer relaxing background atmospheres underneath your music.</p>
-        <div class="space-y-3">
-          <div class="bg-zinc-900/60 p-3.5 rounded-xl border border-zinc-800 space-y-2">
+        <div class="space-y-2.5">
+          <div class="bg-zinc-900/60 p-3 rounded-xl border border-zinc-800 space-y-1.5">
             <div class="flex items-center justify-between text-xs font-semibold">
               <span><i class="fa-solid fa-cloud-rain text-sky-400 mr-1.5"></i> Soft Rainfall</span>
               <span id="amb-val-rain" class="font-mono text-zinc-400">0%</span>
@@ -661,7 +774,7 @@
             <input type="range" min="0" max="100" value="0" oninput="setAmbientLevel('rain', this.value)" class="w-full" />
           </div>
 
-          <div class="bg-zinc-900/60 p-3.5 rounded-xl border border-zinc-800 space-y-2">
+          <div class="bg-zinc-900/60 p-3 rounded-xl border border-zinc-800 space-y-1.5">
             <div class="flex items-center justify-between text-xs font-semibold">
               <span><i class="fa-solid fa-record-vinyl text-amber-400 mr-1.5"></i> Lo-Fi Vinyl Crackle</span>
               <span id="amb-val-vinyl" class="font-mono text-zinc-400">0%</span>
@@ -669,7 +782,7 @@
             <input type="range" min="0" max="100" value="0" oninput="setAmbientLevel('vinyl', this.value)" class="w-full" />
           </div>
 
-          <div class="bg-zinc-900/60 p-3.5 rounded-xl border border-zinc-800 space-y-2">
+          <div class="bg-zinc-900/60 p-3 rounded-xl border border-zinc-800 space-y-1.5">
             <div class="flex items-center justify-between text-xs font-semibold">
               <span><i class="fa-solid fa-wind text-emerald-400 mr-1.5"></i> Deep Space Brown Noise</span>
               <span id="amb-val-brown" class="font-mono text-zinc-400">0%</span>
@@ -682,83 +795,71 @@
   </div>
 
   <!-- BOTTOM PLAYER BAR -->
-  <footer class="h-24 bg-black border-t border-zinc-900 px-4 flex items-center justify-between shrink-0 relative">
+  <footer class="h-20 bg-black border-t border-zinc-900 px-3 sm:px-4 flex items-center justify-between shrink-0 relative gap-2">
     <canvas id="audio-visualizer" class="absolute top-0 left-0 w-full h-1 pointer-events-none opacity-80"></canvas>
 
     <!-- Now Playing Info -->
-    <div class="w-1/4 flex items-center gap-3.5 min-w-[200px]">
-      <svg class="w-9 h-9 shrink-0 hidden sm:block drop-shadow" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <linearGradient id="mp3vCircleGradBtm" x1="25" y1="95" x2="95" y2="25" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stop-color="#2563eb"/>
-            <stop offset="50%" stop-color="#06b6d4"/>
-            <stop offset="100%" stop-color="#1db954"/>
-          </linearGradient>
-        </defs>
-        <circle cx="60" cy="60" r="56" fill="#1e2229" stroke="url(#mp3vCircleGradBtm)" stroke-width="4"/>
-        <path d="M51 39L83 30C85.5 29.3 88 31.2 88 33.8V71C88 79.3 80.5 85.5 72 84C65.2 82.8 60.5 76.5 61.5 69.8C62.5 63.3 68.5 59 75 59.5C76.5 59.6 78 60 79 60.5V43.5L55 50.2V77C55 85.3 47.5 91.5 39 90C32.2 88.8 27.5 82.5 28.5 75.8C29.5 69.3 35.5 65 42 65.5C43.5 65.6 45 66 46 66.5V44.5C46 41.9 48.2 39.7 51 39Z" fill="url(#mp3vCircleGradBtm)"/>
-        <path d="M62 53.5C62 52.3 63.3 51.6 64.3 52.2L73.5 57.7C74.5 58.3 74.5 59.7 73.5 60.3L64.3 65.8C63.3 66.4 62 65.7 62 64.5V53.5Z" fill="#ffffff"/>
-      </svg>
-      <div id="player-art" class="w-14 h-14 rounded-lg bg-zinc-800 ring-1 ring-white/20 flex items-center justify-center text-xl shrink-0">
+    <div class="w-1/4 flex items-center gap-2.5 min-w-[140px] sm:min-w-[180px]">
+      <div id="player-art" class="w-11 h-11 rounded-lg bg-zinc-800 ring-1 ring-white/20 flex items-center justify-center text-base shrink-0">
         <i class="fa-solid fa-compact-disc text-zinc-500"></i>
       </div>
       <div class="overflow-hidden">
-        <div id="player-title" class="text-sm font-semibold text-white truncate">No song playing</div>
-        <div id="player-artist" class="text-xs text-zinc-400 truncate">Select a track</div>
+        <div id="player-title" class="text-xs sm:text-sm font-semibold text-white truncate">No song playing</div>
+        <div id="player-artist" class="text-[11px] text-zinc-400 truncate">Select a track</div>
       </div>
-      <button onclick="toggleLikeCurrent()" id="player-like-btn" class="text-zinc-400 hover:text-white ml-1">
-        <i class="fa-regular fa-heart"></i>
+      <button onclick="toggleLikeCurrent()" id="player-like-btn" class="text-zinc-400 hover:text-white ml-1 shrink-0">
+        <i class="fa-regular fa-heart text-xs"></i>
       </button>
     </div>
 
     <!-- Transport Controls + Seek Bar -->
-    <div class="w-2/4 max-w-xl flex flex-col items-center gap-2">
-      <div class="flex items-center gap-6">
-        <button onclick="toggleShuffle()" id="btn-shuffle" title="Shuffle" class="text-zinc-400 hover:text-white text-sm transition relative">
+    <div class="w-2/4 max-w-lg flex flex-col items-center gap-1.5">
+      <div class="flex items-center gap-4 sm:gap-5">
+        <button onclick="toggleShuffle()" id="btn-shuffle" title="Shuffle" class="text-zinc-400 hover:text-white text-xs sm:text-sm transition relative">
           <i class="fa-solid fa-shuffle"></i>
         </button>
-        <button onclick="prevSong()" title="Previous" class="text-zinc-300 hover:text-white text-lg transition">
+        <button onclick="prevSong()" title="Previous" class="text-zinc-300 hover:text-white text-base transition">
           <i class="fa-solid fa-backward-step"></i>
         </button>
-        <button onclick="togglePlayPause()" id="btn-play" class="w-9 h-9 rounded-full bg-white text-black flex items-center justify-center hover:scale-105 transition">
-          <i class="fa-solid fa-play ml-0.5"></i>
+        <button onclick="togglePlayPause()" id="btn-play" class="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center hover:scale-105 transition">
+          <i class="fa-solid fa-play ml-0.5 text-xs"></i>
         </button>
-        <button onclick="nextSong(true)" title="Next" class="text-zinc-300 hover:text-white text-lg transition">
+        <button onclick="nextSong(true)" title="Next" class="text-zinc-300 hover:text-white text-base transition">
           <i class="fa-solid fa-forward-step"></i>
         </button>
-        <button onclick="cycleLoopMode()" id="btn-loop" title="Loop Off" class="text-zinc-400 hover:text-white text-sm transition relative">
+        <button onclick="cycleLoopMode()" id="btn-loop" title="Loop Off" class="text-zinc-400 hover:text-white text-xs sm:text-sm transition relative">
           <i class="fa-solid fa-repeat"></i>
           <span id="loop-badge" class="hidden absolute -top-1.5 -right-2 bg-[#1db954] text-black text-[9px] font-extrabold px-1 rounded-full">1</span>
         </button>
       </div>
 
-      <div class="w-full flex items-center gap-2 text-xs text-zinc-400 font-mono">
-        <span id="time-current" class="w-10 text-right">0:00</span>
+      <div class="w-full flex items-center gap-2 text-[11px] text-zinc-400 font-mono">
+        <span id="time-current" class="w-8 text-right">0:00</span>
         <input type="range" id="seek-bar" value="0" min="0" max="100" step="0.1" oninput="seekAudio(this.value)" class="flex-1" />
-        <span id="time-total" class="w-10">0:00</span>
+        <span id="time-total" class="w-8">0:00</span>
       </div>
     </div>
 
     <!-- Studio Controls: Speed, Sleep Timer, Lyrics/EQ/Ambient Drawer, Volume -->
-    <div class="w-1/4 flex items-center justify-end gap-2.5 min-w-[240px]">
-      <button onclick="cyclePlaybackSpeed()" id="btn-speed" title="Playback Speed" class="text-[11px] font-mono font-bold bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 px-2 py-1 rounded-md transition">
+    <div class="w-1/4 flex items-center justify-end gap-1.5 sm:gap-2 min-w-[150px]">
+      <button onclick="cyclePlaybackSpeed()" id="btn-speed" title="Playback Speed" class="text-[10px] font-mono font-bold bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 px-1.5 py-1 rounded-md transition">
         1.0x
       </button>
 
-      <button onclick="cycleSleepTimer()" id="btn-sleep" title="Sleep Timer" class="text-zinc-400 hover:text-white text-xs bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 px-2 py-1 rounded-md transition flex items-center gap-1">
+      <button onclick="cycleSleepTimer()" id="btn-sleep" title="Sleep Timer" class="text-zinc-400 hover:text-white text-xs bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 px-1.5 py-1 rounded-md transition flex items-center gap-1">
         <i class="fa-solid fa-moon"></i>
         <span id="sleep-timer-label" class="hidden font-mono text-[10px] text-[#1db954]"></span>
       </button>
 
-      <button onclick="toggleStudioDrawer()" id="btn-studio" title="Lyrics, Equalizer & Ambient Mixer" class="text-zinc-400 hover:text-white text-xs bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 px-2.5 py-1 rounded-md transition flex items-center gap-1">
+      <button onclick="toggleStudioDrawer()" id="btn-studio" title="Lyrics, Equalizer & Ambient Mixer" class="text-zinc-400 hover:text-white text-xs bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 px-2 py-1 rounded-md transition flex items-center gap-1">
         <i class="fa-solid fa-sliders text-[#1db954]"></i>
-        <span class="hidden xl:inline">Studio</span>
+        <span class="hidden lg:inline text-[11px]">Studio</span>
       </button>
 
-      <button onclick="toggleMute()" id="btn-mute" class="text-zinc-400 hover:text-white w-5">
+      <button onclick="toggleMute()" id="btn-mute" class="text-zinc-400 hover:text-white w-4 text-xs">
         <i class="fa-solid fa-volume-high"></i>
       </button>
-      <input type="range" id="volume-bar" value="80" min="0" max="100" oninput="changeVolume(this.value)" class="w-20" />
+      <input type="range" id="volume-bar" value="80" min="0" max="100" oninput="changeVolume(this.value)" class="w-14 sm:w-20" />
     </div>
   </footer>
 
@@ -768,9 +869,9 @@
 
   <!-- 1. PLAYLIST COVER CUSTOMIZER MODAL -->
   <div id="cover-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-4">
-    <div class="bg-[#181818] border border-zinc-800 rounded-2xl w-full max-w-md p-6 shadow-2xl space-y-5">
+    <div class="bg-[#181818] border border-zinc-800 rounded-2xl w-full max-w-md p-5 shadow-2xl space-y-4">
       <div class="flex items-center justify-between">
-        <h3 class="text-lg font-bold flex items-center gap-2">
+        <h3 class="text-base font-bold flex items-center gap-2">
           <i class="fa-solid fa-palette text-[#1db954]"></i> Customize Playlist Cover
         </h3>
         <button onclick="closeCoverModal()" class="text-zinc-400 hover:text-white">
@@ -780,12 +881,12 @@
 
       <div>
         <label class="text-xs font-bold text-zinc-400 uppercase block mb-2">Choose Cover Color Theme</label>
-        <div id="cover-color-grid" class="grid grid-cols-4 gap-2.5"></div>
+        <div id="cover-color-grid" class="grid grid-cols-4 gap-2"></div>
       </div>
 
       <div>
         <label class="text-xs font-bold text-zinc-400 uppercase block mb-2">Or Upload Custom Cover Image</label>
-        <label class="w-full flex items-center justify-center gap-2 bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-semibold py-2.5 px-4 rounded-xl cursor-pointer border border-zinc-700 transition">
+        <label class="w-full flex items-center justify-center gap-2 bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-semibold py-2 px-4 rounded-xl cursor-pointer border border-zinc-700 transition">
           <i class="fa-solid fa-image text-[#1db954]"></i>
           <span>Select Image (JPG, PNG, WebP)</span>
           <input type="file" accept="image/*" class="hidden" onchange="handleCoverImageUpload(event)" />
@@ -796,7 +897,7 @@
         <button onclick="revertPlaylistCover()" class="text-xs font-semibold text-zinc-400 hover:text-red-400 flex items-center gap-1.5 transition">
           <i class="fa-solid fa-rotate-left"></i> Revert to Default
         </button>
-        <button onclick="closeCoverModal()" class="bg-[#1db954] hover:bg-emerald-400 text-black text-xs font-bold px-5 py-2 rounded-full transition">
+        <button onclick="closeCoverModal()" class="bg-[#1db954] hover:bg-emerald-400 text-black text-xs font-bold px-5 py-1.5 rounded-full transition">
           Done
         </button>
       </div>
@@ -805,9 +906,9 @@
 
   <!-- 2. REAL FIREBASE AUTH MODAL -->
   <div id="auth-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-4">
-    <div class="bg-[#181818] border border-zinc-800 rounded-2xl w-full max-w-md p-6 shadow-2xl">
-      <div class="flex items-center justify-between mb-4">
-        <h3 class="text-xl font-bold flex items-center gap-2">
+    <div class="bg-[#181818] border border-zinc-800 rounded-2xl w-full max-w-md p-5 shadow-2xl">
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="text-lg font-bold flex items-center gap-2">
           <i class="fa-solid fa-wave-square text-[#1db954]"></i>
           <span>MP3 Vision Account</span>
         </h3>
@@ -816,53 +917,53 @@
         </button>
       </div>
 
-      <div id="auth-offline-notice" class="hidden bg-amber-950/80 border border-amber-700 text-amber-200 text-xs p-3 rounded-lg mb-4">
-        You are currently offline. Local playback, playlists, and stats work normally and will sync once your connection returns.
+      <div id="auth-offline-notice" class="hidden bg-amber-950/80 border border-amber-700 text-amber-200 text-xs p-2.5 rounded-lg mb-3">
+        You're Offline. Connect to the internet to log in or sync your account.
       </div>
 
-      <div id="auth-logged-out-view" class="space-y-4">
+      <div id="auth-logged-out-view" class="space-y-3">
         <div class="grid grid-cols-2 bg-zinc-900 p-1 rounded-lg text-xs font-bold text-center">
-          <button id="tab-login" onclick="switchAuthTab('login')" class="py-2 rounded-md bg-zinc-800 text-white transition">Log In</button>
-          <button id="tab-signup" onclick="switchAuthTab('signup')" class="py-2 rounded-md text-zinc-400 hover:text-white transition">Create Account</button>
+          <button id="tab-login" onclick="switchAuthTab('login')" class="py-1.5 rounded-md bg-zinc-800 text-white transition">Log In</button>
+          <button id="tab-signup" onclick="switchAuthTab('signup')" class="py-1.5 rounded-md text-zinc-400 hover:text-white transition">Create Account</button>
         </div>
 
-        <div id="auth-error" class="hidden bg-red-950/80 border border-red-700 text-red-200 text-xs p-3 rounded-lg"></div>
+        <div id="auth-error" class="hidden bg-red-950/80 border border-red-700 text-red-200 text-xs p-2.5 rounded-lg"></div>
 
         <div>
           <label class="text-xs font-bold text-zinc-300 uppercase">Email Address</label>
-          <input id="auth-email" type="email" placeholder="you@example.com" class="w-full mt-1 bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#1db954]" />
+          <input id="auth-email" type="email" placeholder="you@example.com" class="w-full mt-1 bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none focus:border-[#1db954]" />
         </div>
         <div>
           <label class="text-xs font-bold text-zinc-300 uppercase">Password</label>
-          <input id="auth-password" type="password" placeholder="At least 6 characters" class="w-full mt-1 bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#1db954]" />
+          <input id="auth-password" type="password" placeholder="At least 6 characters" class="w-full mt-1 bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none focus:border-[#1db954]" />
         </div>
         <div>
           <label class="text-xs font-bold text-zinc-300 uppercase">This Device's Name</label>
-          <input id="auth-device" type="text" value="Desktop Browser" class="w-full mt-1 bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#1db954]" />
+          <input id="auth-device" type="text" value="Desktop Browser" class="w-full mt-1 bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none focus:border-[#1db954]" />
         </div>
 
         <p class="text-[11px] text-zinc-400">
           Privacy sync: Only your listening durations, play counts, stats, and playlists sync to your account—song names stay private on this device.
         </p>
 
-        <button id="auth-submit-btn" onclick="handleAuthSubmit()" class="w-full bg-[#1db954] hover:bg-emerald-400 text-black font-bold py-2.5 rounded-full transition">
+        <button id="auth-submit-btn" onclick="handleAuthSubmit()" class="w-full bg-[#1db954] hover:bg-emerald-400 text-black font-bold py-2 rounded-full transition text-sm">
           Log In
         </button>
       </div>
 
-      <div id="auth-logged-in-view" class="hidden space-y-4">
-        <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 space-y-1">
+      <div id="auth-logged-in-view" class="hidden space-y-3">
+        <div class="bg-zinc-900 p-3.5 rounded-xl border border-zinc-800 space-y-1">
           <div class="text-xs text-zinc-400">Signed in as</div>
           <div id="profile-email" class="text-sm font-bold text-white truncate"></div>
         </div>
         <div>
           <label class="text-xs font-bold text-zinc-300 uppercase">Current Device Name</label>
           <div class="flex gap-2 mt-1">
-            <input id="active-device-input" type="text" class="flex-1 bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#1db954]" />
-            <button onclick="saveDeviceName()" class="bg-zinc-800 hover:bg-zinc-700 px-4 rounded-lg text-xs font-bold">Update</button>
+            <input id="active-device-input" type="text" class="flex-1 bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none focus:border-[#1db954]" />
+            <button onclick="saveDeviceName()" class="bg-zinc-800 hover:bg-zinc-700 px-3.5 rounded-lg text-xs font-bold">Update</button>
           </div>
         </div>
-        <button onclick="handleSignOut()" class="w-full bg-red-950/80 hover:bg-red-900 text-red-200 font-bold py-2.5 rounded-full transition">
+        <button onclick="handleSignOut()" class="w-full bg-red-950/80 hover:bg-red-900 text-red-200 font-bold py-2 rounded-full transition text-sm">
           Sign Out
         </button>
       </div>
@@ -871,56 +972,56 @@
 
   <!-- 3. EDIT SONG & ARTIST MODAL -->
   <div id="edit-song-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-4">
-    <div class="bg-[#181818] border border-zinc-800 rounded-2xl w-full max-w-sm p-6 shadow-2xl space-y-4">
+    <div class="bg-[#181818] border border-zinc-800 rounded-2xl w-full max-w-sm p-5 shadow-2xl space-y-3.5">
       <div class="flex items-center justify-between">
-        <h3 class="text-lg font-bold">Edit Song Info</h3>
+        <h3 class="text-base font-bold">Edit Song Info</h3>
         <button onclick="closeEditSongModal()" class="text-zinc-400 hover:text-white">
           <i class="fa-solid fa-xmark"></i>
         </button>
       </div>
       <div>
         <label class="text-xs font-bold text-zinc-400 uppercase">Song Title</label>
-        <input id="edit-song-title" type="text" class="w-full mt-1 bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#1db954]" />
+        <input id="edit-song-title" type="text" class="w-full mt-1 bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none focus:border-[#1db954]" />
       </div>
       <div>
         <label class="text-xs font-bold text-zinc-400 uppercase">Artist Name</label>
-        <input id="edit-song-artist" type="text" class="w-full mt-1 bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#1db954]" />
+        <input id="edit-song-artist" type="text" class="w-full mt-1 bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none focus:border-[#1db954]" />
       </div>
       <div>
         <label class="text-xs font-bold text-zinc-400 uppercase">Direct Audio URL (.mp3 or .mp4)</label>
-        <input id="edit-song-src" type="text" placeholder="e.g. https://example.com/song.mp3" class="w-full mt-1 bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#1db954]" />
+        <input id="edit-song-src" type="text" placeholder="e.g. https://example.com/song.mp3" class="w-full mt-1 bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none focus:border-[#1db954]" />
       </div>
-      <div class="flex gap-2 pt-2">
-        <button onclick="closeEditSongModal()" class="flex-1 bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-bold py-2.5 rounded-full">Cancel</button>
-        <button onclick="saveEditedSong()" class="flex-1 bg-[#1db954] hover:bg-emerald-400 text-black text-xs font-bold py-2.5 rounded-full">Save Changes</button>
+      <div class="flex gap-2 pt-1">
+        <button onclick="closeEditSongModal()" class="flex-1 bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-bold py-2 rounded-full">Cancel</button>
+        <button onclick="saveEditedSong()" class="flex-1 bg-[#1db954] hover:bg-emerald-400 text-black text-xs font-bold py-2 rounded-full">Save Changes</button>
       </div>
     </div>
   </div>
 
   <!-- 4. CREATE / RENAME PLAYLIST MODAL -->
   <div id="playlist-name-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-4">
-    <div class="bg-[#181818] border border-zinc-800 rounded-2xl w-full max-w-sm p-6 shadow-2xl space-y-4">
+    <div class="bg-[#181818] border border-zinc-800 rounded-2xl w-full max-w-sm p-5 shadow-2xl space-y-3.5">
       <div class="flex items-center justify-between">
-        <h3 id="playlist-modal-heading" class="text-lg font-bold">Create Playlist</h3>
+        <h3 id="playlist-modal-heading" class="text-base font-bold">Create Playlist</h3>
         <button onclick="closePlaylistNameModal()" class="text-zinc-400 hover:text-white">
           <i class="fa-solid fa-xmark"></i>
         </button>
       </div>
       <div>
         <label class="text-xs font-bold text-zinc-400 uppercase">Playlist Name</label>
-        <input id="playlist-name-input" type="text" placeholder="e.g. Workout Mix" class="w-full mt-1 bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#1db954]" />
+        <input id="playlist-name-input" type="text" placeholder="e.g. Workout Mix" class="w-full mt-1 bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none focus:border-[#1db954]" />
       </div>
-      <div class="flex gap-2 pt-2">
-        <button onclick="closePlaylistNameModal()" class="flex-1 bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-bold py-2.5 rounded-full">Cancel</button>
-        <button onclick="confirmPlaylistNameModal()" class="flex-1 bg-[#1db954] hover:bg-emerald-400 text-black text-xs font-bold py-2.5 rounded-full">Save</button>
+      <div class="flex gap-2 pt-1">
+        <button onclick="closePlaylistNameModal()" class="flex-1 bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-bold py-2 rounded-full">Cancel</button>
+        <button onclick="confirmPlaylistNameModal()" class="flex-1 bg-[#1db954] hover:bg-emerald-400 text-black text-xs font-bold py-2 rounded-full">Save</button>
       </div>
     </div>
   </div>
 
   <!-- 5. ASSIGN SONG TO PLAYLISTS MODAL -->
   <div id="assign-playlist-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-4">
-    <div class="bg-[#181818] border border-zinc-800 rounded-xl w-80 p-5 shadow-2xl">
-      <div class="flex items-center justify-between mb-3">
+    <div class="bg-[#181818] border border-zinc-800 rounded-xl w-80 p-4 shadow-2xl">
+      <div class="flex items-center justify-between mb-2.5">
         <h4 class="font-bold text-sm">Add / Remove from Playlists</h4>
         <button onclick="closeAssignPlaylistModal()" class="text-zinc-400 hover:text-white">
           <i class="fa-solid fa-xmark"></i>
@@ -932,34 +1033,34 @@
 
   <!-- 6. ADD MP3/MP4 BY URL MODAL -->
   <div id="url-track-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-4">
-    <div class="bg-[#181818] border border-zinc-800 rounded-2xl w-full max-w-md p-6 shadow-2xl space-y-4">
+    <div class="bg-[#181818] border border-zinc-800 rounded-2xl w-full max-w-md p-5 shadow-2xl space-y-3.5">
       <div class="flex items-center justify-between">
-        <h3 class="text-lg font-bold">Add MP3 or MP4 via URL</h3>
+        <h3 class="text-base font-bold">Add MP3 or MP4 via URL</h3>
         <button onclick="closeUrlTrackModal()" class="text-zinc-400 hover:text-white">
           <i class="fa-solid fa-xmark"></i>
         </button>
       </div>
       <div>
         <label class="text-xs font-bold text-zinc-400 uppercase">Song Title</label>
-        <input id="url-song-title" type="text" placeholder="e.g. Blinding Lights" class="w-full mt-1 bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#1db954]" />
+        <input id="url-song-title" type="text" placeholder="e.g. Blinding Lights" class="w-full mt-1 bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none focus:border-[#1db954]" />
       </div>
       <div>
         <label class="text-xs font-bold text-zinc-400 uppercase">Artist Name</label>
-        <input id="url-song-artist" type="text" placeholder="e.g. The Weeknd" class="w-full mt-1 bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#1db954]" />
+        <input id="url-song-artist" type="text" placeholder="e.g. The Weeknd" class="w-full mt-1 bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none focus:border-[#1db954]" />
       </div>
       <div>
         <label class="text-xs font-bold text-zinc-400 uppercase">Direct MP3/MP4 URL</label>
-        <input id="url-song-src" type="text" placeholder="https://example.com/song.mp3" class="w-full mt-1 bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#1db954]" />
+        <input id="url-song-src" type="text" placeholder="https://example.com/song.mp3" class="w-full mt-1 bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none focus:border-[#1db954]" />
       </div>
-      <div class="flex gap-2 pt-2">
-        <button onclick="closeUrlTrackModal()" class="flex-1 bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-bold py-2.5 rounded-full">Cancel</button>
-        <button onclick="addTrackFromUrl()" class="flex-1 bg-[#1db954] hover:bg-emerald-400 text-black text-xs font-bold py-2.5 rounded-full">Add & Cache Offline</button>
+      <div class="flex gap-2 pt-1">
+        <button onclick="closeUrlTrackModal()" class="flex-1 bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-bold py-2 rounded-full">Cancel</button>
+        <button onclick="addTrackFromUrl()" class="flex-1 bg-[#1db954] hover:bg-emerald-400 text-black text-xs font-bold py-2 rounded-full">Add & Sync Song</button>
       </div>
     </div>
   </div>
 
   <!-- ======================================================================= -->
-  <!-- OFFLINE-SAFE FIREBASE LOADER, INDEXEDDB VAULT, NATIVE/STUDIO AUDIO      -->
+  <!-- FIREBASE LOADER, INDEXEDDB VAULT, NATIVE/STUDIO AUDIO & LYRIC COLORS    -->
   <!-- ======================================================================= -->
   <script type="module">
     const firebaseConfig = {
@@ -1028,7 +1129,7 @@
     }
 
     // =========================================================================
-    // 1. PERSISTENT INDEXEDDB MEDIA VAULT (100% OFFLINE STORAGE)
+    // 1. PERSISTENT INDEXEDDB MEDIA VAULT
     // =========================================================================
     const VaultDB = {
       dbName: 'MP3VisionMediaVault',
@@ -1091,9 +1192,7 @@
           const saved = await VaultDB.saveFile(track.id, blob);
           if (saved) {
             track.blobUrl = URL.createObjectURL(blob);
-            track.cachedOffline = true;
             saveLocalBackup();
-            if (!document.hidden) renderMainContent();
           }
         }
       } catch (e) {}
@@ -1112,8 +1211,6 @@
     let eqFilters = [];
     const ambientNodes = { rain: null, vinyl: null, brown: null };
 
-    // Only connect Web Audio graph when user actively adjusts 5-Band EQ or Ambient Mixer.
-    // Keeping native <audio> unrouted by default prevents Android WebView software resampling lag when screen locks.
     function initWebAudioStudio(forceConnect = false) {
       if (audioCtx) {
         if (audioCtx.state === 'suspended' && !document.hidden) {
@@ -1314,6 +1411,8 @@
       isMuted: false,
       editingTrackId: null,
       lyricsEditMode: false,
+      lyricActiveColor: localStorage.getItem('mp3v_lyric_active_color') || '#1db954',
+      lyricTextColor: localStorage.getItem('mp3v_lyric_text_color') || '#e4e4e7',
       playlistModalMode: 'create',
       songToAssign: null,
       draggedIndex: null,
@@ -1382,18 +1481,22 @@
     };
 
     // =========================================================================
-    // 6. INITIALIZATION, ANTI-LAG BACKGROUND HANDLERS & SHORTCUTS
+    // 6. INITIALIZATION, OFFLINE PILL ("You're Offline") & BACKGROUND HANDLERS
     // =========================================================================
     function updateConnectivityUI() {
       const pill = document.getElementById('offline-status-pill');
       const offlineNotice = document.getElementById('auth-offline-notice');
       if (!navigator.onLine) {
-        pill.classList.remove('hidden');
-        pill.classList.add('flex');
+        if (pill) {
+          pill.classList.remove('hidden');
+          pill.classList.add('flex');
+        }
         if (offlineNotice) offlineNotice.classList.remove('hidden');
       } else {
-        pill.classList.add('hidden');
-        pill.classList.remove('flex');
+        if (pill) {
+          pill.classList.add('hidden');
+          pill.classList.remove('flex');
+        }
         if (offlineNotice) offlineNotice.classList.add('hidden');
         initFirebaseCloud().then(() => {
           if (state.user && !document.hidden) syncStateToCloud();
@@ -1404,7 +1507,6 @@
     window.addEventListener('online', updateConnectivityUI);
     window.addEventListener('offline', updateConnectivityUI);
 
-    // Flush deferred analytics & UI updates cleanly when user unlocks screen
     document.addEventListener('visibilitychange', () => {
       if (!document.hidden) {
         if (audioCtx && audioCtx.state === 'suspended' && state.isPlaying) {
@@ -1441,7 +1543,6 @@
         }
       });
 
-      // Zero-DOM, zero-network listening timer while screen is off so audio thread never lags
       setInterval(() => {
         if (!audio.paused && state.currentTrackId) {
           const now = Date.now();
@@ -1469,7 +1570,6 @@
       }, 1000);
 
       audio.addEventListener('timeupdate', () => {
-        // Skip DOM updates while screen is locked so Android WebView audio decoder has 100% priority
         if (document.hidden) return;
         if (!isNaN(audio.duration) && audio.duration > 0) {
           const progress = (audio.currentTime / audio.duration) * 100;
@@ -1493,7 +1593,6 @@
         }
       });
 
-      // Single debounced stall recovery (800ms) so Android decoder finishes buffering cleanly without stuttering
       audio.addEventListener('waiting', () => {
         if (!state.isPlaying || audio.ended || stallRetryTimer) return;
         stallRetryTimer = setTimeout(() => {
@@ -1508,7 +1607,6 @@
         lastTickTimestamp = null;
         if (isTransitioningTrack) return;
 
-        // If Android WebView pauses right after a background track change, resume once cleanly
         if (state.isPlaying && !audio.ended && audio.currentTime < 4 && document.hidden && !stallRetryTimer) {
           stallRetryTimer = setTimeout(() => {
             stallRetryTimer = null;
@@ -1547,7 +1645,6 @@
     async function restoreVaultUrlsForAllTracks() {
       for (const track of state.tracks) {
         if (track.blobUrl && track.blobUrl.startsWith('blob:')) {
-          track.cachedOffline = true;
           if (track.isLocalBlob || !track.src || !navigator.onLine) {
             track.src = track.blobUrl;
           }
@@ -1556,7 +1653,6 @@
         const restoredUrl = await VaultDB.getFileUrl(track.id);
         if (restoredUrl) {
           track.blobUrl = restoredUrl;
-          track.cachedOffline = true;
           if (track.isLocalBlob || !track.src || !navigator.onLine) {
             track.src = restoredUrl;
           }
@@ -1565,7 +1661,7 @@
     }
 
     // =========================================================================
-    // 7. STUDIO FEATURES: LYRICS, SPEED & SLEEP
+    // 7. STUDIO FEATURES: LYRICS, CUSTOM LYRIC COLORS, SPEED & SLEEP
     // =========================================================================
     window.toggleStudioDrawer = () => {
       const drawer = document.getElementById('side-studio-drawer');
@@ -1577,9 +1673,30 @@
       ['lyrics', 'eq', 'ambient'].forEach(t => {
         document.getElementById(`studio-panel-${t}`).classList.toggle('hidden', t !== tab);
         document.getElementById(`studio-tab-${t}`).className = t === tab
-          ? 'px-2.5 py-1 rounded bg-zinc-800 text-white'
-          : 'px-2.5 py-1 rounded text-zinc-400 hover:text-white';
+          ? 'px-2 py-1 rounded bg-zinc-800 text-white'
+          : 'px-2 py-1 rounded text-zinc-400 hover:text-white';
       });
+    };
+
+    window.setLyricColors = (activeHex, textHex) => {
+      if (activeHex) {
+        state.lyricActiveColor = activeHex;
+        localStorage.setItem('mp3v_lyric_active_color', activeHex);
+        const activeInput = document.getElementById('lyric-active-color-picker');
+        if (activeInput) activeInput.value = activeHex;
+      }
+      if (textHex) {
+        state.lyricTextColor = textHex;
+        localStorage.setItem('mp3v_lyric_text_color', textHex);
+        const textInput = document.getElementById('lyric-text-color-picker');
+        if (textInput) textInput.value = textHex;
+      }
+      renderLyricsPanel();
+      updateSyncedLyricsHighlight(audio.currentTime || 0);
+    };
+
+    window.resetLyricColors = () => {
+      window.setLyricColors('#1db954', '#e4e4e7');
     };
 
     function parseVttToBracketedLyrics(rawText) {
@@ -1648,6 +1765,13 @@
       const display = document.getElementById('lyrics-display-box');
       const textarea = document.getElementById('lyrics-textarea');
 
+      const activeColor = state.lyricActiveColor || '#1db954';
+      const textColor = state.lyricTextColor || '#e4e4e7';
+      const activeInput = document.getElementById('lyric-active-color-picker');
+      const textInput = document.getElementById('lyric-text-color-picker');
+      if (activeInput) activeInput.value = activeColor;
+      if (textInput) textInput.value = textColor;
+
       if (!track) {
         label.textContent = 'No song selected';
         display.textContent = 'Play a song to upload a .VTT file or type synced lyrics.';
@@ -1667,15 +1791,18 @@
         const match = line.match(/^\[(\d{1,3}):(\d{2})(?:\.\d+)?\]\s*(.*)$/);
         if (match) {
           const sec = parseInt(match[1], 10) * 60 + parseInt(match[2], 10);
-          return `<div data-lyric-sec="${sec}" onclick="jumpToLyricTime(${sec})" class="lyric-line py-1 px-2 rounded cursor-pointer hover:bg-zinc-800/60 text-zinc-400 transition">${match[3]}</div>`;
+          return `<div data-lyric-sec="${sec}" onclick="jumpToLyricTime(${sec})" style="color: ${textColor}; opacity: 0.72;" class="lyric-line py-1 px-2 rounded cursor-pointer hover:bg-zinc-800/60 transition">${match[3]}</div>`;
         }
-        return `<div class="py-1 px-2 text-zinc-200">${line}</div>`;
+        return `<div style="color: ${textColor};" class="py-1 px-2">${line}</div>`;
       }).join('');
     }
 
     function updateSyncedLyricsHighlight(currentSec) {
       const lines = Array.from(document.querySelectorAll('.lyric-line'));
       if (!lines.length) return;
+      const activeColor = state.lyricActiveColor || '#1db954';
+      const textColor = state.lyricTextColor || '#e4e4e7';
+
       let activeIdx = -1;
       lines.forEach((el, idx) => {
         const t = parseFloat(el.getAttribute('data-lyric-sec'));
@@ -1683,9 +1810,15 @@
       });
       lines.forEach((el, idx) => {
         if (idx === activeIdx) {
-          el.className = 'lyric-line py-1 px-2 rounded cursor-pointer bg-emerald-950/60 text-[#1db954] font-bold transition';
+          el.className = 'lyric-line py-1 px-2 rounded cursor-pointer font-bold transition';
+          el.style.color = activeColor;
+          el.style.backgroundColor = `${activeColor}22`;
+          el.style.opacity = '1';
         } else {
-          el.className = 'lyric-line py-1 px-2 rounded cursor-pointer hover:bg-zinc-800/60 text-zinc-400 transition';
+          el.className = 'lyric-line py-1 px-2 rounded cursor-pointer hover:bg-zinc-800/60 transition';
+          el.style.color = textColor;
+          el.style.backgroundColor = 'transparent';
+          el.style.opacity = '0.72';
         }
       });
     }
@@ -1724,8 +1857,8 @@
       const btn = document.getElementById('btn-speed');
       btn.textContent = `${state.playbackSpeed.toFixed(2).replace(/\.00$/, '.0')}x`;
       btn.className = state.playbackSpeed !== 1.0
-        ? 'text-[11px] font-mono font-bold bg-emerald-950 border border-[#1db954] text-[#1db954] px-2 py-1 rounded-md transition'
-        : 'text-[11px] font-mono font-bold bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 px-2 py-1 rounded-md transition';
+        ? 'text-[10px] font-mono font-bold bg-emerald-950 border border-[#1db954] text-[#1db954] px-1.5 py-1 rounded-md transition'
+        : 'text-[10px] font-mono font-bold bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 px-1.5 py-1 rounded-md transition';
     };
 
     window.cycleSleepTimer = () => {
@@ -1772,7 +1905,7 @@
         const isSelected = !pl.coverImage && (pl.coverColor || DEFAULT_COVER_GRADIENT) === theme.gradient;
         return `
           <button onclick="selectPlaylistCoverColor('${theme.gradient}')" class="flex flex-col items-center gap-1.5 p-2 rounded-xl border ${isSelected ? 'border-[#1db954] bg-zinc-800' : 'border-zinc-800 hover:border-zinc-600'} transition">
-            <div class="w-12 h-12 rounded-lg bg-gradient-to-br ${theme.gradient} shadow"></div>
+            <div class="w-10 h-10 rounded-lg bg-gradient-to-br ${theme.gradient} shadow"></div>
             <span class="text-[10px] text-zinc-300 truncate w-full text-center">${theme.label}</span>
           </button>
         `;
@@ -1894,12 +2027,12 @@
       document.getElementById('auth-error').classList.add('hidden');
 
       if (mode === 'login') {
-        loginTab.className = 'py-2 rounded-md bg-zinc-800 text-white transition';
-        signupTab.className = 'py-2 rounded-md text-zinc-400 hover:text-white transition';
+        loginTab.className = 'py-1.5 rounded-md bg-zinc-800 text-white transition';
+        signupTab.className = 'py-1.5 rounded-md text-zinc-400 hover:text-white transition';
         submitBtn.textContent = 'Log In';
       } else {
-        signupTab.className = 'py-2 rounded-md bg-zinc-800 text-white transition';
-        loginTab.className = 'py-2 rounded-md text-zinc-400 hover:text-white transition';
+        signupTab.className = 'py-1.5 rounded-md bg-zinc-800 text-white transition';
+        loginTab.className = 'py-1.5 rounded-md text-zinc-400 hover:text-white transition';
         submitBtn.textContent = 'Create Account';
       }
     };
@@ -1912,7 +2045,7 @@
       const submitBtn = document.getElementById('auth-submit-btn');
 
       if (!navigator.onLine) {
-        errorBox.textContent = 'You are offline. Connect to the internet to log in or create an account.';
+        errorBox.textContent = "You're Offline. Connect to the internet to log in or create an account.";
         errorBox.classList.remove('hidden');
         return;
       }
@@ -1932,7 +2065,7 @@
 
       try {
         const fb = await initFirebaseCloud();
-        if (!fb) throw new Error('Cloud service unreachable right now. Local offline mode remains active.');
+        if (!fb) throw new Error('Unable to connect to cloud authentication right now.');
 
         if (state.authMode === 'signup') {
           await fb.createUserWithEmailAndPassword(fb.auth, email, password);
@@ -2017,8 +2150,7 @@
             secondsListened: Math.max(t.secondsListened || 0, localMatch ? (localMatch.secondsListened || 0) : 0),
             lyrics: t.lyrics || (localMatch ? localMatch.lyrics : '') || '',
             src: (localMatch && localMatch.isLocalBlob && localMatch.src) ? localMatch.src : (t.src || (localMatch ? localMatch.src : '') || ''),
-            blobUrl: localMatch ? localMatch.blobUrl : null,
-            cachedOffline: localMatch ? !!localMatch.cachedOffline : false
+            blobUrl: localMatch ? localMatch.blobUrl : null
           };
         });
 
@@ -2224,8 +2356,7 @@
           color: gradients[(state.tracks.length + i) % gradients.length],
           src: persistentBlobUrl,
           blobUrl: persistentBlobUrl,
-          isLocalBlob: true,
-          cachedOffline: true
+          isLocalBlob: true
         };
 
         state.tracks.push(newTrack);
@@ -2277,8 +2408,7 @@
         liked: false,
         color: 'from-emerald-500 to-teal-900',
         src,
-        isLocalBlob: false,
-        cachedOffline: false
+        isLocalBlob: false
       };
 
       state.tracks.push(newTrack);
@@ -2325,7 +2455,6 @@
       if (newSrc) {
         track.src = newSrc;
         track.isLocalBlob = false;
-        track.cachedOffline = false;
         track.mediaType = newSrc.toLowerCase().split('?')[0].endsWith('.mp4') ? 'mp4' : 'mp3';
         cacheRemoteUrlInVault(track);
       }
@@ -2492,7 +2621,7 @@
         container.innerHTML = state.playlists.map(pl => {
           const alreadyIn = pl.trackIds.includes(trackId);
           return `
-            <button onclick="toggleTrackInPlaylist('${pl.id}')" class="w-full flex items-center justify-between px-3 py-2 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-sm transition">
+            <button onclick="toggleTrackInPlaylist('${pl.id}')" class="w-full flex items-center justify-between px-3 py-2 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-xs sm:text-sm transition">
               <span class="truncate">${pl.name}</span>
               <span class="text-xs ${alreadyIn ? 'text-[#1db954]' : 'text-zinc-500'}">
                 ${alreadyIn ? '<i class="fa-solid fa-check"></i> Added' : '<i class="fa-solid fa-plus"></i> Add'}
@@ -2557,7 +2686,6 @@
         }
         if (vaultUrl) {
           track.blobUrl = vaultUrl;
-          track.cachedOffline = true;
           resolvedSrc = vaultUrl;
         }
       }
@@ -2587,7 +2715,7 @@
         document.getElementById('time-total').textContent = '0:00';
         document.getElementById('player-title').textContent = track.title;
         document.getElementById('player-artist').textContent = track.artist;
-        document.getElementById('player-art').className = `w-14 h-14 rounded-lg bg-gradient-to-br ${track.color || 'from-emerald-500 to-teal-900'} ring-1 ring-white/25 flex items-center justify-center text-xl shrink-0 shadow`;
+        document.getElementById('player-art').className = `w-11 h-11 rounded-lg bg-gradient-to-br ${track.color || 'from-emerald-500 to-teal-900'} ring-1 ring-white/25 flex items-center justify-center text-base shrink-0 shadow`;
         document.getElementById('player-art').innerHTML = `<i class="fa-solid fa-music text-white"></i>`;
         updateLikeButtonUI();
         renderLyricsPanel();
@@ -2615,7 +2743,6 @@
           }
         };
 
-        // Wait until the first audio frame is decoded (canplay) before calling play() to prevent stuttering
         if (audio.readyState >= 2) {
           startPlayback();
         } else {
@@ -2722,20 +2849,20 @@
     function updateTransportBadgesUI() {
       const shuffleBtn = document.getElementById('btn-shuffle');
       shuffleBtn.className = state.isShuffle
-        ? 'text-[#1db954] text-sm transition relative'
-        : 'text-zinc-400 hover:text-white text-sm transition relative';
+        ? 'text-[#1db954] text-xs sm:text-sm transition relative'
+        : 'text-zinc-400 hover:text-white text-xs sm:text-sm transition relative';
 
       const loopBtn = document.getElementById('btn-loop');
       const badge = document.getElementById('loop-badge');
 
       if (state.loopMode === 'off') {
-        loopBtn.className = 'text-zinc-400 hover:text-white text-sm transition relative';
+        loopBtn.className = 'text-zinc-400 hover:text-white text-xs sm:text-sm transition relative';
         badge.classList.add('hidden');
       } else if (state.loopMode === 'all') {
-        loopBtn.className = 'text-[#1db954] text-sm transition relative';
+        loopBtn.className = 'text-[#1db954] text-xs sm:text-sm transition relative';
         badge.classList.add('hidden');
       } else {
-        loopBtn.className = 'text-[#1db954] text-sm transition relative';
+        loopBtn.className = 'text-[#1db954] text-xs sm:text-sm transition relative';
         badge.classList.remove('hidden');
       }
     }
@@ -2773,7 +2900,7 @@
     }
 
     // =========================================================================
-    // 15. ANALYTICS & RENDERING
+    // 15. ANALYTICS & RENDERING (REMOVED 2026-W47 TEXT)
     // =========================================================================
     function incrementPlayCount(trackId, deferSync = false) {
       const track = state.tracks.find(t => t.id === trackId);
@@ -2828,15 +2955,15 @@
       const current = state.tracks.find(t => t.id === state.currentTrackId);
       const btn = document.getElementById('player-like-btn');
       btn.innerHTML = current && current.liked
-        ? '<i class="fa-solid fa-heart text-[#1db954]"></i>'
-        : '<i class="fa-regular fa-heart"></i>';
+        ? '<i class="fa-solid fa-heart text-[#1db954] text-xs"></i>'
+        : '<i class="fa-regular fa-heart text-xs"></i>';
     }
 
     function updatePlayButtonUI() {
       const btn = document.getElementById('btn-play');
       btn.innerHTML = state.isPlaying
-        ? '<i class="fa-solid fa-pause"></i>'
-        : '<i class="fa-solid fa-play ml-0.5"></i>';
+        ? '<i class="fa-solid fa-pause text-xs"></i>'
+        : '<i class="fa-solid fa-play ml-0.5 text-xs"></i>';
     }
 
     window.switchView = (viewId) => {
@@ -2845,8 +2972,8 @@
         const el = document.getElementById('nav-' + nav);
         if (el) {
           el.className = viewId === nav
-            ? 'w-full flex items-center gap-3 text-sm font-semibold text-white bg-zinc-800/80 px-3 py-1.5 rounded-lg transition'
-            : 'w-full flex items-center gap-3 text-sm font-semibold text-zinc-400 hover:text-white px-3 py-1.5 rounded-lg transition';
+            ? 'w-full flex items-center gap-2.5 text-xs font-semibold text-white bg-zinc-800/80 px-2.5 py-1.5 rounded-lg transition'
+            : 'w-full flex items-center gap-2.5 text-xs font-semibold text-zinc-400 hover:text-white px-2.5 py-1.5 rounded-lg transition';
         }
       });
       renderAll();
@@ -2888,7 +3015,7 @@
       if (current) {
         document.getElementById('player-title').textContent = current.title;
         document.getElementById('player-artist').textContent = current.artist;
-        document.getElementById('player-art').className = `w-14 h-14 rounded-lg bg-gradient-to-br ${current.color || 'from-emerald-500 to-teal-900'} ring-1 ring-white/25 flex items-center justify-center text-xl shrink-0 shadow`;
+        document.getElementById('player-art').className = `w-11 h-11 rounded-lg bg-gradient-to-br ${current.color || 'from-emerald-500 to-teal-900'} ring-1 ring-white/25 flex items-center justify-center text-base shrink-0 shadow`;
         document.getElementById('player-art').innerHTML = `<i class="fa-solid fa-music text-white"></i>`;
         updateLikeButtonUI();
       }
@@ -2898,26 +3025,26 @@
     function renderPlaylistsSidebar() {
       const container = document.getElementById('playlist-sidebar');
       if (state.playlists.length === 0) {
-        container.innerHTML = `<div class="px-3 py-1.5 text-xs text-zinc-500">No playlists yet.</div>`;
+        container.innerHTML = `<div class="px-2.5 py-1 text-xs text-zinc-500">No playlists yet.</div>`;
         return;
       }
 
       container.innerHTML = state.playlists.map(pl => {
         const active = state.currentView === pl.id;
         const thumbHtml = pl.coverImage
-          ? `<img src="${pl.coverImage}" class="w-5 h-5 rounded object-cover shrink-0" />`
-          : `<div class="w-5 h-5 rounded bg-gradient-to-br ${pl.coverColor || DEFAULT_COVER_GRADIENT} shrink-0"></div>`;
+          ? `<img src="${pl.coverImage}" class="w-4 h-4 rounded object-cover shrink-0" />`
+          : `<div class="w-4 h-4 rounded bg-gradient-to-br ${pl.coverColor || DEFAULT_COVER_GRADIENT} shrink-0"></div>`;
 
         return `
-          <div onclick="switchView('${pl.id}')" class="w-full px-3 py-1.5 rounded-md text-sm flex items-center justify-between cursor-pointer group ${active ? 'bg-zinc-800 text-white font-semibold' : 'text-zinc-400 hover:text-white hover:bg-zinc-900'} transition">
-            <div class="flex items-center gap-2.5 truncate">
+          <div onclick="switchView('${pl.id}')" class="w-full px-2.5 py-1.5 rounded-md text-xs flex items-center justify-between cursor-pointer group ${active ? 'bg-zinc-800 text-white font-semibold' : 'text-zinc-400 hover:text-white hover:bg-zinc-900'} transition">
+            <div class="flex items-center gap-2 truncate">
               ${thumbHtml}
               <span class="truncate">${pl.name}</span>
             </div>
-            <div class="flex items-center gap-2">
-              <span class="text-xs text-zinc-500">${pl.trackIds.length}</span>
+            <div class="flex items-center gap-1.5">
+              <span class="text-[11px] text-zinc-500">${pl.trackIds.length}</span>
               <button onclick="deletePlaylistById('${pl.id}', event)" title="Delete Playlist" class="opacity-0 group-hover:opacity-100 text-zinc-500 hover:text-red-400 transition">
-                <i class="fa-solid fa-trash text-xs"></i>
+                <i class="fa-solid fa-trash text-[10px]"></i>
               </button>
             </div>
           </div>
@@ -2932,7 +3059,8 @@
       const totalPlays = state.tracks.reduce((sum, t) => sum + (t.plays || 0), 0);
 
       document.getElementById('stat-weekly-hours').textContent = `${(weeklySec / 3600).toFixed(2)} hrs`;
-      document.getElementById('stat-weekly-mins').textContent = `${Math.round(weeklySec / 60)} mins logged (${currentWeek})`;
+      // Removed (2026-W47) week identifier text
+      document.getElementById('stat-weekly-mins').textContent = `${Math.round(weeklySec / 60)} mins logged this week`;
 
       document.getElementById('stat-total-hours').textContent = `${(totalSec / 3600).toFixed(2)} hrs`;
       document.getElementById('stat-total-plays').textContent = `${totalPlays} total song streams`;
@@ -2957,12 +3085,12 @@
         const pct = Math.max(6, Math.round((day.sec / maxSec) * 100));
         const minsLabel = Math.round(day.sec / 60);
         return `
-          <div class="flex-1 flex flex-col items-center gap-1.5 h-full justify-end group">
+          <div class="flex-1 flex flex-col items-center gap-1 h-full justify-end group">
             <span class="text-[10px] font-mono text-zinc-400 opacity-0 group-hover:opacity-100 transition">${minsLabel}m</span>
-            <div class="w-full bg-zinc-800 rounded-t-md h-28 flex items-end overflow-hidden">
+            <div class="w-full bg-zinc-800 rounded-t-md h-24 flex items-end overflow-hidden">
               <div style="height: ${pct}%" class="w-full bg-gradient-to-t from-emerald-600 to-[#1db954] rounded-t-md transition-all duration-300"></div>
             </div>
-            <span class="text-[11px] font-semibold text-zinc-400">${day.label}</span>
+            <span class="text-[10px] font-semibold text-zinc-400">${day.label}</span>
           </div>
         `;
       }).join('');
@@ -2971,8 +3099,8 @@
       const topArtistsEl = document.getElementById('top-artists-list');
 
       if (state.tracks.length === 0) {
-        topSongsEl.innerHTML = `<div class="text-xs text-zinc-500 py-6 text-center">No songs tracked yet.</div>`;
-        topArtistsEl.innerHTML = `<div class="text-xs text-zinc-500 py-6 text-center">No artists tracked yet.</div>`;
+        topSongsEl.innerHTML = `<div class="text-xs text-zinc-500 py-5 text-center">No songs tracked yet.</div>`;
+        topArtistsEl.innerHTML = `<div class="text-xs text-zinc-500 py-5 text-center">No artists tracked yet.</div>`;
         document.getElementById('stat-top-artist-name').textContent = '—';
         document.getElementById('stat-top-artist-time').textContent = '0 mins listened';
         return;
@@ -2983,15 +3111,15 @@
         .slice(0, 5);
 
       topSongsEl.innerHTML = topSongs.map((song, idx) => `
-        <div onclick="playById('${song.id}')" class="flex items-center justify-between p-2 rounded-lg hover:bg-zinc-800/70 cursor-pointer transition">
-          <div class="flex items-center gap-2.5 overflow-hidden">
+        <div onclick="playById('${song.id}')" class="flex items-center justify-between p-1.5 rounded-lg hover:bg-zinc-800/70 cursor-pointer transition">
+          <div class="flex items-center gap-2 overflow-hidden">
             <span class="text-xs font-bold text-zinc-500 w-4">${idx + 1}</span>
-            <div class="w-8 h-8 rounded bg-gradient-to-br ${song.color} flex items-center justify-center text-xs shrink-0">
+            <div class="w-7 h-7 rounded bg-gradient-to-br ${song.color} flex items-center justify-center text-xs shrink-0">
               <i class="fa-solid fa-music"></i>
             </div>
             <div class="truncate">
-              <div class="text-sm font-semibold text-white truncate">${song.title}</div>
-              <div class="text-xs text-zinc-400 truncate">${song.artist}</div>
+              <div class="text-xs font-semibold text-white truncate">${song.title}</div>
+              <div class="text-[11px] text-zinc-400 truncate">${song.artist}</div>
             </div>
           </div>
           <div class="text-right shrink-0">
@@ -3012,13 +3140,13 @@
       }
 
       topArtistsEl.innerHTML = topArtists.map(([artist, info], idx) => `
-        <div class="flex items-center justify-between p-2 rounded-lg bg-zinc-900/40">
-          <div class="flex items-center gap-2.5 overflow-hidden">
+        <div class="flex items-center justify-between p-1.5 rounded-lg bg-zinc-900/40">
+          <div class="flex items-center gap-2 overflow-hidden">
             <span class="text-xs font-bold text-zinc-500 w-4">${idx + 1}</span>
-            <div class="w-8 h-8 rounded-full bg-zinc-700 flex items-center justify-center text-xs font-bold text-emerald-400 shrink-0">
+            <div class="w-7 h-7 rounded-full bg-zinc-700 flex items-center justify-center text-xs font-bold text-emerald-400 shrink-0">
               ${artist.charAt(0).toUpperCase()}
             </div>
-            <div class="text-sm font-semibold text-white truncate">${artist}</div>
+            <div class="text-xs font-semibold text-white truncate">${artist}</div>
           </div>
           <div class="text-right shrink-0">
             <div class="text-xs font-mono text-[#1db954]">${formatDurationHuman(info.seconds)}</div>
@@ -3045,7 +3173,7 @@
       plHeaderActions.classList.remove('flex');
       subtitleEl.textContent = '';
 
-      coverEl.className = `w-32 h-32 rounded-lg bg-gradient-to-br ${DEFAULT_COVER_GRADIENT} shadow-2xl flex items-center justify-center text-4xl shrink-0 overflow-hidden relative group`;
+      coverEl.className = `hero-cover-box bg-gradient-to-br ${DEFAULT_COVER_GRADIENT} shadow-2xl group`;
       coverEl.innerHTML = `<i class="fa-solid fa-headphones"></i>`;
 
       const rawQuery = (document.getElementById('search-input')?.value || '').trim();
@@ -3060,7 +3188,7 @@
         typeEl.textContent = 'APP GUIDE';
         titleEl.textContent = 'Tutorial';
         subtitleEl.textContent = 'Everything you can do in MP3 Vision';
-        coverEl.className = 'w-32 h-32 rounded-lg bg-gradient-to-br from-sky-500 to-zinc-900 shadow-2xl flex items-center justify-center text-4xl shrink-0';
+        coverEl.className = 'hero-cover-box bg-gradient-to-br from-sky-500 to-zinc-900 shadow-2xl';
         coverEl.innerHTML = `<i class="fa-solid fa-graduation-cap"></i>`;
         tutorialBox.classList.remove('hidden');
         songSection.classList.add('hidden');
@@ -3069,7 +3197,7 @@
         typeEl.textContent = 'COLLECTION';
         titleEl.textContent = 'Liked Songs';
         if (rawQuery) subtitleEl.textContent = `Searching Liked Songs for "${rawQuery}"`;
-        coverEl.className = 'w-32 h-32 rounded-lg bg-gradient-to-br from-emerald-400 to-teal-900 shadow-2xl flex items-center justify-center text-4xl shrink-0';
+        coverEl.className = 'hero-cover-box bg-gradient-to-br from-emerald-400 to-teal-900 shadow-2xl';
         coverEl.innerHTML = `<i class="fa-solid fa-heart"></i>`;
       } else if (state.currentView === 'analytics') {
         typeEl.textContent = 'MP3 VISION INSIGHTS';
@@ -3088,19 +3216,19 @@
 
         if (pl) {
           if (pl.coverImage) {
-            coverEl.className = 'w-32 h-32 rounded-lg bg-zinc-900 shadow-2xl shrink-0 overflow-hidden relative group cursor-pointer';
+            coverEl.className = 'hero-cover-box bg-zinc-900 shadow-2xl group cursor-pointer';
             coverEl.innerHTML = `
               <img src="${pl.coverImage}" class="w-full h-full object-cover" />
-              <div onclick="openCoverModal()" class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center text-xs font-bold text-white transition">
-                <i class="fa-solid fa-camera mr-1"></i> Edit Cover
+              <div onclick="openCoverModal()" class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center text-[11px] font-bold text-white transition">
+                <i class="fa-solid fa-camera mr-1"></i> Edit
               </div>
             `;
           } else {
-            coverEl.className = `w-32 h-32 rounded-lg bg-gradient-to-br ${pl.coverColor || DEFAULT_COVER_GRADIENT} shadow-2xl flex items-center justify-center text-4xl shrink-0 overflow-hidden relative group cursor-pointer`;
+            coverEl.className = `hero-cover-box bg-gradient-to-br ${pl.coverColor || DEFAULT_COVER_GRADIENT} shadow-2xl group cursor-pointer`;
             coverEl.innerHTML = `
               <i class="fa-solid fa-music"></i>
-              <div onclick="openCoverModal()" class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center text-xs font-bold text-white transition">
-                <i class="fa-solid fa-palette mr-1"></i> Edit Cover
+              <div onclick="openCoverModal()" class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center text-[11px] font-bold text-white transition">
+                <i class="fa-solid fa-palette mr-1"></i> Edit
               </div>
             `;
           }
@@ -3112,7 +3240,7 @@
 
       if (filtered.length === 0) {
         songListEl.innerHTML = `
-          <div class="py-12 text-center text-zinc-500 text-sm">
+          <div class="py-10 text-center text-zinc-500 text-xs sm:text-sm">
             ${rawQuery ? `No songs found matching "${rawQuery}".` : 'No songs in this list.'}
           </div>
         `;
@@ -3122,57 +3250,55 @@
       songListEl.innerHTML = filtered.map((track, idx) => {
         const isCurrent = state.currentTrackId === track.id;
         const isMp4 = track.mediaType === 'mp4' || (track.src && track.src.toLowerCase().includes('.mp4'));
-        const isOfflineReady = track.isLocalBlob || track.cachedOffline || (track.src && track.src.startsWith('blob:'));
         return `
           <div
             ${canReorder ? `draggable="true" ondragstart="handleDragStart(${idx})" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(${idx}, event)"` : ''}
             onclick="playById('${track.id}')"
-            class="grid grid-cols-12 items-center px-3 py-2.5 rounded-lg hover:bg-zinc-800/60 cursor-pointer group transition ${isCurrent ? 'bg-zinc-800/90' : ''}"
+            class="grid grid-cols-12 items-center px-2 py-2 rounded-lg hover:bg-zinc-800/60 cursor-pointer group transition ${isCurrent ? 'bg-zinc-800/90' : ''}"
           >
-            <div class="col-span-1 flex items-center gap-1.5 text-sm ${isCurrent ? 'text-[#1db954] font-bold' : 'text-zinc-400'}" onclick="event.stopPropagation()">
+            <div class="col-span-1 flex items-center gap-1 text-xs ${isCurrent ? 'text-[#1db954] font-bold' : 'text-zinc-400'}" onclick="event.stopPropagation()">
               <span class="w-4 text-center">
                 ${isCurrent && state.isPlaying ? '<i class="fa-solid fa-volume-high animate-pulse"></i>' : idx + 1}
               </span>
               ${canReorder ? `
-                <div class="flex flex-col text-[10px] text-zinc-500 opacity-0 group-hover:opacity-100 transition">
+                <div class="flex flex-col text-[9px] text-zinc-500 opacity-0 group-hover:opacity-100 transition">
                   <button onclick="moveSongInSequence(${idx}, -1, event)" class="hover:text-white leading-none"><i class="fa-solid fa-caret-up"></i></button>
                   <button onclick="moveSongInSequence(${idx}, 1, event)" class="hover:text-white leading-none"><i class="fa-solid fa-caret-down"></i></button>
                 </div>
               ` : ''}
             </div>
 
-            <div class="col-span-4 flex items-center gap-3 pr-2 overflow-hidden">
-              <div class="w-10 h-10 rounded bg-gradient-to-br ${track.color || 'from-emerald-500 to-teal-900'} flex items-center justify-center shrink-0">
-                <i class="fa-solid fa-music text-xs"></i>
+            <div class="col-span-4 flex items-center gap-2.5 pr-2 overflow-hidden">
+              <div class="w-8 h-8 rounded bg-gradient-to-br ${track.color || 'from-emerald-500 to-teal-900'} flex items-center justify-center shrink-0">
+                <i class="fa-solid fa-music text-[10px]"></i>
               </div>
               <div class="truncate">
                 <div class="flex items-center gap-1.5">
-                  <span class="text-sm font-semibold truncate ${isCurrent ? 'text-[#1db954]' : 'text-white'}">${track.title}</span>
-                  ${isMp4 ? '<span class="text-[9px] font-bold uppercase bg-zinc-700 text-zinc-200 px-1.5 py-0.5 rounded">MP4 Audio</span>' : ''}
-                  ${isOfflineReady ? '<span title="Saved in Offline Vault" class="text-[9px] font-bold uppercase bg-emerald-950/90 text-[#1db954] border border-emerald-800/60 px-1.5 py-0.5 rounded">Offline Ready</span>' : ''}
+                  <span class="text-xs sm:text-sm font-semibold truncate ${isCurrent ? 'text-[#1db954]' : 'text-white'}">${track.title}</span>
+                  ${isMp4 ? '<span class="text-[8px] font-bold uppercase bg-zinc-700 text-zinc-200 px-1 py-0.5 rounded">MP4</span>' : ''}
                 </div>
               </div>
             </div>
 
-            <div class="col-span-3 text-sm text-zinc-400 truncate pr-2">${track.artist}</div>
+            <div class="col-span-3 text-xs text-zinc-400 truncate pr-2">${track.artist}</div>
 
-            <div class="col-span-1 text-right text-xs font-mono text-zinc-400">
+            <div class="col-span-1 text-right text-[11px] font-mono text-zinc-400">
               <div>${formatDurationHuman(track.secondsListened)}</div>
-              <div class="text-[10px] text-zinc-500">${track.plays || 0} plays</div>
+              <div class="text-[9px] text-zinc-500">${track.plays || 0} plays</div>
             </div>
 
-            <div class="col-span-3 flex items-center justify-end gap-3" onclick="event.stopPropagation()">
-              <button onclick="toggleLike('${track.id}', event)" class="${track.liked ? 'text-[#1db954]' : 'text-zinc-500 hover:text-white'}">
+            <div class="col-span-3 flex items-center justify-end gap-2.5" onclick="event.stopPropagation()">
+              <button onclick="toggleLike('${track.id}', event)" class="${track.liked ? 'text-[#1db954]' : 'text-zinc-500 hover:text-white'} text-xs">
                 <i class="${track.liked ? 'fa-solid' : 'fa-regular'} fa-heart"></i>
               </button>
               <button onclick="openEditSongModal('${track.id}', event)" class="text-zinc-400 hover:text-white">
-                <i class="fa-solid fa-pen text-xs"></i>
+                <i class="fa-solid fa-pen text-[11px]"></i>
               </button>
               <button onclick="openAssignPlaylistModal('${track.id}', event)" class="text-zinc-400 hover:text-white">
-                <i class="fa-solid fa-folder-plus text-xs"></i>
+                <i class="fa-solid fa-folder-plus text-[11px]"></i>
               </button>
               <button onclick="deleteOrRemoveSong('${track.id}', event)" class="text-zinc-500 hover:text-red-400">
-                <i class="fa-solid ${isPlaylistView ? 'fa-minus' : 'fa-trash'} text-xs"></i>
+                <i class="fa-solid ${isPlaylistView ? 'fa-minus' : 'fa-trash'} text-[11px]"></i>
               </button>
             </div>
           </div>

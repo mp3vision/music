@@ -221,6 +221,86 @@
       }
     }
 
+    /* ===================================================================== */
+    /* CITIES: SKYLINES / CAPCUT INTERACTIVE SPOTLIGHT TOUR ENGINE           */
+    /* ===================================================================== */
+    #interactive-tour-layer {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    #tour-spotlight-hole {
+      position: fixed;
+      border-radius: 14px;
+      box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.78), 0 0 25px 4px rgba(29, 185, 84, 0.65);
+      border: 2px solid #1db954;
+      transition: top 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+                  left 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+                  width 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+                  height 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+                  border-radius 0.32s ease;
+      pointer-events: none;
+      animation: tourPulseGlow 2s infinite ease-in-out;
+    }
+    @keyframes tourPulseGlow {
+      0%, 100% {
+        box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.78), 0 0 18px 2px rgba(29, 185, 84, 0.55);
+      }
+      50% {
+        box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.78), 0 0 32px 7px rgba(6, 182, 212, 0.85);
+      }
+    }
+    #tour-coach-card {
+      position: fixed;
+      width: 310px;
+      max-width: calc(100vw - 24px);
+      background: linear-gradient(145deg, #181b22 0%, #121318 100%);
+      border: 1.5px solid #1db954;
+      border-radius: 16px;
+      padding: 14px 16px;
+      color: #ffffff;
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.85), 0 0 20px rgba(29, 185, 84, 0.22);
+      pointer-events: auto;
+      transition: top 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+                  left 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+      z-index: 10001;
+    }
+    .tour-advisor-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(29, 185, 84, 0.16);
+      border: 1px solid rgba(29, 185, 84, 0.45);
+      color: #1db954;
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 3px 9px;
+      border-radius: 9999px;
+    }
+    .tour-step-dot {
+      height: 5px;
+      border-radius: 999px;
+      background: #3f3f46;
+      transition: all 0.25s ease;
+    }
+    .tour-step-dot.active {
+      width: 18px !important;
+      background: #1db954;
+    }
+    .tour-try-tip {
+      background: rgba(6, 182, 212, 0.12);
+      border-left: 3px solid #06b6d4;
+      padding: 6px 9px;
+      border-radius: 6px;
+      font-size: 11px;
+      color: #cffafe;
+      margin-top: 8px;
+    }
+
     /* Offline Fallback Layout Helpers */
     .grid-cols-12 {
       display: grid;
@@ -301,7 +381,7 @@
     <aside class="app-sidebar bg-[#121212] rounded-lg flex flex-col overflow-hidden shrink-0 border border-zinc-900">
       <div class="p-3.5 space-y-2.5 shrink-0">
         <!-- Fixed Top-Left Brand Logo & Title Alignment -->
-        <div class="brand-header">
+        <div class="brand-header" id="tour-target-brand">
           <svg class="brand-logo-svg drop-shadow-md" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
             <defs>
               <linearGradient id="mp3vCircleGrad" x1="25" y1="95" x2="95" y2="25" gradientUnits="userSpaceOnUse">
@@ -334,7 +414,7 @@
           <button onclick="switchView('liked')" id="nav-liked" class="w-full flex items-center gap-2.5 text-xs font-semibold text-zinc-400 hover:text-white px-2.5 py-1.5 rounded-lg transition">
             <i class="fa-solid fa-heart text-sm w-4 text-emerald-400"></i> <span class="truncate">Liked Songs</span>
           </button>
-          <button onclick="switchView('tutorial')" id="nav-tutorial" class="w-full flex items-center gap-2.5 text-xs font-semibold text-zinc-400 hover:text-white px-2.5 py-1.5 rounded-lg transition">
+          <button onclick="openTutorialMenu()" id="nav-tutorial" class="w-full flex items-center gap-2.5 text-xs font-semibold text-zinc-400 hover:text-white px-2.5 py-1.5 rounded-lg transition">
             <i class="fa-solid fa-graduation-cap text-sm w-4 text-sky-400"></i> <span class="truncate">Tutorial</span>
           </button>
         </nav>
@@ -343,7 +423,7 @@
       <hr class="border-zinc-800 mx-3" />
 
       <!-- Playlists Header -->
-      <div class="px-4 pt-2.5 pb-1 flex items-center justify-between shrink-0">
+      <div id="tour-target-playlists" class="px-4 pt-2.5 pb-1 flex items-center justify-between shrink-0">
         <span class="text-[11px] font-bold uppercase tracking-wider text-zinc-400">Playlists</span>
         <button onclick="openCreatePlaylistModal()" title="Create New Playlist" class="text-zinc-400 hover:text-white transition px-1.5 py-0.5 rounded hover:bg-zinc-800">
           <i class="fa-solid fa-plus text-xs"></i>
@@ -354,7 +434,7 @@
       <div id="playlist-sidebar" class="flex-1 overflow-y-auto px-2.5 space-y-1 min-h-[36px]"></div>
 
       <!-- Add Music & Support -->
-      <div class="p-2.5 border-t border-zinc-800 space-y-1.5 shrink-0 bg-[#121212]">
+      <div id="tour-target-import" class="p-2.5 border-t border-zinc-800 space-y-1.5 shrink-0 bg-[#121212]">
         <button onclick="openUrlTrackModal()" class="w-full flex items-center justify-center gap-1.5 bg-[#1db954] hover:bg-emerald-400 text-black text-[11px] font-bold py-1.5 px-2.5 rounded-full transition">
           <i class="fa-solid fa-cloud"></i>
           <span class="truncate">Add MP3/MP4 via URL</span>
@@ -387,7 +467,7 @@
       
       <!-- Top Bar -->
       <header class="h-14 px-4 flex items-center justify-between bg-black/30 backdrop-blur-md shrink-0 gap-2">
-        <div class="search-pill-box">
+        <div id="tour-target-search" class="search-pill-box">
           <i class="fa-solid fa-magnifying-glass search-pill-icon"></i>
           <input
             type="text"
@@ -407,7 +487,7 @@
         </div>
 
         <div class="flex items-center gap-2 shrink-0">
-          <!-- Updated Offline Pill Text: "You're Offline" -->
+          <!-- Offline Pill Text: "You're Offline" -->
           <span id="offline-status-pill" class="hidden text-[11px] font-semibold bg-amber-950/80 border border-amber-700/60 text-amber-200 px-2.5 py-1 rounded-full items-center gap-1.5">
             <i class="fa-solid fa-plane text-[10px]"></i>
             <span>You're Offline</span>
@@ -449,95 +529,137 @@
           </div>
         </div>
 
-        <!-- SIMPLE & COMPLETE USER TUTORIAL VIEW -->
+        <!-- INTERACTIVE TUTORIAL HUB + QUICK JUMP MISSIONS -->
         <div id="tutorial-container" class="hidden space-y-4 max-w-5xl">
+          <!-- Hero Interactive Launch Card -->
+          <div class="bg-gradient-to-r from-emerald-950/90 via-cyan-950/80 to-[#181818] border border-emerald-500/40 rounded-2xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-2xl">
+            <div class="space-y-1.5">
+              <div class="inline-flex items-center gap-1.5 bg-emerald-500/20 border border-emerald-400/40 text-[#1db954] text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> Interactive Spotlight Guide
+              </div>
+              <h2 class="text-lg sm:text-xl font-extrabold text-white">Learn MP3 Vision Hands-On</h2>
+              <p class="text-xs text-zinc-300 max-w-xl leading-relaxed">
+                Launch the live interactive tour to highlight each control right on your screen—or click any mission card below to jump straight to that feature with the spotlight guide!
+              </p>
+            </div>
+            <button onclick="startInteractiveTour(0)" class="bg-[#1db954] hover:bg-emerald-400 text-black text-xs font-extrabold px-5 py-3 rounded-full flex items-center gap-2 shrink-0 shadow-lg transition hover:scale-105">
+              <i class="fa-solid fa-play"></i>
+              <span>Start Interactive Tour</span>
+            </button>
+          </div>
+
+          <!-- Clickable Interactive Mission Cards -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
             
-            <!-- 1. Adding Music -->
-            <div class="bg-[#181818] border border-zinc-800/80 rounded-2xl p-4 space-y-1.5 shadow-xl">
-              <div class="flex items-center gap-2 text-[#1db954] font-bold text-sm">
-                <i class="fa-solid fa-file-audio"></i>
-                <h3>1. Adding Songs & Videos</h3>
+            <!-- Mission 1 -->
+            <div onclick="startInteractiveTour(0)" class="bg-[#181818] hover:bg-zinc-800/80 border border-zinc-800/80 hover:border-[#1db954] rounded-2xl p-4 space-y-1.5 shadow-xl cursor-pointer transition group">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2 text-[#1db954] font-bold text-sm">
+                  <i class="fa-solid fa-file-audio"></i>
+                  <h3>1. Adding Songs & Videos</h3>
+                </div>
+                <span class="text-[10px] text-zinc-400 group-hover:text-[#1db954] font-bold"><i class="fa-solid fa-location-crosshairs mr-1"></i>Show Me</span>
               </div>
               <p class="text-xs text-zinc-300 leading-relaxed">
-                Click <b>Import Files</b> in the bottom-left menu to pick <code>.mp3</code> or <code>.mp4</code> files from your device (videos play as audio-only). You can also click <b>Add MP3/MP4 via URL</b> to stream a song using a direct web link.
+                Pick <code>.mp3</code> or <code>.mp4</code> files from your device or paste a direct audio web link.
               </p>
             </div>
 
-            <!-- 2. Playing & Searching -->
-            <div class="bg-[#181818] border border-zinc-800/80 rounded-2xl p-4 space-y-1.5 shadow-xl">
-              <div class="flex items-center gap-2 text-sky-400 font-bold text-sm">
-                <i class="fa-solid fa-magnifying-glass"></i>
-                <h3>2. Playing, Searching & Shortcuts</h3>
+            <!-- Mission 2 -->
+            <div onclick="startInteractiveTour(1)" class="bg-[#181818] hover:bg-zinc-800/80 border border-zinc-800/80 hover:border-sky-400 rounded-2xl p-4 space-y-1.5 shadow-xl cursor-pointer transition group">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2 text-sky-400 font-bold text-sm">
+                  <i class="fa-solid fa-magnifying-glass"></i>
+                  <h3>2. Instant Search & Filter</h3>
+                </div>
+                <span class="text-[10px] text-zinc-400 group-hover:text-sky-400 font-bold"><i class="fa-solid fa-location-crosshairs mr-1"></i>Show Me</span>
               </div>
               <p class="text-xs text-zinc-300 leading-relaxed">
-                Click any song row to start playing. Use the top search bar to find songs by title or artist instantly. At the bottom bar, use <b>Shuffle</b>, <b>Previous</b>, <b>Play/Pause</b>, <b>Next</b>, <b>Loop</b> (loop all or loop 1 song), and the volume slider. Keyboard shortcuts: press <b>Spacebar</b> to pause/play, and <b>Left / Right Arrows</b> to skip backward or forward 5 seconds.
+                Filter your library or current playlist in real time by song title or artist name.
               </p>
             </div>
 
-            <!-- 3. Editing & Liking Songs -->
-            <div class="bg-[#181818] border border-zinc-800/80 rounded-2xl p-4 space-y-1.5 shadow-xl">
-              <div class="flex items-center gap-2 text-purple-400 font-bold text-sm">
-                <i class="fa-solid fa-heart"></i>
-                <h3>3. Liking, Editing & Deleting Songs</h3>
+            <!-- Mission 3 -->
+            <div onclick="startInteractiveTour(2)" class="bg-[#181818] hover:bg-zinc-800/80 border border-zinc-800/80 hover:border-purple-400 rounded-2xl p-4 space-y-1.5 shadow-xl cursor-pointer transition group">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2 text-purple-400 font-bold text-sm">
+                  <i class="fa-solid fa-list-ul"></i>
+                  <h3>3. Song Table, Likes & Edits</h3>
+                </div>
+                <span class="text-[10px] text-zinc-400 group-hover:text-purple-400 font-bold"><i class="fa-solid fa-location-crosshairs mr-1"></i>Show Me</span>
               </div>
               <p class="text-xs text-zinc-300 leading-relaxed">
-                Click the <b>Heart</b> icon on any song (or on the bottom player) to save it to <b>Liked Songs</b>. Click the <b>Pen</b> icon on a song to rename its title, change the artist name, or update its audio link. Click the <b>Trash</b> icon to delete a song from your library.
+                Play tracks, heart your favorites, edit titles/artists, reorder sequence, or assign tracks to playlists.
               </p>
             </div>
 
-            <!-- 4. Playlists & Custom Covers -->
-            <div class="bg-[#181818] border border-zinc-800/80 rounded-2xl p-4 space-y-1.5 shadow-xl">
-              <div class="flex items-center gap-2 text-amber-400 font-bold text-sm">
-                <i class="fa-solid fa-folder-plus"></i>
-                <h3>4. Playlists, Song Order & Covers</h3>
+            <!-- Mission 4 -->
+            <div onclick="startInteractiveTour(3)" class="bg-[#181818] hover:bg-zinc-800/80 border border-zinc-800/80 hover:border-amber-400 rounded-2xl p-4 space-y-1.5 shadow-xl cursor-pointer transition group">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2 text-amber-400 font-bold text-sm">
+                  <i class="fa-solid fa-folder-plus"></i>
+                  <h3>4. Custom Playlists & Covers</h3>
+                </div>
+                <span class="text-[10px] text-zinc-400 group-hover:text-amber-400 font-bold"><i class="fa-solid fa-location-crosshairs mr-1"></i>Show Me</span>
               </div>
               <p class="text-xs text-zinc-300 leading-relaxed">
-                Click the <b>+</b> button next to <b>Playlists</b> in the sidebar to create a new playlist. Click the <b>Folder+</b> icon on any song to add or remove it from your playlists. Drag and drop songs up or down (or click the small up/down arrows) to change the play order. Inside a playlist, you can click <b>Customize Cover</b> (pick a color theme or upload your own picture), <b>Rename</b>, or <b>Delete</b>.
+                Create custom playlists, drag songs to reorder, and customize cover themes or upload cover art.
               </p>
             </div>
 
-            <!-- 5. Lyrics (.VTT, Typing & Colors) -->
-            <div class="bg-[#181818] border border-zinc-800/80 rounded-2xl p-4 space-y-1.5 shadow-xl">
-              <div class="flex items-center gap-2 text-emerald-400 font-bold text-sm">
-                <i class="fa-solid fa-closed-captioning"></i>
-                <h3>5. Synced Lyrics & Custom Colors</h3>
+            <!-- Mission 5 -->
+            <div onclick="startInteractiveTour(4)" class="bg-[#181818] hover:bg-zinc-800/80 border border-zinc-800/80 hover:border-emerald-400 rounded-2xl p-4 space-y-1.5 shadow-xl cursor-pointer transition group">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2 text-emerald-400 font-bold text-sm">
+                  <i class="fa-solid fa-play"></i>
+                  <h3>5. Player Controls, Shuffle & Loop</h3>
+                </div>
+                <span class="text-[10px] text-zinc-400 group-hover:text-emerald-400 font-bold"><i class="fa-solid fa-location-crosshairs mr-1"></i>Show Me</span>
               </div>
               <p class="text-xs text-zinc-300 leading-relaxed">
-                Click <b>Studio</b> in the bottom-right corner and open the <b>Lyrics</b> tab. Click <b>.VTT</b> to upload a lyric file or <b>Type</b> to write lyrics yourself (prefix lines with <code>[00:15]</code> for live sync). Use the color bar at the top of the Lyrics panel to customize your highlight and text colors.
+                Master the transport bar, seek scrubber, Shuffle mode, Loop All / Loop One, and keyboard shortcuts.
               </p>
             </div>
 
-            <!-- 6. Equalizer & Ambient Mixer -->
-            <div class="bg-[#181818] border border-zinc-800/80 rounded-2xl p-4 space-y-1.5 shadow-xl">
-              <div class="flex items-center gap-2 text-pink-400 font-bold text-sm">
-                <i class="fa-solid fa-sliders"></i>
-                <h3>6. Sound Equalizer & Ambient Mixer</h3>
+            <!-- Mission 6 -->
+            <div onclick="startInteractiveTour(5)" class="bg-[#181818] hover:bg-zinc-800/80 border border-zinc-800/80 hover:border-pink-400 rounded-2xl p-4 space-y-1.5 shadow-xl cursor-pointer transition group">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2 text-pink-400 font-bold text-sm">
+                  <i class="fa-solid fa-sliders"></i>
+                  <h3>6. Studio: Lyrics, 5-Band EQ & Ambient</h3>
+                </div>
+                <span class="text-[10px] text-zinc-400 group-hover:text-pink-400 font-bold"><i class="fa-solid fa-location-crosshairs mr-1"></i>Show Me</span>
               </div>
               <p class="text-xs text-zinc-300 leading-relaxed">
-                Inside the <b>Studio</b> panel, open <b>5-Band EQ</b> to boost bass, sharpen vocals, or choose a ready-made sound preset. Open the <b>Ambient</b> tab to mix relaxing background sounds—<b>Soft Rainfall</b>, <b>Vinyl Crackle</b>, or <b>Brown Noise</b>—right over your songs.
+                Upload <code>.VTT</code> synced lyrics, pick custom lyric colors, tune the 5-Band EQ, or mix Rain & Vinyl sounds.
               </p>
             </div>
 
-            <!-- 7. Speed & Sleep Timer -->
-            <div class="bg-[#181818] border border-zinc-800/80 rounded-2xl p-4 space-y-1.5 shadow-xl">
-              <div class="flex items-center gap-2 text-indigo-400 font-bold text-sm">
-                <i class="fa-solid fa-moon"></i>
-                <h3>7. Playback Speed & Sleep Timer</h3>
+            <!-- Mission 7 -->
+            <div onclick="startInteractiveTour(6)" class="bg-[#181818] hover:bg-zinc-800/80 border border-zinc-800/80 hover:border-indigo-400 rounded-2xl p-4 space-y-1.5 shadow-xl cursor-pointer transition group">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2 text-indigo-400 font-bold text-sm">
+                  <i class="fa-solid fa-moon"></i>
+                  <h3>7. Playback Speed & Sleep Timer</h3>
+                </div>
+                <span class="text-[10px] text-zinc-400 group-hover:text-indigo-400 font-bold"><i class="fa-solid fa-location-crosshairs mr-1"></i>Show Me</span>
               </div>
               <p class="text-xs text-zinc-300 leading-relaxed">
-                In the bottom-right bar, click <b>1.0x</b> to speed up (<code>1.25x</code>, <code>1.5x</code>) or slow down (<code>0.85x</code>) your music. Click the <b>Moon</b> icon to set an automatic Sleep Timer (15, 30, or 60 minutes) that pauses your music when time runs out.
+                Change playback speed (<code>0.85x</code>–<code>1.5x</code>) or set an automatic sleep countdown timer.
               </p>
             </div>
 
-            <!-- 8. Listening Stats & Privacy-First Sync -->
-            <div class="bg-[#181818] border border-zinc-800/80 rounded-2xl p-4 space-y-1.5 shadow-xl">
-              <div class="flex items-center gap-2 text-orange-400 font-bold text-sm">
-                <i class="fa-solid fa-chart-line"></i>
-                <h3>8. Listening Stats & Private Cloud Sync</h3>
+            <!-- Mission 8 -->
+            <div onclick="startInteractiveTour(7)" class="bg-[#181818] hover:bg-zinc-800/80 border border-zinc-800/80 hover:border-orange-400 rounded-2xl p-4 space-y-1.5 shadow-xl cursor-pointer transition group">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2 text-orange-400 font-bold text-sm">
+                  <i class="fa-solid fa-chart-line"></i>
+                  <h3>8. Listening Stats & Private Cloud Sync</h3>
+                </div>
+                <span class="text-[10px] text-zinc-400 group-hover:text-orange-400 font-bold"><i class="fa-solid fa-location-crosshairs mr-1"></i>Show Me</span>
               </div>
               <p class="text-xs text-zinc-300 leading-relaxed">
-                Click <b>Detailed Stats</b> in the sidebar to see your weekly listening hours, total hours played, daily average, 7-day activity chart, top songs, and top artists. Click <b>Log In / Sign Up</b> to sync your listening durations, play counts, and playlists across devices—while keeping your song titles private on your own device.
+                Track weekly hours, 7-day charts, and sync durations across devices while keeping song names private.
               </p>
             </div>
 
@@ -813,7 +935,7 @@
     </div>
 
     <!-- Transport Controls + Seek Bar -->
-    <div class="w-2/4 max-w-lg flex flex-col items-center gap-1.5">
+    <div id="tour-target-transport" class="w-2/4 max-w-lg flex flex-col items-center gap-1.5">
       <div class="flex items-center gap-4 sm:gap-5">
         <button onclick="toggleShuffle()" id="btn-shuffle" title="Shuffle" class="text-zinc-400 hover:text-white text-xs sm:text-sm transition relative">
           <i class="fa-solid fa-shuffle"></i>
@@ -841,7 +963,7 @@
     </div>
 
     <!-- Studio Controls: Speed, Sleep Timer, Lyrics/EQ/Ambient Drawer, Volume -->
-    <div class="w-1/4 flex items-center justify-end gap-1.5 sm:gap-2 min-w-[150px]">
+    <div id="tour-target-studio-controls" class="w-1/4 flex items-center justify-end gap-1.5 sm:gap-2 min-w-[150px]">
       <button onclick="cyclePlaybackSpeed()" id="btn-speed" title="Playback Speed" class="text-[10px] font-mono font-bold bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 px-1.5 py-1 rounded-md transition">
         1.0x
       </button>
@@ -862,6 +984,43 @@
       <input type="range" id="volume-bar" value="80" min="0" max="100" oninput="changeVolume(this.value)" class="w-14 sm:w-20" />
     </div>
   </footer>
+
+  <!-- ======================================================================= -->
+  <!-- CITIES: SKYLINES / CAPCUT INTERACTIVE SPOTLIGHT OVERLAY                 -->
+  <!-- ======================================================================= -->
+  <div id="interactive-tour-layer" class="hidden">
+    <div id="tour-spotlight-hole"></div>
+    <div id="tour-coach-card">
+      <div class="flex items-center justify-between gap-2 mb-2">
+        <span class="tour-advisor-badge">
+          <i class="fa-solid fa-bolt"></i>
+          <span id="tour-step-category">STEP 1 OF 8</span>
+        </span>
+        <button onclick="endInteractiveTour()" title="Exit Tour" class="text-zinc-400 hover:text-white text-xs px-1.5 py-0.5 rounded hover:bg-zinc-800">
+          Skip <i class="fa-solid fa-xmark ml-0.5"></i>
+        </button>
+      </div>
+
+      <h3 id="tour-step-title" class="text-sm sm:text-base font-extrabold text-white mb-1">Import Your Music</h3>
+      <p id="tour-step-desc" class="text-xs text-zinc-300 leading-relaxed"></p>
+      <div id="tour-step-tip" class="tour-try-tip"></div>
+
+      <div class="flex items-center justify-between mt-3.5 pt-2.5 border-t border-zinc-800">
+        <div id="tour-progress-dots" class="flex items-center gap-1"></div>
+        <div class="flex items-center gap-1.5">
+          <button id="tour-prev-btn" onclick="prevTourStep()" class="bg-zinc-800 hover:bg-zinc-700 text-white text-[11px] font-bold px-2.5 py-1.5 rounded-full transition">
+            Back
+          </button>
+          <button id="tour-hub-btn" onclick="endInteractiveTour(true)" class="bg-zinc-800/80 hover:bg-zinc-700 text-zinc-300 text-[11px] font-semibold px-2.5 py-1.5 rounded-full transition">
+            All Tips
+          </button>
+          <button id="tour-next-btn" onclick="nextTourStep()" class="bg-[#1db954] hover:bg-emerald-400 text-black text-[11px] font-extrabold px-3.5 py-1.5 rounded-full transition">
+            Next <i class="fa-solid fa-arrow-right ml-0.5"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- ======================================================================= -->
   <!-- MODALS -->
@@ -1060,7 +1219,7 @@
   </div>
 
   <!-- ======================================================================= -->
-  <!-- FIREBASE LOADER, INDEXEDDB VAULT, NATIVE/STUDIO AUDIO & LYRIC COLORS    -->
+  <!-- FIREBASE LOADER, INDEXEDDB VAULT, NATIVE/STUDIO AUDIO & TOUR ENGINE     -->
   <!-- ======================================================================= -->
   <script type="module">
     const firebaseConfig = {
@@ -1367,7 +1526,222 @@
     };
 
     // =========================================================================
-    // 3. PLAYLIST COVER PALETTE DEFINITIONS
+    // 3. INTERACTIVE SPOTLIGHT TUTORIAL ENGINE (CITIES: SKYLINES / CAPCUT STYLE)
+    // =========================================================================
+    let currentTourStep = 0;
+    let isTourActive = false;
+
+    const TOUR_STEPS = [
+      {
+        targetId: 'tour-target-import',
+        title: '1. Add Songs & Videos',
+        desc: 'Start building your library here! Click "Import Files" to load .mp3 or .mp4 files from your device, or "Add MP3/MP4 via URL" to stream a direct link.',
+        tip: 'Try it: You can click "Import Files" right inside the glowing box!',
+        beforeShow: () => {
+          document.getElementById('side-studio-drawer').classList.add('hidden');
+          window.switchView('all');
+        }
+      },
+      {
+        targetId: 'tour-target-search',
+        title: '2. Instant Live Search',
+        desc: 'Type any song title or artist name in the search pill to filter your active view in real time.',
+        tip: 'Tip: Click the X icon inside the search bar anytime to clear your filter.',
+        beforeShow: () => {
+          document.getElementById('side-studio-drawer').classList.add('hidden');
+          window.switchView('all');
+        }
+      },
+      {
+        targetId: 'song-table-section',
+        title: '3. Interactive Tracklist & Actions',
+        desc: 'Click any row to play. Use the right-side action icons on each track to Heart (Like), Edit title/artist, add to Playlists, or reorder tracks.',
+        tip: 'Tip: Drag and drop rows (or use the up/down arrows) to customize playback order!',
+        beforeShow: () => {
+          document.getElementById('side-studio-drawer').classList.add('hidden');
+          window.switchView('all');
+        }
+      },
+      {
+        targetId: 'tour-target-playlists',
+        title: '4. Custom Playlists & Cover Art',
+        desc: 'Click the + icon to create playlists for any mood. Inside a playlist, you can pick gradient themes or upload your own cover image!',
+        tip: 'Try it: Click the + button to create a new playlist right now.',
+        beforeShow: () => {
+          document.getElementById('side-studio-drawer').classList.add('hidden');
+        }
+      },
+      {
+        targetId: 'tour-target-transport',
+        title: '5. Playback Deck, Shuffle & Loop',
+        desc: 'Control Play/Pause, skip tracks, scrub the timeline, enable Shuffle, or cycle Loop (Loop All Playlist vs. Loop 1 Song).',
+        tip: 'Shortcut: Press Spacebar to play/pause and Left/Right arrows to seek 5s.',
+        beforeShow: () => {
+          document.getElementById('side-studio-drawer').classList.add('hidden');
+        }
+      },
+      {
+        targetId: 'side-studio-drawer',
+        title: '6. Audio Studio: Lyrics, EQ & Ambient',
+        desc: 'Welcome to the Studio! Upload .VTT synced lyrics and pick custom highlight colors, sculpt sound with the 5-Band EQ, or layer Rain & Vinyl crackle.',
+        tip: 'Try it: Click the "Lyrics", "5-Band EQ", or "Ambient" tabs at the top of this drawer!',
+        beforeShow: () => {
+          document.getElementById('side-studio-drawer').classList.remove('hidden');
+          renderLyricsPanel();
+        }
+      },
+      {
+        targetId: 'tour-target-studio-controls',
+        title: '7. Speed, Sleep Timer & Studio Toggle',
+        desc: 'Tap "1.0x" to speed up or slow down playback (0.85x to 1.5x), tap the Moon icon to set an auto-pause Sleep Timer, or toggle the Studio drawer.',
+        tip: 'Try it: Tap 1.0x or the Moon icon to test them out live!',
+        beforeShow: () => {
+          document.getElementById('side-studio-drawer').classList.add('hidden');
+        }
+      },
+      {
+        targetId: 'nav-analytics',
+        title: '8. Detailed Stats & Private Cloud Sync',
+        desc: 'View your weekly hours, 7-day bar chart, top songs, and top artists. Log in at the top right to sync listening durations while keeping song titles private!',
+        tip: 'All set! Click "Finish" to start enjoying MP3 Vision.',
+        beforeShow: () => {
+          document.getElementById('side-studio-drawer').classList.add('hidden');
+          window.switchView('analytics');
+        }
+      }
+    ];
+
+    window.openTutorialMenu = () => {
+      window.switchView('tutorial');
+      // Automatically launch the interactive spotlight tour when clicking Tutorial
+      window.startInteractiveTour(0);
+    };
+
+    window.startInteractiveTour = (stepIdx = 0) => {
+      isTourActive = true;
+      currentTourStep = Math.max(0, Math.min(stepIdx, TOUR_STEPS.length - 1));
+      document.getElementById('interactive-tour-layer').classList.remove('hidden');
+      applyTourStep(currentTourStep);
+    };
+
+    window.endInteractiveTour = (goToHub = false) => {
+      isTourActive = false;
+      document.getElementById('interactive-tour-layer').classList.add('hidden');
+      if (goToHub) {
+        document.getElementById('side-studio-drawer').classList.add('hidden');
+        window.switchView('tutorial');
+      }
+    };
+
+    window.nextTourStep = () => {
+      if (currentTourStep < TOUR_STEPS.length - 1) {
+        currentTourStep++;
+        applyTourStep(currentTourStep);
+      } else {
+        window.endInteractiveTour(false);
+        window.switchView('all');
+      }
+    };
+
+    window.prevTourStep = () => {
+      if (currentTourStep > 0) {
+        currentTourStep--;
+        applyTourStep(currentTourStep);
+      }
+    };
+
+    function applyTourStep(idx) {
+      const step = TOUR_STEPS[idx];
+      if (!step) return;
+
+      if (typeof step.beforeShow === 'function') {
+        step.beforeShow();
+      }
+
+      document.getElementById('tour-step-category').textContent = `STEP ${idx + 1} OF ${TOUR_STEPS.length}`;
+      document.getElementById('tour-step-title').textContent = step.title;
+      document.getElementById('tour-step-desc').textContent = step.desc;
+      document.getElementById('tour-step-tip').textContent = step.tip;
+
+      const prevBtn = document.getElementById('tour-prev-btn');
+      prevBtn.style.visibility = idx === 0 ? 'hidden' : 'visible';
+
+      const nextBtn = document.getElementById('tour-next-btn');
+      nextBtn.innerHTML = idx === TOUR_STEPS.length - 1
+        ? `Finish <i class="fa-solid fa-check ml-0.5"></i>`
+        : `Next <i class="fa-solid fa-arrow-right ml-0.5"></i>`;
+
+      const dotsContainer = document.getElementById('tour-progress-dots');
+      dotsContainer.innerHTML = TOUR_STEPS.map((_, i) => `
+        <div onclick="startInteractiveTour(${i})" style="width: ${i === idx ? '18px' : '6px'};" class="tour-step-dot cursor-pointer ${i === idx ? 'active' : ''}"></div>
+      `).join('');
+
+      requestAnimationFrame(() => {
+        positionTourSpotlight(step.targetId);
+      });
+    }
+
+    function positionTourSpotlight(targetId) {
+      if (!isTourActive) return;
+      const targetEl = document.getElementById(targetId);
+      const hole = document.getElementById('tour-spotlight-hole');
+      const card = document.getElementById('tour-coach-card');
+
+      if (!targetEl) return;
+
+      const rect = targetEl.getBoundingClientRect();
+      const pad = 6;
+      const top = Math.max(4, rect.top - pad);
+      const left = Math.max(4, rect.left - pad);
+      const width = Math.min(window.innerWidth - left - 4, rect.width + pad * 2);
+      const height = Math.min(window.innerHeight - top - 4, rect.height + pad * 2);
+
+      hole.style.top = `${top}px`;
+      hole.style.left = `${left}px`;
+      hole.style.width = `${width}px`;
+      hole.style.height = `${height}px`;
+
+      // Smart positioning for the floating coach card so it never covers the highlighted element
+      const cardRect = card.getBoundingClientRect();
+      const cardW = cardRect.width || 310;
+      const cardH = cardRect.height || 210;
+      const margin = 14;
+
+      let cardTop = top;
+      let cardLeft = left + width + margin;
+
+      // Try right of target first
+      if (cardLeft + cardW > window.innerWidth - 10) {
+        // Try left of target
+        cardLeft = left - cardW - margin;
+      }
+      if (cardLeft < 10) {
+        // Center horizontally above or below target
+        cardLeft = Math.max(12, Math.min(window.innerWidth - cardW - 12, left + (width / 2) - (cardW / 2)));
+        if (top + height + cardH + margin < window.innerHeight - 10) {
+          cardTop = top + height + margin;
+        } else if (top - cardH - margin > 10) {
+          cardTop = top - cardH - margin;
+        } else {
+          cardTop = Math.max(12, window.innerHeight - cardH - 16);
+        }
+      } else {
+        // Clamp vertical position inside viewport
+        cardTop = Math.max(12, Math.min(window.innerHeight - cardH - 12, top));
+      }
+
+      card.style.top = `${cardTop}px`;
+      card.style.left = `${cardLeft}px`;
+    }
+
+    window.addEventListener('resize', () => {
+      if (isTourActive && TOUR_STEPS[currentTourStep]) {
+        positionTourSpotlight(TOUR_STEPS[currentTourStep].targetId);
+      }
+    });
+
+    // =========================================================================
+    // 4. PLAYLIST COVER PALETTE DEFINITIONS
     // =========================================================================
     const DEFAULT_COVER_GRADIENT = 'from-emerald-500 to-zinc-900';
     const COVER_THEMES = [
@@ -1382,7 +1756,7 @@
     ];
 
     // =========================================================================
-    // 4. STATE & STATS STRUCTURE
+    // 5. STATE & STATS STRUCTURE
     // =========================================================================
     let unsubscribeRtdb = null;
     let isApplyingCloudUpdate = false;
@@ -1452,7 +1826,7 @@
     }
 
     // =========================================================================
-    // 5. SEARCH INPUT HANDLERS
+    // 6. SEARCH INPUT HANDLERS
     // =========================================================================
     window.handleSearchInput = () => {
       const inputEl = document.getElementById('search-input');
@@ -1481,7 +1855,7 @@
     };
 
     // =========================================================================
-    // 6. INITIALIZATION, OFFLINE PILL ("You're Offline") & BACKGROUND HANDLERS
+    // 7. INITIALIZATION, OFFLINE PILL ("You're Offline") & BACKGROUND HANDLERS
     // =========================================================================
     function updateConnectivityUI() {
       const pill = document.getElementById('offline-status-pill');
@@ -1661,7 +2035,7 @@
     }
 
     // =========================================================================
-    // 7. STUDIO FEATURES: LYRICS, CUSTOM LYRIC COLORS, SPEED & SLEEP
+    // 8. STUDIO FEATURES: LYRICS, CUSTOM LYRIC COLORS, SPEED & SLEEP
     // =========================================================================
     window.toggleStudioDrawer = () => {
       const drawer = document.getElementById('side-studio-drawer');
@@ -1894,7 +2268,7 @@
     };
 
     // =========================================================================
-    // 8. PLAYLIST COVER CUSTOMIZER
+    // 9. PLAYLIST COVER CUSTOMIZER
     // =========================================================================
     window.openCoverModal = () => {
       const pl = state.playlists.find(p => p.id === state.currentView);
@@ -1996,7 +2370,7 @@
     }
 
     // =========================================================================
-    // 9. FIREBASE AUTHENTICATION
+    // 10. FIREBASE AUTHENTICATION
     // =========================================================================
     window.openAuthModal = () => {
       document.getElementById('auth-error').classList.add('hidden');
@@ -2108,7 +2482,7 @@
     }
 
     // =========================================================================
-    // 10. REALTIME DATABASE SYNC (PRIVACY-PRESERVING: NO SONG TITLES SYNCED)
+    // 11. REALTIME DATABASE SYNC (PRIVACY-PRESERVING: NO SONG TITLES SYNCED)
     // =========================================================================
     async function subscribeToRealtimeDatabase(uid) {
       const fb = await initFirebaseCloud();
@@ -2312,7 +2686,7 @@
     }
 
     // =========================================================================
-    // 11. IMPORT MP3 / MP4 FILES & ADD VIA URL
+    // 12. IMPORT MP3 / MP4 FILES & ADD VIA URL
     // =========================================================================
     window.handleFileUpload = async (event) => {
       const files = Array.from(event.target.files);
@@ -2424,7 +2798,7 @@
     };
 
     // =========================================================================
-    // 12. RENAME SONG, ARTIST, OR AUDIO URL / DELETE SONG
+    // 13. RENAME SONG, ARTIST, OR AUDIO URL / DELETE SONG
     // =========================================================================
     window.openEditSongModal = (trackId, event) => {
       if (event) event.stopPropagation();
@@ -2502,7 +2876,7 @@
     };
 
     // =========================================================================
-    // 13. REORDER SEQUENCE & PLAYLIST MANAGEMENT
+    // 14. REORDER SEQUENCE & PLAYLIST MANAGEMENT
     // =========================================================================
     window.moveSongInSequence = (index, direction, event) => {
       if (event) event.stopPropagation();
@@ -2650,7 +3024,7 @@
     };
 
     // =========================================================================
-    // 14. PLAYBACK & TRANSPORT CONTROLS (ANTI-LAG CANPLAY & LOCK-SCREEN SAFE)
+    // 15. PLAYBACK & TRANSPORT CONTROLS (ANTI-LAG CANPLAY & LOCK-SCREEN SAFE)
     // =========================================================================
     function getActiveQueue() {
       const visible = getFilteredTracks();
@@ -2900,7 +3274,7 @@
     }
 
     // =========================================================================
-    // 15. ANALYTICS & RENDERING (REMOVED 2026-W47 TEXT)
+    // 16. ANALYTICS & RENDERING (NO 2026-W47 TEXT)
     // =========================================================================
     function incrementPlayCount(trackId, deferSync = false) {
       const track = state.tracks.find(t => t.id === trackId);
@@ -3059,7 +3433,6 @@
       const totalPlays = state.tracks.reduce((sum, t) => sum + (t.plays || 0), 0);
 
       document.getElementById('stat-weekly-hours').textContent = `${(weeklySec / 3600).toFixed(2)} hrs`;
-      // Removed (2026-W47) week identifier text
       document.getElementById('stat-weekly-mins').textContent = `${Math.round(weeklySec / 60)} mins logged this week`;
 
       document.getElementById('stat-total-hours').textContent = `${(totalSec / 3600).toFixed(2)} hrs`;
@@ -3185,9 +3558,9 @@
         titleEl.textContent = 'All Songs';
         if (rawQuery) subtitleEl.textContent = `Showing search results for "${rawQuery}"`;
       } else if (state.currentView === 'tutorial') {
-        typeEl.textContent = 'APP GUIDE';
-        titleEl.textContent = 'Tutorial';
-        subtitleEl.textContent = 'Everything you can do in MP3 Vision';
+        typeEl.textContent = 'INTERACTIVE ONBOARDING';
+        titleEl.textContent = 'Interactive Tutorial';
+        subtitleEl.textContent = 'Click any mission below or start the live guided spotlight tour';
         coverEl.className = 'hero-cover-box bg-gradient-to-br from-sky-500 to-zinc-900 shadow-2xl';
         coverEl.innerHTML = `<i class="fa-solid fa-graduation-cap"></i>`;
         tutorialBox.classList.remove('hidden');

@@ -42,6 +42,7 @@
     .justify-center { justify-content: center; }
     .justify-end { justify-content: flex-end; }
     .shrink-0 { flex-shrink: 0; }
+    .mt-auto { margin-top: auto; }
     .overflow-hidden { overflow: hidden; }
     .overflow-y-auto { overflow-y: auto; }
     .truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -136,9 +137,13 @@
       color: #ffffff !important;
     }
 
-    /* Responsive Phone & Tablet Sizing Adjustments */
+    /* Responsive Phone & Tablet Sizing Adjustments + Touch Scrollable Sidebar */
     .app-sidebar {
       width: 14.5rem;
+      overflow-y: auto !important;
+      overflow-x: hidden !important;
+      -webkit-overflow-scrolling: touch;
+      touch-action: pan-y;
     }
     .hero-cover-box {
       width: 6.5rem !important;
@@ -377,8 +382,8 @@
   <!-- MAIN WORKSPACE -->
   <div class="flex-1 flex gap-2 p-2 overflow-hidden">
     
-    <!-- LEFT SIDEBAR -->
-    <aside class="app-sidebar bg-[#121212] rounded-lg flex flex-col overflow-hidden shrink-0 border border-zinc-900">
+    <!-- LEFT SIDEBAR (Scrollable as a whole unit on phone/tablet screens) -->
+    <aside class="app-sidebar bg-[#121212] rounded-lg flex flex-col overflow-y-auto shrink-0 border border-zinc-900">
       <div class="p-3.5 space-y-2.5 shrink-0">
         <!-- Fixed Top-Left Brand Logo & Title Alignment -->
         <div class="brand-header" id="tour-target-brand">
@@ -420,7 +425,7 @@
         </nav>
       </div>
 
-      <hr class="border-zinc-800 mx-3" />
+      <hr class="border-zinc-800 mx-3 shrink-0" />
 
       <!-- Playlists Header -->
       <div id="tour-target-playlists" class="px-4 pt-2.5 pb-1 flex items-center justify-between shrink-0">
@@ -430,11 +435,11 @@
         </button>
       </div>
 
-      <!-- Playlist Sidebar List (Scrollable) -->
-      <div id="playlist-sidebar" class="flex-1 overflow-y-auto px-2.5 space-y-1 min-h-[36px]"></div>
+      <!-- Playlist Sidebar List -->
+      <div id="playlist-sidebar" class="px-2.5 py-1 space-y-1 shrink-0"></div>
 
       <!-- Add Music & Support -->
-      <div id="tour-target-import" class="p-2.5 border-t border-zinc-800 space-y-1.5 shrink-0 bg-[#121212]">
+      <div id="tour-target-import" class="mt-auto p-2.5 border-t border-zinc-800 space-y-1.5 shrink-0 bg-[#121212]">
         <button onclick="openUrlTrackModal()" class="w-full flex items-center justify-center gap-1.5 bg-[#1db954] hover:bg-emerald-400 text-black text-[11px] font-bold py-1.5 px-2.5 rounded-full transition">
           <i class="fa-solid fa-cloud"></i>
           <span class="truncate">Add MP3/MP4 via URL</span>
@@ -447,13 +452,13 @@
 
         <div class="pt-0.5">
           <a
-            href="https://buymeacoffee.com/mp3vision"
+            href="https://paypal.me/BPHEStudio"
             target="_blank"
             rel="noopener noreferrer"
-            class="w-full flex items-center justify-center gap-1.5 bg-[#FFDD00] hover:bg-yellow-300 text-black text-[11px] font-extrabold py-1.5 px-2.5 rounded-full shadow transition hover:scale-[1.02]"
+            class="w-full flex items-center justify-center gap-1.5 bg-[#0070BA] hover:bg-[#005ea6] text-white text-[11px] font-extrabold py-1.5 px-2.5 rounded-full shadow transition hover:scale-[1.02]"
           >
-            <i class="fa-solid fa-mug-hot text-xs"></i>
-            <span class="truncate">Buy Me a Coffee</span>
+            <i class="fa-brands fa-paypal text-xs"></i>
+            <span class="truncate">Support on PayPal</span>
           </a>
           <p class="text-[9px] text-zinc-400 text-center mt-1 leading-tight">
             Support MP3 Vision: <span class="text-white font-semibold">no ads at all!</span>
@@ -665,23 +670,23 @@
 
           </div>
 
-          <div class="bg-gradient-to-r from-zinc-900 to-[#181818] border border-yellow-500/30 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xl">
+          <div class="bg-gradient-to-r from-zinc-900 to-[#181818] border border-sky-500/30 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xl">
             <div class="space-y-0.5">
               <h3 class="text-sm font-bold text-white flex items-center gap-2">
-                <i class="fa-solid fa-mug-hot text-[#FFDD00]"></i> Support MP3 Vision
+                <i class="fa-brands fa-paypal text-[#0070BA]"></i> Support MP3 Vision
               </h3>
               <p class="text-xs text-zinc-300">
-                Enjoying uninterrupted music? Donate to keep MP3 Vision running with <strong class="text-white">no ads at all!</strong>
+                Enjoying uninterrupted music? Support BPHEStudio on PayPal to keep MP3 Vision running with <strong class="text-white">no ads at all!</strong>
               </p>
             </div>
             <a
-              href="https://buymeacoffee.com/mp3vision"
+              href="https://paypal.me/BPHEStudio"
               target="_blank"
               rel="noopener noreferrer"
-              class="bg-[#FFDD00] hover:bg-yellow-300 text-black text-xs font-extrabold px-4 py-2 rounded-full flex items-center gap-2 shrink-0 shadow transition hover:scale-105"
+              class="bg-[#0070BA] hover:bg-[#005ea6] text-white text-xs font-extrabold px-4 py-2 rounded-full flex items-center gap-2 shrink-0 shadow transition hover:scale-105"
             >
-              <i class="fa-solid fa-mug-hot"></i>
-              <span>Buy Me a Coffee</span>
+              <i class="fa-brands fa-paypal"></i>
+              <span>Support on PayPal</span>
             </a>
           </div>
         </div>
@@ -1613,7 +1618,6 @@
 
     window.openTutorialMenu = () => {
       window.switchView('tutorial');
-      // Automatically launch the interactive spotlight tour when clicking Tutorial
       window.startInteractiveTour(0);
     };
 
@@ -1676,6 +1680,11 @@
         <div onclick="startInteractiveTour(${i})" style="width: ${i === idx ? '18px' : '6px'};" class="tour-step-dot cursor-pointer ${i === idx ? 'active' : ''}"></div>
       `).join('');
 
+      const targetEl = document.getElementById(step.targetId);
+      if (targetEl && typeof targetEl.scrollIntoView === 'function') {
+        targetEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      }
+
       requestAnimationFrame(() => {
         positionTourSpotlight(step.targetId);
       });
@@ -1701,7 +1710,6 @@
       hole.style.width = `${width}px`;
       hole.style.height = `${height}px`;
 
-      // Smart positioning for the floating coach card so it never covers the highlighted element
       const cardRect = card.getBoundingClientRect();
       const cardW = cardRect.width || 310;
       const cardH = cardRect.height || 210;
@@ -1710,13 +1718,10 @@
       let cardTop = top;
       let cardLeft = left + width + margin;
 
-      // Try right of target first
       if (cardLeft + cardW > window.innerWidth - 10) {
-        // Try left of target
         cardLeft = left - cardW - margin;
       }
       if (cardLeft < 10) {
-        // Center horizontally above or below target
         cardLeft = Math.max(12, Math.min(window.innerWidth - cardW - 12, left + (width / 2) - (cardW / 2)));
         if (top + height + cardH + margin < window.innerHeight - 10) {
           cardTop = top + height + margin;
@@ -1726,7 +1731,6 @@
           cardTop = Math.max(12, window.innerHeight - cardH - 16);
         }
       } else {
-        // Clamp vertical position inside viewport
         cardTop = Math.max(12, Math.min(window.innerHeight - cardH - 12, top));
       }
 
